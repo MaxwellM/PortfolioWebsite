@@ -1,0 +1,19 @@
+doctype html
+html
+    head
+        link(rel="stylesheet", href="../css/main.css", type="text/css")
+        link(rel="stylesheet", href="../css/projects.css", type="text/css")
+
+    body(ng-app='app', ng-controller='myCtrl')
+        div#MainWrapper
+            div#nav_bar
+                include resource/navigation
+            div#projectPage
+                include resource/projectPage
+            div#resumePage
+                include resource/resume
+            div#contactMePage
+                include resource/contactMePage
+            div#footerWrapper
+                include resource/footer
+    script(src="../js/app.js")
