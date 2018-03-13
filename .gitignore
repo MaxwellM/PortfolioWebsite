@@ -1,0 +1,7 @@
+# complied web things
+web/html
+web/css
+
+# editor things
+.idea/
+.csv
