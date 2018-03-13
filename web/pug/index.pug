@@ -3,17 +3,17 @@ html
     head
         link(rel="stylesheet", href="../css/main.css", type="text/css")
         link(rel="stylesheet", href="../css/projects.css", type="text/css")
-
+        script(src="../js/node_modules/angular/angular.min.js")
     body(ng-app='app', ng-controller='myCtrl')
         div#MainWrapper
             div#nav_bar
-                include resource/navigation
+                include navigation
             div#projectPage
-                include resource/projectPage
+                include projectPage
             div#resumePage
-                include resource/resume
+                include resume
             div#contactMePage
-                include resource/contactMePage
+                include contactMePage
             div#footerWrapper
-                include resource/footer
+                include footer
     script(src="../js/app.js")
