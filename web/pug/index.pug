@@ -3,17 +3,23 @@ html
     head
         link(rel="stylesheet", href="../css/main.css", type="text/css")
         link(rel="stylesheet", href="../css/projects.css", type="text/css")
+        link(rel="stylesheet", href="../css/footer.css", type="text/css")
+        link(rel="stylesheet", href="../css/navigation.css", type="text/css")
+        link(rel="stylesheet", href="../css/resume.css", type="text/css")
         //link(rel="stylesheet", href="../css/angular-datepicker.css", type="text/css")
         script(src="../js/node_modules/angular/angular.js")
     body(ng-app='app', ng-controller='myCtrl')
         div#MainWrapper
             div#nav_bar
                 include navigation
-            div#projectPage
+            div#mainPage(ng-show='myCtrl.buttonName == "Home"')
+                //img#mainPageBackground(src='../images/dollarstore.JPG', alt='')
+                include main
+            div#projectPage(ng-show='myCtrl.buttonName == "Projects"')
                 include projectPage
-            div#resumePage
+            div#resumePage(ng-show='myCtrl.buttonName == "Resume"')
                 include resume
-            div#contactMePage
+            div#contactMePage(ng-show='myCtrl.buttonName == "Contact Me"')
                 include contactMePage
             div#footerWrapper
                 include footer

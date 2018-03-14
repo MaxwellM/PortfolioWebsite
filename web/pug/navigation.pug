@@ -1,5 +1,5 @@
-div#nav(ng-init='myCtrl.buttonName = "NIO Tests"')
-    div.button(ng-repeat='button in ["NIO Tests", "Spotter Tests", "NIO Results", "Spotter Results", "Settings", "NIO Validator", "Spotter Validator"]',
+div#nav(ng-init='myCtrl.buttonName = "Home"')
+    div.button(ng-repeat='button in ["Home", "Projects", "Resume", "Contact Me"]',
     ng-click='log(button);myCtrl.buttonName = button;',
     id='NAVButton{{button}}',
     ng-class='{selected: myCtrl.buttonName == button}') {{ button }}
