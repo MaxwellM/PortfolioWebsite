@@ -1,9 +1,31 @@
 div#nav {
-  display: flex;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
 }
 
 div#nav_bar {
-  position: relative;
-  top: 5%;
+  //position: relative;
+  //top: 5%;
   z-index: 1;
+  & div#Mebutton, div#Otherbuttons {
+    font-family: Montserrat,helvetica neue,Helvetica,Arial,sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+  }
 }
+
+div#Mebutton {
+  float: left;
+}
+
+div#Otherbuttons {
+  float: right;
+  margin-left: 20px;
+}
+
+//#nav > .button:nth-child(2) {
+//  margin-left: 60%;
+//}
