@@ -1,7 +1,7 @@
 div#nav(ng-init='myCtrl.buttonName = "Maxwell Morin"')
     div#Mebutton(ng-repeat='button in ["Maxwell Morin"]',
-    ng-click='log(button);myCtrl.buttonName = button;',
-    ng-class='{selected: myCtrl.buttonName == button}') {{ button }}
+        ng-click='log(button);myCtrl.buttonName = button;',
+        ng-class='{selected: myCtrl.buttonName == button}') {{ button }}
     div#Otherbuttons(ng-repeat='button in ["Contact Me", "Resume", "Projects"]',
-    ng-click='log(button);myCtrl.buttonName = button;',
-    ng-class='{selected: myCtrl.buttonName == button}') {{ button }}
+        ng-click='log(button);myCtrl.buttonName = button;',
+        ng-class='{selected: myCtrl.buttonName == button}') {{ button }}

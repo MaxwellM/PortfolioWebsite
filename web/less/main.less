@@ -8,13 +8,14 @@ div#MainWrapper {
 
 div#InsiteMainPageWrapper {
   position: absolute;
-  top: 45%;
+  top: 30%;
   left: 20%;
   z-index: 1;
   display: flex;
 }
 
 div#MEWrapper {
+  width: 200px;
   & img#ME {
     background: url(../images/me.jpg) no-repeat;
     background-size: cover;
@@ -23,6 +24,7 @@ div#MEWrapper {
     z-index: 1;
     border-radius: 100%;
     border: 3px solid white;
+    position: absolute;
   }
 }
 
@@ -48,5 +50,6 @@ div#mainPage {
     background-size: cover;
     filter: blur(5px);
     z-index: -1;
+    position: absolute;
   }
 }

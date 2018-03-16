@@ -14,11 +14,19 @@ div#nav_bar {
     font-size: 24px;
     cursor: pointer;
     color: white;
+    padding: 32px 32px 40px;
+    &.selected {
+      border-bottom: 4px solid #1B7B64;
+      //a {
+      //  color: #FFC925;
+      //}
+    }
   }
 }
 
 div#Mebutton {
   float: left;
+  margin-left: 50px;
 }
 
 div#Otherbuttons {
@@ -26,6 +34,10 @@ div#Otherbuttons {
   margin-left: 20px;
 }
 
-//#nav > .button:nth-child(2) {
-//  margin-left: 60%;
+div#Otherbuttons:nth-child(2) {
+  margin-right: 50px;
+}
+
+//#Otherbuttons > .button:nth-child(1) {
+//  margin-right: 250px;
 //}
