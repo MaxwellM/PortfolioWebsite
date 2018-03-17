@@ -1,3 +1,13 @@
+body {
+  font-family: merriweather,serif;
+  -webkit-font-feature-settings: 'kern' 1;
+  -moz-font-feature-settings: 'kern' 1;
+  -o-font-feature-settings: 'kern' 1;
+  color: #2e2e2e;
+  letter-spacing: .01rem;
+  line-height: 1.75rem;
+}
+
 div#MainWrapper {
   position:fixed;
   top:0;
@@ -7,49 +17,55 @@ div#MainWrapper {
 }
 
 div#InsiteMainPageWrapper {
-  position: absolute;
-  top: 30%;
-  left: 20%;
-  z-index: 1;
-  display: flex;
+  background-color: #f5f8fa;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(0,0,0,.125);
+  //position: absolute;
+  //top: 30%;
+  //left: 20%;
+  //z-index: 1;
+  //display: flex;
 }
 
 div#MEWrapper {
-  width: 200px;
-  & img#ME {
-    background: url(../images/me.jpg) no-repeat;
-    background-size: cover;
-    height: 200px;
-    width: 200px;
-    z-index: 1;
-    border-radius: 100%;
-    border: 3px solid white;
-    position: absolute;
-  }
+  //width: 200px;
+  //& img#ME {
+  //  background: url(../images/me.jpg) no-repeat;
+  //  background-size: cover;
+  //  height: 200px;
+  //  width: 200px;
+  //  z-index: 1;
+  //  border-radius: 100%;
+  //  border: 3px solid white;
+  //  position: absolute;
+  //}
 }
 
 div#AboutMeWrapper {
-  margin-left: 20px;
-  color: white;
-  & h1 {
-    font-size: 3rem;
-    font-family: open sans,sans-serif;
-  }
-  & h3 {
-    font-family: open sans,sans-serif;
-  }
+  //margin-left: 20px;
+  //color: white;
+  //& h1 {
+  //  font-size: 3rem;
+  //  font-family: open sans,sans-serif;
+  //}
+  //& h3 {
+  //  font-family: open sans,sans-serif;
+  //}
 }
 
 div#mainPage {
   height: 100%;
   width: 100%;
-  & img#mainPageBackground {
-    height: 100%;
-    width: 100%;
-    background: url(../images/desk3.jpg) no-repeat;
-    background-size: cover;
-    filter: blur(5px);
-    z-index: -1;
-    position: absolute;
-  }
+  background-color: blue;
+  //background-color: #f5f8fa;
+  //& img#mainPageBackground {
+  //  height: 100%;
+  //  width: 100%;
+  //  background: url(../images/desk3.jpg) no-repeat;
+  //  background-size: cover;
+  //  filter: blur(5px);
+  //  z-index: -1;
+  //  position: absolute;
+  //}
 }
