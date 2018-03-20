@@ -21,6 +21,9 @@ div#InsiteMainPageWrapper {
   border-bottom-style: solid;
   border-bottom-width: 1px;
   border-bottom-color: rgba(0,0,0,.125);
+  display: block;
+  padding: 2rem;
+  text-align: center;
   //position: absolute;
   //top: 30%;
   //left: 20%;
@@ -30,28 +33,38 @@ div#InsiteMainPageWrapper {
 
 div#MEWrapper {
   //width: 200px;
-  //& img#ME {
-  //  background: url(../images/me.jpg) no-repeat;
-  //  background-size: cover;
-  //  height: 200px;
-  //  width: 200px;
-  //  z-index: 1;
-  //  border-radius: 100%;
-  //  border: 3px solid white;
-  //  position: absolute;
-  //}
+  & img#ME {
+    //background: url(../images/me.jpg) no-repeat;
+    //background-size: cover;
+    height: 100px;
+    width: 100px;
+    z-index: 1;
+    border-radius: 100%;
+    border: 3px solid white;
+    //position: absolute;
+  }
 }
 
 div#AboutMeWrapper {
   //margin-left: 20px;
   //color: white;
-  //& h1 {
-  //  font-size: 3rem;
-  //  font-family: open sans,sans-serif;
-  //}
-  //& h3 {
-  //  font-family: open sans,sans-serif;
-  //}
+  & h1 {
+    font-weight: 700;
+    line-height: 1.25;
+    color: #3a4145;
+    ont-family: open sans,sans-serif;
+    margin-top: 0;
+    margin-bottom: .5rem;
+    font-size: 3rem;
+  }
+  & h3 {
+    font-family: merriweather,serif;
+    font-weight: 400;
+    color: #aaa;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 
 div#mainPage {

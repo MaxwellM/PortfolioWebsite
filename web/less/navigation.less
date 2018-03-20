@@ -1,5 +1,8 @@
 div#nav {
   display: flow-root;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(0,0,0,.125);
   //padding-top: 1rem;
   //padding-bottom: 1rem;
   & div#Otherbuttons, div#Mebutton {
@@ -14,6 +17,7 @@ div#nav {
     position: relative;
     overflow: hidden;
     &:hover {
+      color: rgba(41, 128, 185, 1);
       background-color: rgba(41, 128, 185, 0.1);
       transition-duration: 0.3s;
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
