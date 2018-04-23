@@ -38,10 +38,57 @@ div#projectPagePlusOneRow {
 }
 
 div#projectPagePlusTwoRow {
+  border-top-style: solid;
+  border-top-width: 2px;
+  overflow: auto;
+  margin-bottom: 15px;
+}
+
+div#projectPagePlusThreeRow {
   //border-top-style: solid;
   //border-top-width: 2px;
   overflow: auto;
   margin-bottom: 15px;
+}
+
+div#nioSettingsWrapper {
+  width: 50%;
+  //height: 800px;
+  overflow-wrap: normal;
+  float: right;
+  display: grid;
+  & img#nioSettingsImage {
+    float: left;
+    height: 200px;
+    width: 300px;
+    //z-index: 1;
+    //border-radius: 100%;
+    border: 3px solid white;
+  }
+  & div#nioSettingsLabelWrapper {
+    display: grid;
+    float: right;
+  }
+}
+
+div#nioStabilityWrapper {
+  width: 50%;
+  //height: 800px;
+  overflow-wrap: normal;
+  float: left;
+  display: grid;
+  & img#nioStabilityImage {
+    float: left;
+    height: 200px;
+    width: 300px;
+    //z-index: 1;
+    //border-radius: 100%;
+    border: 3px solid white;
+  }
+  & div#nioStabilityLabelWrapper {
+    display: grid;
+    float: right;
+  }
 }
 
 div#lostInSpaceWrapper {
