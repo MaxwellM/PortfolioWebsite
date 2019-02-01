@@ -1,2 +1,40 @@
 div#angularJSExampleTableWrapper
-    h1 test
+    div#angularJSExampleTableSidebarWrapper
+        div#angularJSExampleTableSidebarSearchTitle
+            h1 Search
+        div#angularJSExampleTableSidebarFilters
+            div#angularJSExampleTableSidebarFilterLabels
+                label Name
+                label Species
+                label Born
+                label Died
+            div#angularJSExampleTableSidebarInputs
+                input(type='text', ng-model='name')
+                input(type='text', ng-model='species')
+                datepicker
+                    input(type='text', ng-model='born')
+                datepicker
+                    input(type='text', ng-model='died')
+                input#quoteBuilderResultsSearchButton(type='button', value='Search', ng-click='refreshQuoteBuilderResults()')
+        div#angularJSExampleTableSidebarTableTitleWrapper
+            h1 Quote Selection
+        div#angularJSExampleTableSidebarTableWrapper
+            div#angularJSExampleTableSidebarTable
+                table#angularJSExampleTableResultsTableTH
+                    thead
+                        tbody
+                            th(width=100) Name
+                            th(width=100) Species
+                            th(width=0) Born
+                table#angularJSExampleTableResultsTableTD
+                    thead
+                        tbody
+                            tr(ng-repeat="character in allCharacters | orderBy: 'born':true | limitTo: 250", ng-click='setClickedRow(character.id)')
+                                td(width=100) {{ character.name }}
+                                td(width=100) {{ character.species }}
+                                td(width=0) {{ character.born | date:'short'}}
+                h2#angularJSExampleTableResultsEmptyTable(ng-show='allCharacters.length == 0') NO CHARACTERS FOUND
+    div#angularJSExampleTablePageWrapper
+        div#quoteBuilderInnerTitle
+            h1 Star Wars Characters
+                img#QuoteImage(src='../images/person.png', alt='')

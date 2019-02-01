@@ -3,6 +3,178 @@ div#angularJSExamplesPage {
 }
 
 div#angularJSExampleTableWrapper {
-  height: 100px;
+  height: 100%;
   overflow: auto;
+}
+
+div#qangularJSExampleTableInnerTitle {
+  & h1 {
+    color: #282e44;
+    text-transform: capitalize;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    text-align: center;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: solid;
+    border-color: #282e44;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin: auto;
+  }
+}
+
+div#angularJSExampleTableSidebarWrapper {
+  float: left;
+  display: inline-block;
+  min-width: 360px;
+  max-width: 360px;
+  height: 100%;
+  overflow: auto;
+  background-color: #52658F;
+  border-right: #333A56;
+  border-right-style: solid;
+}
+
+div#angularJSExampleTableInnerPageWrapper {
+  height: 100%;
+  overflow: auto;
+  background-color: #F7F5E6;
+}
+
+div#angularJSExampleTableSidebarSearchTitle, div#angularJSExampleTableSidebarTableTitleWrapper {
+  & h1 {
+    color: #F7F5E6;
+    margin: 10px;
+    text-transform: capitalize;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  }
+}
+
+div#angularJSExampleTableSidebarFilters {
+  border-top-style: solid;
+  border-bottom-style: solid;
+  border-color: #333A56;
+  border-width: 2px;
+  //padding-bottom: 5px;
+  background-color: #F7F5E6;
+  margin-bottom: 25px;
+  display: flex;
+}
+
+div#angularJSExampleTableSidebarFilterLabels {
+  display: grid;
+  //padding-top: 5px;
+  text-align: right;
+  float: left;
+  border-right: solid;
+  border-right-width: 2px;
+  padding-top: 10px;
+  padding-bottom: 30px;
+  padding-right: 5px;
+  width: 105px;
+  & label {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    color: #282e44;
+    font-size: 18px;
+    text-transform: capitalize;
+    margin-left: 10px;
+    width: max-content;
+  }
+  //padding-bottom: 15px;
+  //padding-right: 15px;
+}
+
+div#angularJSExampleTableSidebarInputs {
+  float: left;
+  display: grid;
+  //padding-top: 5px;
+  width: 100%;
+  & input {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 18px;
+    width: 100%;
+  }
+  & input:hover, input:focus {
+    background-color: #52658F;
+    color: #F7F5E6;
+  }
+  //padding-left: 15px;
+  //padding-bottom: 25px;
+}
+
+input#angularJSExampleTableSearchButton {
+
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  width: 100%;
+  padding: 5px;
+  cursor: pointer;
+  border-top: 2px solid #52658F;
+}
+
+div#angularJSExampleTableSidebarTable {
+  background: #F7F5E6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  //border-top-style: solid;
+  //border-bottom-style: solid;
+  ////border-color: #333A56;
+  //border-width: 2px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  overflow: auto;
+  min-height: 100px;
+  max-height: 400px;
+  & table {
+    border-collapse: collapse;
+    cursor: pointer;
+    //border-color: #333A56;
+    width: 100%;
+  }
+  & table th {
+    border: 1px solid #333A56;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    text-transform: capitalize;
+    background-color: #52658F;
+    color: #F7F5E6;
+  }
+  & table td {
+    border: 1px solid #333A56;
+    color: #282e44;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    text-transform: capitalize;
+  }
+}
+
+div#angularJSExampleTablePageWrapper {
+  height: 100%;
+  overflow: auto;
+  background-color: #F7F5E6;
+}
+
+div#quoteBuilderInnerTitle {
+  & h1 {
+    color: #282e44;
+    text-transform: capitalize;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    text-align: center;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: solid;
+    border-color: #282e44;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin: auto;
+  }
+  & img {
+    width: 50px;
+    vertical-align: middle;
+    margin-left: 10px;
+  }
 }
