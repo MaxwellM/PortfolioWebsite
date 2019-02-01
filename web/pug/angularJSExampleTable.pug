@@ -35,6 +35,38 @@ div#angularJSExampleTableWrapper
                                 td(width=0) {{ character.born | date:'short'}}
                 h2#angularJSExampleTableResultsEmptyTable(ng-show='allCharacters.length == 0') NO CHARACTERS FOUND
     div#angularJSExampleTablePageWrapper
-        div#quoteBuilderInnerTitle
+        div#angularJSExampleTableInnerTitle
             h1 Star Wars Characters
-                img#QuoteImage(src='../images/person.png', alt='')
+                img#angularJSExampleTableImage(src='../images/person.png', alt='')
+        div#angularJSExampeTableSplitWrapper
+            h2(ng-model='add', ng-click='showSection(true)') Add
+            h2(ng-model='view', ng-click='showSection(false)') View
+        div#angulaJSExampleTableEnterWrapper(ng-show='showAddCharacter')
+            div#angulaJSExampleTableTitle
+                h1 Add Character
+            div#angularJSExampleLabels
+                label Name
+                label Species
+                label Born
+                label Associates
+                label Gender
+                label Affiliation
+                label Masters
+                label Apprentices
+            div#angularJSExampleInputs
+                input(type='text', ng-model='name')
+                input(type='text', ng-model='species')
+                input(type='text', ng-model='born')
+                input(type='text', ng-model='associates')
+                input(type='text', ng-model='gender')
+                input(type='text', ng-model='affiliation')
+                input(type='text', ng-model='masters')
+                input(type='apprentices', ng-model='apprentices')
+                input#angularJSExampeTableAddButton(type='button', value='Add Character', ng-click='addCharacter(name, species, born, associates, gender, affiliation, masters)')
+        div#anjularJSExampleTableShowCharacters(ng-show='showViewCharacters')
+            div#anjularJSExampleTableShowCharactersTest
+                h1 TEST BITCH
+
+
+
+w
