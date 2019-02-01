@@ -1,64 +1,192 @@
-div#nav {
-  display: flow-root;
+//div#nav {
+//  display: flow-root;
+//  border-bottom-style: solid;
+//  border-bottom-width: 1px;
+//  border-bottom-color: rgba(0,0,0,.125);
+//  //padding-top: 1rem;
+//  //padding-bottom: 1rem;
+//  & div#Otherbuttons, div#Mebutton, ul.top-level-menu {
+//    cursor: pointer;
+//    font-family: Montserrat,helvetica neue,Helvetica,Arial,sans-serif;
+//    font-weight: 700;
+//    padding-top: 10px;
+//    padding-bottom: 10px;
+//    padding-left: 10px;
+//    padding-right: 10px;
+//    box-shadow: 0 0 1px transparent;
+//    position: relative;
+//    overflow: hidden;
+//    &:hover {
+//      color: rgba(41, 128, 185, 1);
+//      background-color: rgba(41, 128, 185, 0.1);
+//      transition-duration: 0.3s;
+//      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+//    }
+//    &.selected {
+//      box-shadow: 0 4px 0 #2098D1;
+//    }
+//    &:before {
+//      content: "";
+//      position: absolute;
+//      z-index: -1;
+//      left: 50%;
+//      right: 50%;
+//      top: 0;
+//      background: #2098D1;
+//      height: 4px;
+//      -webkit-transition-property: left, right;
+//      transition-property: left, right;
+//      -webkit-transition-duration: 0.3s;
+//      transition-duration: 0.3s;
+//      -webkit-transition-timing-function: ease-out;
+//      transition-timing-function: ease-out;
+//    }
+//    &:hover:before, &:focus:before, &:active:before {
+//      left: 0;
+//      right: 0;
+//    }
+//  }
+//}
+//
+//ul.top-level-menu:nth-child(1) {
+//  float: left;
+//  margin-left: 50px;
+//  font-size: 24px
+//}
+//
+//ul.top-level-menu:nth-child(1n + 1) {
+//  float: right;
+//  margin-left: 20px;
+//}
+//
+//ul.top-level-menu:nth-child(2) {
+//  margin-right: 50px;
+//}
+//
+//
+//
+//div#Mebutton {
+//  float: left;
+//  margin-left: 50px;
+//  font-size: 24px
+//}
+//
+//div#Otherbuttons {
+//  float: right;
+//  margin-left: 20px;
+//}
+//
+//div#Otherbuttons:nth-child(2) {
+//  margin-right: 50px;
+//}
+
+
+div#nav_bar {
+  position: relative;
+  background: #333A56;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: rgba(0,0,0,.125);
-  //padding-top: 1rem;
-  //padding-bottom: 1rem;
-  & div#Otherbuttons, div#Mebutton {
-    cursor: pointer;
-    font-family: Montserrat,helvetica neue,Helvetica,Arial,sans-serif;
-    font-weight: 700;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    box-shadow: 0 0 1px transparent;
-    position: relative;
-    overflow: hidden;
-    &:hover {
-      color: rgba(41, 128, 185, 1);
-      background-color: rgba(41, 128, 185, 0.1);
-      transition-duration: 0.3s;
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    &.selected {
-      box-shadow: 0 4px 0 #2098D1;
-    }
-    &:before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      left: 50%;
-      right: 50%;
-      top: 0;
-      background: #2098D1;
-      height: 4px;
-      -webkit-transition-property: left, right;
-      transition-property: left, right;
-      -webkit-transition-duration: 0.3s;
-      transition-duration: 0.3s;
-      -webkit-transition-timing-function: ease-out;
-      transition-timing-function: ease-out;
-    }
-    &:hover:before, &:focus:before, &:active:before {
-      left: 0;
-      right: 0;
-    }
-  }
+  border-bottom-width: thick;
+  border-bottom-color: #52658F;
+  height: 30px;
 }
 
-div#Mebutton {
+.navbar {
+  padding-left: 150px;
+  display: table-cell;
+  width: 1000px;
+  z-index: 1;
+}
+
+.third-level-menu
+{
+  position: absolute;
+  top: 0;
+  right: -275px;
+  width: 275px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+}
+
+.third-level-menu > li
+{
+  height: 30px;
+  background: #999999;
+}
+.third-level-menu > li:hover { background: #CCCCCC; }
+
+.second-level-menu
+{
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: max-content;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+  z-index: 1;
+}
+
+.second-level-menu > li
+{
+  position: relative;
+  height: 30px;
+  background: #999999;
+  z-index: 1;
+}
+.second-level-menu > li:hover { background: #CCCCCC; }
+
+.top-level-menu
+{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1;
+}
+
+.top-level-menu > li
+{
+  position: relative;
   float: left;
-  margin-left: 50px;
-  font-size: 24px
+  //margin-right: 25px;
+  width: auto;
+  z-index: 1;
+}
+.top-level-menu > li:hover { background: #CCCCCC; }
+
+.top-level-menu li:hover > ul
+{
+  /* On hover, display the next level's menu */
+  display: inline;
 }
 
-div#Otherbuttons {
-  float: right;
-  margin-left: 20px;
+
+/* Menu Link Styles */
+
+.top-level-menu a /* Apply to all links inside the multi-level menu */
+{
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  color: #F7F5E6;
+  background-color: #333A56;
+  text-decoration: none;
+  padding: 0 14px 0 16px;
+  cursor: pointer;
+  z-index: 1;
+
+  /* Make the link cover the entire list item-container */
+  display: block;
+  line-height: 30px;
+}
+.top-level-menu a:hover {
+  color:#52658F;
+  //background-color: #F7F5E6;
 }
 
-div#Otherbuttons:nth-child(2) {
-  margin-right: 50px;
+ul.second-level-menu a {
+  background-color: #333A56;
 }

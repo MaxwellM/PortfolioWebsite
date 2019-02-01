@@ -5,25 +5,32 @@ html
         link(rel="stylesheet", href="../css/projects.css", type="text/css")
         link(rel="stylesheet", href="../css/footer.css", type="text/css")
         link(rel="stylesheet", href="../css/navigation.css", type="text/css")
-        //link(rel="stylesheet", href="../css/pdf.css", type="text/css")
         link(rel="stylesheet", href="../css/contactMe.css", type="text/css")
         link(rel="stylesheet", href="../css/resume.css", type="text/css")
+        link(rel="stylesheet", href="../css/angularJSExampleTable.css", type="text/css")
         link(rel="shortcut icon", href="../images/favicon.png", type="image/png")
         script(src="../js/node_modules/angular/angular.js")
     body(ng-app='app', ng-controller='myCtrl')
         div#MainWrapper
             div#nav_bar
                 include navigation
-            div#mainPage(ng-show='myCtrl.buttonName == "Maxwell Morin"')
+            div#mainPage(ng-controller='mainPageCtrl', ng-show='myCtrl.buttonName == "Maxwell Morin"')
                 include main
-            div#projectPage(ng-show='myCtrl.buttonName == "Projects"')
+            div#projectPage(ng-controller='projectCtrl', ng-show='myCtrl.buttonName == "Projects"')
                 include projectPage
-            div#resumePage(ng-show='myCtrl.buttonName == "Resume"')
+            div#resumePage(ng-controller='resumeCtrl', ng-show='myCtrl.buttonName == "Resume"')
                 include resume
-            div#contactMePage(ng-show='myCtrl.buttonName == "Contact Me"')
+            div#contactMePage(ng-controller='angularJSExampleTableCtrl', ng-show='myCtrl.buttonName == "Contact Me"')
                 include contactMePage
+            div#angularJSExamplesPage(ng-controller='angularJSExampleTableCtrl', ng-show='myCtrl.buttonName == "AngularJS Table Example"')
+                include angularJSExampleTable
             div#footerWrapper
                 include footer
-    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
     script(src="../js/app.js")
-    //script(src="../js/node_modules/angularjs-datepicker/src/js/angular-datepicker.js")
+    script(src="../js/mainePage.js")
+    script(src="../js/contactMe.js")
+    script(src="../js/project.js")
+    script(src="../js/resume.js")
+    script(src="../js/angularJSExampleTable.js")
+    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
+    script(src="../js/node_modules/angularjs-datepicker/src/js/angular-datepicker.js")

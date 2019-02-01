@@ -1,7 +1,30 @@
-div#nav(ng-init='myCtrl.buttonName = "Maxwell Morin"')
-    div#Mebutton(ng-repeat='button in ["Maxwell Morin"]',
-        ng-click='log(button);myCtrl.buttonName = button;',
-        ng-class='{selected: myCtrl.buttonName == button}') {{ button }}
-    div#Otherbuttons(ng-repeat='button in ["Contact Me", "Resume", "Projects"]',
-        ng-click='log(button);myCtrl.buttonName = button;',
-        ng-class='{selected: myCtrl.buttonName == button}') {{ button }}
+.navbar(ng-init='myCtrl.buttonName = "Maxwell Morin"')
+    ul.top-level-menu
+        li
+            a(
+            ng-click='log(button);myCtrl.buttonName = "Maxwell Morin";',
+            id='NAVButtonMaxwellMorin',
+            ng-class='{selected: myCtrl.buttonName == "Maxwell Morin"}') Maxwell Morin
+        li
+            a(
+            ng-click='log(button);myCtrl.buttonName = "Contact Me";',
+            id='NAVButtonContactMe',
+            ng-class='{selected: myCtrl.buttonName == "Contact Me"}') Contact Me
+        li
+            a(
+            ng-click='log(button);myCtrl.buttonName = "Resume";',
+            id='NAVButtonResume',
+            ng-class='{selected: myCtrl.buttonName == "Resume"}') Resume
+        li
+            a(
+            ng-click='log(button);myCtrl.buttonName = "Projects";',
+            id='NAVButtonProjects',
+            ng-class='{selected: myCtrl.buttonName == "Projects"}') Projects
+        li
+            a Examples &#9660;
+            ul.second-level-menu
+                li
+                    a(
+                    ng-click='log(button);myCtrl.buttonName = "AngularJS Table Example";',
+                    id='NAVButtonAngularJSTableExample',
+                    ng-class='{selected: myCtrl.buttonName == "AngularJS Table Example"}') AngularJS Table Example
