@@ -26,22 +26,25 @@ func main() {
 
 func AddCharacterToDB(data *gin.Context) {
 	type PduIpAddress struct {
-		Name string `json:"name"`
-		Born      string `json:"born"`
-		Associated map[string]interface{} `json:"associated"`
-		Gender string `json"gender"`
+		Name        string                 `json:"name"`
+		Born        string                 `json:"born"`
+		Associated  map[string]interface{} `json:"associated"`
+		Gender      string                 `json"gender"`
 		Affiliation map[string]interface{} `json:"affiliation"`
-		Masters map[string]interface{} `json:"masters"`
+		Masters     map[string]interface{} `json:"masters"`
 	}
 
-	name := data.DefaultQuery("name", "")
-	born := data.DefaultQuery("born", "")
-	associated := data.DefaultQuery("associated", "")
-	gender := data.DefaultQuery("gender", "")
-	affiliation := data.DefaultQuery("affiliation", "")
-	masters := data.DefaultQuery("masters", "")
+	var info PduIpAddress
+	data.Bind(&info)
 
-	characterReturn, err := goResources.AddCharacter(name, born, associated, gender, affiliation, masters)
+	//name := data.DefaultQuery("name", "")
+	//born := data.DefaultQuery("born", "")
+	//associated := data.DefaultQuery("associated", map[string]interface{})
+	//gender := data.DefaultQuery("gender", "")
+	//affiliation := data.DefaultQuery("affiliation", "")
+	//masters := data.DefaultQuery("masters", "")
+
+	characterReturn, err := goResources.AddCharacter(info.Name, info.Born, info.Associated, info.Gender, info.Affiliation, info.Masters)
 	if err != nil {
 		data.String(http.StatusBadRequest, "Failed to add character.", err)
 	} else {
