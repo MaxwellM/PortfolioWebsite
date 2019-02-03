@@ -12,5 +12,9 @@ cd web
 ./buildwebsite.py
 cd ..
 
-go install
-/root/bin/PortfolioWebsite
+#needs absolutes or else it hates life
+/root/bin/go get
+/root/bin/go run runTestServer.go
+
+#go install
+#/root/bin/PortfolioWebsite
