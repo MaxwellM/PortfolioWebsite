@@ -12,7 +12,7 @@ import (
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-
+	
 	//sets the root of the directory to access
 	router.Static("/css", "./web/css")
 	router.Static("/js", "./web/js")
@@ -23,7 +23,8 @@ func main() {
 	router.POST("/addCharacterToDB", AddCharacterToDB)
 	router.GET("/loadAngularJSExampleTableResults", LoadAngularJSExampleTableResults)
 
-	router.Run(":8080")
+	// This is the port that runs
+	router.Run(":80")
 }
 
 func AddCharacterToDB(data *gin.Context) {
