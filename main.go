@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
-	"PortfolioWebsite/goResources"
+	"PortfolioWebsite/goResources/db"
+	"PortfolioWebsite/goResources/starWarsCharacterTableEample"
 )
 
 func main() {
@@ -20,34 +21,98 @@ func main() {
 	router.StaticFile("/", "./web/html/index.html")
 
 	router.POST("/addCharacterToDB", AddCharacterToDB)
+	router.GET("/loadAngularJSExampleTableResults", LoadAngularJSExampleTableResults)
 
 	router.Run(":8080")
 }
 
 func AddCharacterToDB(data *gin.Context) {
 	type PduIpAddress struct {
-		Name        string                 `json:"name"`
-		Born        string                 `json:"born"`
-		Associated  map[string]interface{} `json:"associated"`
-		Gender      string                 `json"gender"`
-		Affiliation map[string]interface{} `json:"affiliation"`
-		Masters     map[string]interface{} `json:"masters"`
+		Name        string   `json:"name"`
+		Homeworld   string   `json:"homeworld"`
+		Born        string   `json:"born"`
+		Died        string   `json:"died"`
+		Gender      string   `json:"gender"`
+		Species     string   `json:"species"`
+		Affiliation []string `json:"affiliation"`
+		Associated  []string `json:"associated"`
+		Masters     []string `json:"masters"`
+		Apprentices []string `json:"apprentices"`
 	}
 
 	var info PduIpAddress
 	data.Bind(&info)
 
-	//name := data.DefaultQuery("name", "")
-	//born := data.DefaultQuery("born", "")
-	//associated := data.DefaultQuery("associated", map[string]interface{})
-	//gender := data.DefaultQuery("gender", "")
-	//affiliation := data.DefaultQuery("affiliation", "")
-	//masters := data.DefaultQuery("masters", "")
+	fmt.Println("INFO: ", info)
 
-	characterReturn, err := goResources.AddCharacter(info.Name, info.Born, info.Associated, info.Gender, info.Affiliation, info.Masters)
+	characterReturn, err := starWarsCharacterTableEample.AddCharacter(
+		info.Name,
+		info.Homeworld,
+		info.Born,
+		info.Died,
+		info.Gender,
+		info.Species,
+		info.Affiliation,
+		info.Associated,
+		info.Masters,
+		info.Apprentices)
 	if err != nil {
 		data.String(http.StatusBadRequest, "Failed to add character.", err)
 	} else {
 		data.String(http.StatusOK, "successfully added Charcter!", characterReturn)
 	}
+}
+
+func LoadAngularJSExampleTableResults(data *gin.Context) {
+	rows, err := db.ConnPool.Query(
+		"select id, name, home_world, born, died, species, gender, affiliation, associated, masters, apprentices from star_wars_characters")
+
+	if err != nil {
+		fmt.Println("There was an error reading the star_wars_characters table from the database:", err)
+	}
+
+	type CharacterResult struct {
+		Id          int      `json:"id"`
+		Name        string   `json:"name"`
+		Homeworld   string   `json:"homeworld"`
+		Born        string   `json:"born"`
+		Died        string   `json:"died"`
+		Species     string   `json:"species"`
+		Gender      string   `json:"gender"`
+		Affiliation []string `json:"affiliation"`
+		Associated  []string `json:"associated"`
+		Masters     []string `json:"masters"`
+		Apprentices []string `json:"apprentices"`
+	}
+
+	characterResultsArray := []*CharacterResult{}
+
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var characterResult CharacterResult
+
+		err = rows.Scan(
+			&characterResult.Id,
+			&characterResult.Name,
+			&characterResult.Homeworld,
+			&characterResult.Born,
+			&characterResult.Died,
+			&characterResult.Species,
+			&characterResult.Gender,
+			&characterResult.Affiliation,
+			&characterResult.Associated,
+			&characterResult.Masters,
+			&characterResult.Apprentices)
+
+		if err != nil {
+			fmt.Println("There was an error querying the database for the Star Wars Character Results:", err)
+			continue
+		}
+
+		characterResultsArray = append(characterResultsArray, &characterResult)
+	}
+
+	data.JSON(http.StatusOK, characterResultsArray)
 }

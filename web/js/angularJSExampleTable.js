@@ -4,20 +4,30 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.addCharacter = addCharacter;
     $scope.showSection= showSection;
-    $scope.pushToDB = pushToDB;
+    $scope.refreshAngularJSExampleTableResults = refreshAngularJSExampleTableResults;
 
     $scope.showAddCharacter = false;
     $scope.showViewCharacters = false;
 
+    $scope.searchName = "";
+    $scope.searchSpecies = "";
+    $scope.searchBorn = "";
+    $scope.searchDied = "";
+    $scope.allCharacters = [];
 
-    function addCharacter(name, species, born, associates, gender, affiliation, masters) {
+
+    function addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices) {
         let obj = {
             name: name,
-            born: born ,
-            associated: splitResults(associates),
+            homeworld: homeworld,
+            born: born,
+            died: died,
+            species: species,
             gender: gender,
             affiliation: splitResults(affiliation),
-            masters: splitResults(masters)
+            associated: splitResults(associated),
+            masters: splitResults(masters),
+            apprentices: splitResults(apprentices)
         };
 
 
@@ -30,6 +40,28 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
             alert("ERROR ADDING CHARACTER TO DB: ", error);
         });
 
+    }
+
+    function refreshAngularJSExampleTableResults() {
+        let name = $scope.searchName;
+        let species = $scope.searchSpecies;
+        let born = Date.parse($scope.searchBorn);
+        let died = Date.parse($scope.searchDied);
+
+        $http.get("/loadAngularJSExampleTableResults", {params: {name, species, born, died}}).then(function (res) {
+            let results = res.data;
+
+            console.log("CHARACTER RESULTS: ", results);
+
+            $scope.allCharacters = results;
+
+            // $scope.allCharacters.forEach(function (res) {
+            //     res.born = Date.parse(res.born);
+            // });
+        }, function () {
+            console.warn("error loading character results:", arguments);
+            //loadAllSpotterResults();
+        });
     }
 
     function showSection(section) {
@@ -53,13 +85,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         return split
     }
 
-    function pushToDB (name, species, born, associates, gender, affiliation, masters) {
-        $http.post("/addCharacterToDB", obj).then(function (res) {
-            let results = res.data;
-            console.log("RESULTS: ", results);
-        }, function(error) {
-           alert("ERROR ADDING CHARACTER TO DB: ", error);
-        });
-    }
+    // Timed or single shot functions
+    refreshAngularJSExampleTableResults();
 
 }]);

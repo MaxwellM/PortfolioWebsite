@@ -15,9 +15,9 @@ div#angularJSExampleTableWrapper
                     input(type='text', ng-model='born')
                 datepicker
                     input(type='text', ng-model='died')
-                input#quoteBuilderResultsSearchButton(type='button', value='Search', ng-click='refreshQuoteBuilderResults()')
+                input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
         div#angularJSExampleTableSidebarTableTitleWrapper
-            h1 Quote Selection
+            h1 Character Selection
         div#angularJSExampleTableSidebarTableWrapper
             div#angularJSExampleTableSidebarTable
                 table#angularJSExampleTableResultsTableTH
@@ -46,23 +46,27 @@ div#angularJSExampleTableWrapper
                 h1 Add Character
             div#angularJSExampleLabels
                 label Name
-                label Species
+                label Homeworld
                 label Born
-                label Associates
+                label Died
+                label Species
                 label Gender
                 label Affiliation
+                label Associated
                 label Masters
                 label Apprentices
             div#angularJSExampleInputs
                 input(type='text', ng-model='name')
-                input(type='text', ng-model='species')
+                input(type='text', ng-model='homeworld')
                 input(type='text', ng-model='born')
-                input(type='text', ng-model='associates')
+                input(type='text', ng-model='died')
+                input(type='text', ng-model='species')
                 input(type='text', ng-model='gender')
                 input(type='text', ng-model='affiliation')
+                input(type='text', ng-model='associated')
                 input(type='text', ng-model='masters')
-                input(type='apprentices', ng-model='apprentices')
-                input#angularJSExampeTableAddButton(type='button', value='Add Character', ng-click='addCharacter(name, species, born, associates, gender, affiliation, masters)')
+                input(type='text', ng-model='apprentices')
+                input#angularJSExampeTableAddButton(type='button', value='Add Character', ng-click='addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices)')
         div#anjularJSExampleTableShowCharacters(ng-show='showViewCharacters')
             div#anjularJSExampleTableShowCharactersTest
                 h1 TEST BITCH
