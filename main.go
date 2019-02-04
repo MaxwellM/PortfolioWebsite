@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 
 	"PortfolioWebsite/goResources/db"
 	"PortfolioWebsite/goResources/starWarsCharacterTableEample"
@@ -22,9 +23,10 @@ func main() {
 
 	router.POST("/addCharacterToDB", AddCharacterToDB)
 	router.GET("/loadAngularJSExampleTableResults", LoadAngularJSExampleTableResults)
+	router.GET("/setClickedRow", SetClickedRow)
 
 	// This is the port that runs
-	router.Run(":80")
+	router.Run(":8080")
 }
 
 func AddCharacterToDB(data *gin.Context) {
@@ -116,4 +118,24 @@ func LoadAngularJSExampleTableResults(data *gin.Context) {
 	}
 
 	data.JSON(http.StatusOK, characterResultsArray)
+}
+
+func SetClickedRow(data *gin.Context) {
+	id := data.DefaultQuery("id", "")
+
+	fmt.Println("ID: ", id)
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		fmt.Println("YOU SUCK MAX", err)
+	}
+
+	fmt.Println("ID AFTER: ", idInt)
+	quoteBuilderReturn, err := starWarsCharacterTableEample.RetreiveCharacter(idInt)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining a particular Quote", err)
+	} else {
+		data.JSON(http.StatusOK, quoteBuilderReturn)
+	}
 }

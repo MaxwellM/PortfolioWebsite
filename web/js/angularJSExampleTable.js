@@ -5,6 +5,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     $scope.addCharacter = addCharacter;
     $scope.showSection= showSection;
     $scope.refreshAngularJSExampleTableResults = refreshAngularJSExampleTableResults;
+    $scope.setClickedRow = setClickedRow;
 
     $scope.showAddCharacter = false;
     $scope.showViewCharacters = false;
@@ -14,6 +15,21 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     $scope.searchBorn = "";
     $scope.searchDied = "";
     $scope.allCharacters = [];
+    $scope.selectedCharacter = [];
+
+    function setClickedRow(id) {
+        let obj = {
+            id: id
+        };
+        console.log("ID: ", obj.id);
+        $http.get("/setClickedRow", {params: {id}}).then(function (res) {
+            let results = res.data;
+            console.log("Character: ", results);
+            $scope.selectedCharacter = results;
+        }, function (error) {
+            alert("Couldn't select that Star Wars Character", error);
+        })
+    }
 
 
     function addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices) {
