@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"PortfolioWebsite/goResources/db"
 	"PortfolioWebsite/goResources/starWarsCharacterTableEample"
 )
 
@@ -26,7 +25,7 @@ func main() {
 	router.GET("/setClickedRow", SetClickedRow)
 
 	// This is the port that runs
-	router.Run(":8080")
+	router.Run(":80")
 }
 
 func AddCharacterToDB(data *gin.Context) {
@@ -67,57 +66,13 @@ func AddCharacterToDB(data *gin.Context) {
 }
 
 func LoadAngularJSExampleTableResults(data *gin.Context) {
-	rows, err := db.ConnPool.Query(
-		"select id, name, home_world, born, died, species, gender, affiliation, associated, masters, apprentices from star_wars_characters")
-
+	starWarsCharactersReturn, err := starWarsCharacterTableEample.LoadAllStarWarsCharacters()
 	if err != nil {
-		fmt.Println("There was an error reading the star_wars_characters table from the database:", err)
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining all Star Wars Characters", err)
+	} else {
+		data.JSON(http.StatusOK, starWarsCharactersReturn)
 	}
-
-	type CharacterResult struct {
-		Id          int      `json:"id"`
-		Name        string   `json:"name"`
-		Homeworld   string   `json:"homeworld"`
-		Born        string   `json:"born"`
-		Died        string   `json:"died"`
-		Species     string   `json:"species"`
-		Gender      string   `json:"gender"`
-		Affiliation []string `json:"affiliation"`
-		Associated  []string `json:"associated"`
-		Masters     []string `json:"masters"`
-		Apprentices []string `json:"apprentices"`
-	}
-
-	characterResultsArray := []*CharacterResult{}
-
-	defer rows.Close()
-
-	for rows.Next() {
-
-		var characterResult CharacterResult
-
-		err = rows.Scan(
-			&characterResult.Id,
-			&characterResult.Name,
-			&characterResult.Homeworld,
-			&characterResult.Born,
-			&characterResult.Died,
-			&characterResult.Species,
-			&characterResult.Gender,
-			&characterResult.Affiliation,
-			&characterResult.Associated,
-			&characterResult.Masters,
-			&characterResult.Apprentices)
-
-		if err != nil {
-			fmt.Println("There was an error querying the database for the Star Wars Character Results:", err)
-			continue
-		}
-
-		characterResultsArray = append(characterResultsArray, &characterResult)
-	}
-
-	data.JSON(http.StatusOK, characterResultsArray)
 }
 
 func SetClickedRow(data *gin.Context) {

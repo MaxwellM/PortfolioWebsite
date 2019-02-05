@@ -5,6 +5,20 @@ import (
 	"fmt"
 )
 
+type CharacterResult struct {
+	Id          int      `json:"id"`
+	Name        string   `json:"name"`
+	Homeworld   string   `json:"homeworld"`
+	Born        string   `json:"born"`
+	Died        string   `json:"died"`
+	Species     string   `json:"species"`
+	Gender      string   `json:"gender"`
+	Affiliation []string `json:"affiliation"`
+	Associated  []string `json:"associated"`
+	Masters     []string `json:"masters"`
+	Apprentices []string `json:"apprentices"`
+}
+
 type StarWarsCharacterResult struct {
 	Id          int                    `json:"id"`
 	Name        string                 `json:"name"`
@@ -40,6 +54,60 @@ func AddCharacter(name string, homeworld string, born string, died string, gende
 	}
 
 	return lastInsertId, nil
+}
+
+func LoadAllStarWarsCharacters() ([]*CharacterResult, error) {
+	rows, err := db.ConnPool.Query(
+		`SELECT 
+				id, 
+				name, 
+				home_world, 
+				born, 
+				died, 
+				species, 
+				gender, 
+				affiliation, 
+				associated, 
+				masters, 
+				apprentices 
+			FROM 
+				star_wars_characters`)
+
+	if err != nil {
+		fmt.Println("There was an error reading the star_wars_characters table from the database:", err)
+	}
+
+	characterResultsArray := []*CharacterResult{}
+
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var characterResult CharacterResult
+
+		err = rows.Scan(
+			&characterResult.Id,
+			&characterResult.Name,
+			&characterResult.Homeworld,
+			&characterResult.Born,
+			&characterResult.Died,
+			&characterResult.Species,
+			&characterResult.Gender,
+			&characterResult.Affiliation,
+			&characterResult.Associated,
+			&characterResult.Masters,
+			&characterResult.Apprentices)
+
+		if err != nil {
+			fmt.Println("There was an error querying that database for all Star Wars Characters:", err)
+			continue
+		}
+
+		characterResultsArray = append(characterResultsArray, &characterResult)
+	}
+
+
+	return characterResultsArray, nil
 }
 
 func RetreiveCharacter(id int)([]*StarWarsCharacterResult, error) {

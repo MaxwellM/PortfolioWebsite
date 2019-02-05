@@ -8,7 +8,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     $scope.setClickedRow = setClickedRow;
 
     $scope.showAddCharacter = false;
-    $scope.showViewCharacters = false;
+    $scope.showViewCharacters = true;
 
     $scope.searchName = "";
     $scope.searchSpecies = "";
