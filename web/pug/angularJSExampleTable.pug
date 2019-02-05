@@ -39,8 +39,8 @@ div#angularJSExampleTableWrapper
             h1 Star Wars Characters
                 img#angularJSExampleTableImage(src='../images/person.png', alt='')
         div#angularJSExampeTableSplitWrapper
-            h2(ng-model='add', ng-click='showSection(true)') Add
-            h2(ng-model='view', ng-click='showSection(false)') View
+            h2#starWarsCharacterAdd(ng-model='add', ng-click='showSection(true)') Add
+            h2#starWarsCharacterView(ng-model='view', ng-click='showSection(false)') View
         div#angulaJSExampleTableEnterWrapper(ng-show='showAddCharacter')
             div#angulaJSExampleTableTitle
                 h1 Add Character
@@ -69,7 +69,7 @@ div#angularJSExampleTableWrapper
                 input#angularJSExampeTableAddButton(type='button', value='Add Character', ng-click='addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices)')
         div#anjularJSExampleTableShowCharacters(ng-show='showViewCharacters')
             div#anjularJSExampleTableShowCharactersTest
-                h1 TEST BITCH
+                h1 Character
 
 
 

@@ -81,13 +81,23 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     }
 
     function showSection(section) {
+        let view = document.getElementById('starWarsCharacterView');
+        let add = document.getElementById('starWarsCharacterAdd');
         console.log("SECTION: ", section);
         if (section) {
             $scope.showAddCharacter = true;
             $scope.showViewCharacters = false;
+            add.style.backgroundColor = '#52658F';
+            add.style.color = '#F7F5E6';
+            view.style.backgroundColor = '#F7F5E6';
+            view.style.color = '#282e44';
         } else if (!section) {
             $scope.showViewCharacters = true;
             $scope.showAddCharacter = false;
+            view.style.backgroundColor = '#52658F';
+            view.style.color = '#F7F5E6';
+            add.style.backgroundColor = '#F7F5E6';
+            add.style.color = '#282e44';
         } else {
             console.log("Not sure what you selected there?");
         }
@@ -103,5 +113,5 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
 
     // Timed or single shot functions
     refreshAngularJSExampleTableResults();
-
+    showSection(false);
 }]);
