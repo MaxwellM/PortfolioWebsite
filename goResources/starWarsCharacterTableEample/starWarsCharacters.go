@@ -2,7 +2,9 @@ package starWarsCharacterTableEample
 
 import (
 	"PortfolioWebsite/goResources/db"
+	"encoding/json"
 	"fmt"
+	"reflect"
 )
 
 type CharacterResult struct {
@@ -13,27 +15,27 @@ type CharacterResult struct {
 	Died        string   `json:"died"`
 	Species     string   `json:"species"`
 	Gender      string   `json:"gender"`
-	Affiliation []string `json:"affiliation"`
-	Associated  []string `json:"associated"`
-	Masters     []string `json:"masters"`
-	Apprentices []string `json:"apprentices"`
+	Affiliation string `json:"affiliation"`
+	Associated  string `json:"associated"`
+	Masters     string `json:"masters"`
+	Apprentices string `json:"apprentices"`
 }
 
 type StarWarsCharacterResult struct {
-	Id          int                    `json:"id"`
-	Name        string                 `json:"name"`
-	Homeworld   string                 `json:"homeworld"`
-	Born        string                 `json:"born"`
-	Died        string                 `json:"died"`
-	Species     string                 `json:"species"`
-	Gender      string                 `json:"gender"`
-	Affiliation []string `json:"totalPrice"`
-	Associated  []string `json:"associated"`
-	Masters     []string `json:"memo"`
-	Apprentices []string `json:"apprentices"`
+	Id          int      `json:"id"`
+	Name        string   `json:"name"`
+	Homeworld   string   `json:"homeworld"`
+	Born        string   `json:"born"`
+	Died        string   `json:"died"`
+	Species     string   `json:"species"`
+	Gender      string   `json:"gender"`
+	Affiliation string `json:"affiliation"`
+	Associated  string `json:"associated"`
+	Masters     string `json:"masters"`
+	Apprentices string`json:"apprentices"`
 }
 
-func AddCharacter(name string, homeworld string, born string, died string, gender string, species string, affiliation []string , associated []string , masters []string, apprentices []string)  (int, error) {
+func AddCharacter(name string, homeworld string, born string, died string, gender string, species string, affiliation string , associated string, masters string, apprentices string)  (int, error) {
 	// Used to return the ID of the row we inserted into our DB.
 	lastInsertId := 0
 
@@ -46,7 +48,20 @@ func AddCharacter(name string, homeworld string, born string, died string, gende
 
 	// This inserts our quote and accompanying data into our table!
 	err := db.ConnPool.QueryRow(
-		"INSERT INTO star_wars_characters(name, home_world, born, died, species, gender, affiliation, associated, masters, apprentices) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
+		`INSERT INTO 
+				star_wars_characters(
+					name, 
+					home_world, 
+					born, 
+					died, 
+					species, 
+					gender, 
+					affiliation, 
+					associated, 
+					masters, 
+					apprentices) 
+			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+			RETURNING id`,
 		name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices).Scan(&lastInsertId)
 	if err != nil {
 		fmt.Println("Error saving character to database: ", err)
@@ -165,4 +180,61 @@ func RetreiveCharacter(id int)([]*StarWarsCharacterResult, error) {
 	}
 
 	return starWarsCharacterResultsArray, nil
+}
+
+func ResubmitCharacter(character map[string]interface{}) (string, error) {
+	//fmt.Println("Quote: ", quote)
+
+	// We have to cast our ID to an int. This worked.
+	// https://tanaikech.github.io/2017/06/02/changing-from-float64-to-int-for-values-did-unmarshal-using-mapstringinterface/
+	id := int(character["id"].(float64))
+
+	editedName := character["name"]
+	editedHomeworld := character["homeworld"]
+	editedBorn := character["born"]
+	editedDied := character["died"]
+	editedSpecies := character["species"]
+	editedGender := character["gender"]
+	editedAffiliation, _ := json.Marshal(character["affiliation"])
+	editedAssociated, _ := json.Marshal(character["associated"])
+	editedMasters, _ := json.Marshal(character["masters"])
+	editedApprentices, _ := json.Marshal(character["apprentices"])
+
+
+	fmt.Println("Affiliation Type: ", reflect.TypeOf(editedAffiliation))
+	//totalPrice := quote["quote"].(map[string]interface{})["Final Price"]
+	//memeo := quote["quote"].(map[string]interface{})["Memo"]
+
+	_, err := db.ConnPool.Exec(
+		`UPDATE
+				star_wars_characters
+			SET
+				id = $1,
+				name = $2,
+				home_world = $3,
+				born = $4,
+				died = $5,
+				species = $6,
+				gender = $7,
+				affiliation = $8,
+				associated = $9,
+				masters = $10,
+				apprentices = $11
+			WHERE 
+				(id = $1)`,
+		id,
+		editedName,
+		editedHomeworld,
+		editedBorn,
+		editedDied,
+		editedSpecies,
+		editedGender,
+		editedAffiliation,
+		editedAssociated,
+		editedMasters,
+		editedApprentices)
+	if err != nil {
+		return "Failed to save to the DB", err
+	}
+	return "Success!", nil
 }

@@ -3,6 +3,7 @@ var ngModule = angular.module('app');
 ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
 
     $scope.addCharacter = addCharacter;
+    $scope.reSubmitCharacter = reSubmitCharacter;
     $scope.showSection= showSection;
     $scope.refreshAngularJSExampleTableResults = refreshAngularJSExampleTableResults;
     $scope.setClickedRow = setClickedRow;
@@ -31,6 +32,21 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         })
     }
 
+    function reSubmitCharacter() {
+        let obj = {
+            character: $scope.selectedCharacter[0],
+        };
+
+        console.log("EDITED CHARACTER: ", $scope.selectedCharacter[0]);
+
+        // Now that everything has been updated, we can update the quote in the DB with the new information!
+        $http.post("/updateCharacter", obj).then(function (res) {
+            let results = res.data;
+
+        }, function (error) {
+            alert("Couldn't update the quote!", error);
+        })
+    }
 
     function addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices) {
         let obj = {
@@ -40,10 +56,10 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
             died: died,
             species: species,
             gender: gender,
-            affiliation: splitResults(affiliation),
-            associated: splitResults(associated),
-            masters: splitResults(masters),
-            apprentices: splitResults(apprentices)
+            affiliation: affiliation,
+            associated: associated,
+            masters: masters,
+            apprentices: apprentices
         };
 
 
@@ -61,8 +77,8 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     function refreshAngularJSExampleTableResults() {
         let name = $scope.searchName;
         let species = $scope.searchSpecies;
-        let born = Date.parse($scope.searchBorn);
-        let died = Date.parse($scope.searchDied);
+        let born = $scope.searchBorn;
+        let died = $scope.searchDied;
 
         $http.get("/loadAngularJSExampleTableResults", {params: {name, species, born, died}}).then(function (res) {
             let results = res.data;

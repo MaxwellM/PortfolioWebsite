@@ -279,3 +279,68 @@ h2#angularJSExampleTableResultsEmptyTable {
     width: -moz-fit-content;
     margin: auto;
 }
+
+div#anjularJSExampleTableResult {
+  display: flex;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+}
+
+div#angularJSExampleTableLabels {
+  display: grid;
+  //padding-top: 5px;
+  text-align: right;
+  float: left;
+  border-right: solid;
+  border-right-width: 2px;
+  padding-top: 10px;
+  padding-bottom: 30px;
+  padding-right: 5px;
+  width: 105px;
+  & label {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    color: #282e44;
+    font-size: 18px;
+    text-transform: capitalize;
+    margin-left: 10px;
+    width: max-content;
+  }
+  & label:nth-child(1n + 2) {
+    margin-top: 14px;
+  }
+}
+
+div#angularJSExampleTableInputs {
+  float: left;
+  display: grid;
+  //padding-top: 5px;
+  width: fit-content;
+  & input {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 18px;
+    width: 100%;
+  }
+  & input:hover, input:focus {
+    background-color: #52658F;
+    color: #F7F5E6;
+  }
+}
+
+div#anjularJSExampleTableShowCharactersTest {
+  color: #282e44;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: center;
+  border-bottom: solid;
+  border-color: #282e44;
+  margin: auto;
+}
+
+
+div#anjularJSExampleTableShowCharacters {
+  width: fit-content;
+  margin: auto;
+}
