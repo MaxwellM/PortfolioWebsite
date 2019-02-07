@@ -21,6 +21,7 @@ func main() {
 	router.StaticFile("/", "./web/html/index.html")
 
 	router.POST("/addCharacterToDB", AddCharacterToDB)
+	router.POST("/updateCharacter", UpdateCharacter)
 	router.GET("/loadAngularJSExampleTableResults", LoadAngularJSExampleTableResults)
 	router.GET("/setClickedRow", SetClickedRow)
 
@@ -36,10 +37,10 @@ func AddCharacterToDB(data *gin.Context) {
 		Died        string   `json:"died"`
 		Gender      string   `json:"gender"`
 		Species     string   `json:"species"`
-		Affiliation []string `json:"affiliation"`
-		Associated  []string `json:"associated"`
-		Masters     []string `json:"masters"`
-		Apprentices []string `json:"apprentices"`
+		Affiliation string `json:"affiliation"`
+		Associated  string `json:"associated"`
+		Masters     string `json:"masters"`
+		Apprentices string `json:"apprentices"`
 	}
 
 	var info PduIpAddress
@@ -62,6 +63,25 @@ func AddCharacterToDB(data *gin.Context) {
 		data.String(http.StatusBadRequest, "Failed to add character.", err)
 	} else {
 		data.String(http.StatusOK, "successfully added Charcter!", characterReturn)
+	}
+}
+
+func UpdateCharacter(data *gin.Context) {
+	type temp struct {
+		Character map[string]interface{} `json:"character"`
+	}
+
+	var info temp
+	data.Bind(&info)
+
+	fmt.Println("EDITED CHARACTER: ", info.Character)
+
+	characterReturn, err := starWarsCharacterTableEample.ResubmitCharacter(info.Character)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error re-submitting the character", err)
+	} else {
+		data.JSON(http.StatusOK, characterReturn)
 	}
 }
 
