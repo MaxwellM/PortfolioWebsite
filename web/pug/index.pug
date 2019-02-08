@@ -8,6 +8,7 @@ html
         link(rel="stylesheet", href="../css/contactMe.css", type="text/css")
         link(rel="stylesheet", href="../css/resume.css", type="text/css")
         link(rel="stylesheet", href="../css/angularJSExampleTable.css", type="text/css")
+        link(rel="stylesheet", href="../css/angularJSExampleDisplay.css", type="text/css")
         link(rel="stylesheet", href="../css/angular-datepicker.css", type="text/css")
         link(rel="shortcut icon", href="../images/favicon.png", type="image/png")
         script(src="../js/node_modules/angular/angular.js")
@@ -23,8 +24,10 @@ html
                 include resume
             div#contactMePage(ng-controller='angularJSExampleTableCtrl', ng-show='myCtrl.buttonName == "Contact Me"')
                 include contactMePage
-            div#angularJSExamplesPage(ng-controller='angularJSExampleTableCtrl', ng-show='myCtrl.buttonName == "AngularJS Table Example"')
+            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-show='myCtrl.buttonName == "Table Example"')
                 include angularJSExampleTable
+            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-show='myCtrl.buttonName == "Display Example"')
+                include angularJSExampleDisplay
             div#footerWrapper
                 include footer
     script(src="../js/app.js")
@@ -33,5 +36,6 @@ html
     script(src="../js/project.js")
     script(src="../js/resume.js")
     script(src="../js/angularJSExampleTable.js")
+    script(src="../js/angularJSExampleDisplay.js")
     script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
     script(src="../js/node_modules/angularjs-datepicker/src/js/angular-datepicker.js")

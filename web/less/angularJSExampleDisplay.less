@@ -1,0 +1,92 @@
+div#angularJSExampleDisplayPage {
+  height: calc(100% - 145px);
+}
+
+div#angularJSExampleDisplayInnerPageWrapper {
+  height: 100%;
+  overflow: auto;
+  background-color: #F7F5E6;
+}
+
+div#angularJSExampleDisplay {
+  display: table-cell;
+ & label {
+   display: grid;
+ }
+}
+
+div#angularJSExampleDisplayTitle {
+  & h1 {
+    color: #282e44;
+    text-transform: capitalize;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    text-align: center;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: solid;
+    border-color: #282E43;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin: auto;
+  }
+  & img {
+    width: 50px;
+    vertical-align: middle;
+    margin-left: 10px;
+  }
+}
+
+div#angularJSExampleDisplayInputWrapper {
+  display: flex;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+}
+
+div#angularJSExampleDisplayWrapper {
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+div#angularJSExampleDisplayWeatherLabelWrapper {
+  display: grid;
+  //padding-top: 5px;
+  text-align: right;
+  float: left;
+  border-right: solid;
+  border-right-width: 2px;
+  padding-top: 10px;
+  padding-bottom: 30px;
+  padding-right: 5px;
+  //width: 105px;
+  & label {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    color: #282e44;
+    font-size: 18px;
+    text-transform: capitalize;
+    //margin-left: 10px;
+    width: max-content;
+  }
+  //padding-bottom: 15px;
+  //padding-right: 15px;
+}
+
+div#angularJSExampleDisplayWeatherDataWrapper{
+  float: left;
+  display: grid;
+  //padding-top: 5px;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin-top: 10px;
+  & label {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    color: #282e44;
+    font-size: 18px;
+    text-transform: capitalize;
+    margin-left: 10px;
+    width: max-content;
+  }
+}

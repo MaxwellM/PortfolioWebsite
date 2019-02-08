@@ -21,10 +21,15 @@
             id='NAVButtonProjects',
             ng-class='{selected: myCtrl.buttonName == "Projects"}') Projects
         li
-            a Examples &#9660;
+            a AngularJS Examples &#9660;
             ul.second-level-menu
                 li
                     a(
-                    ng-click='log(button);myCtrl.buttonName = "AngularJS Table Example";',
+                    ng-click='log(button);myCtrl.buttonName = "Table Example";',
                     id='NAVButtonAngularJSTableExample',
-                    ng-class='{selected: myCtrl.buttonName == "AngularJS Table Example"}') AngularJS Table Example
+                    ng-class='{selected: myCtrl.buttonName == "Table Example"}') Table Example
+                li
+                    a(
+                    ng-click='log(button);myCtrl.buttonName = "Display Example";',
+                    id='NAVButtonAngularJSDisplayExample',
+                    ng-class='{selected: myCtrl.buttonName == "Display Example"}') Display Example

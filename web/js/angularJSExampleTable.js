@@ -68,6 +68,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         $http.post("/addCharacterToDB", obj).then(function (res) {
             let results = res.data;
             console.log("RESULTS: ", results);
+            refreshAngularJSExampleTableResults();
         }, function(error) {
             alert("ERROR ADDING CHARACTER TO DB: ", error);
         });

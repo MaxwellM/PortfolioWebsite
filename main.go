@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PortfolioWebsite/goResources/weatherExample"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -20,10 +21,18 @@ func main() {
 	router.Static("/html", "./web/html")
 	router.StaticFile("/", "./web/html/index.html")
 
+	// Linked to the Star Wars Character Example
 	router.POST("/addCharacterToDB", AddCharacterToDB)
 	router.POST("/updateCharacter", UpdateCharacter)
 	router.GET("/loadAngularJSExampleTableResults", LoadAngularJSExampleTableResults)
 	router.GET("/setClickedRow", SetClickedRow)
+
+	// Linked to the Weather Example
+	router.GET("/getWeather", GetWeather)
+
+	// Timed functions!
+	go weatherExample.InitRequstCount()
+
 
 	// This is the port that runs
 	router.Run(":80")
@@ -112,5 +121,19 @@ func SetClickedRow(data *gin.Context) {
 		fmt.Println("Error obtaining a particular Quote", err)
 	} else {
 		data.JSON(http.StatusOK, quoteBuilderReturn)
+	}
+}
+
+func GetWeather(data *gin.Context) {
+	location := data.DefaultQuery("location", "84094")
+
+	fmt.Println("Location: ", location)
+
+	weatherReturn, err := weatherExample.GetWeather(location)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining a weather report", err)
+	} else {
+		data.JSON(http.StatusOK, weatherReturn)
 	}
 }
