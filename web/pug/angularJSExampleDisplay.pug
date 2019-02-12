@@ -7,7 +7,9 @@ div#angularJSExampleDisplayInnerPageWrapper
             label Enter Zip Code:
             input(type='text', ng-model='weatherLocation')
             button(ng-click='getWeather(weatherLocation)') Submit
-        div#angularJSExampleDisplay(ng-repeat='day in weatherData.DailyForecasts')
+        div#angularJSExampleDisplayLocation
+            h3 Forecast for {{ weatherData.Location }}
+        div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
             div#angularJSExampleDisplayWeatherLabelWrapper
                 label Day
                 label Date
@@ -22,4 +24,11 @@ div#angularJSExampleDisplayInnerPageWrapper
                 label {{ day.Night.IconPhrase }}
                 label {{ day.Temperature.Maximum.Value }} {{ day.Temperature.Maximum.Unit}}
                 label {{ day.Temperature.Minimum.Value }} {{ day.Temperature.Minimum.Unit}}
+    div#angularJSExampleDisplayCurrentConditionsWrapper
+        div#angularJSExampleDisplayCurrentConditions
+            label Current Conditions
+            label {{ currentConditionsWeather[0].Result.WeatherText}}
+            label Current Temp: {{ currentConditionsWeather.Result[0].Temperature.Imperial.Value }} {{ currentConditionsWeather.Result[0].Temperature.Imperial.Unit }}
+            label From: {{ currentConditionsWeather.Result[0].EpochTime | date:'short'}}
+
 

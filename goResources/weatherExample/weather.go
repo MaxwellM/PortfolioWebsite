@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"time"
 )
 
@@ -26,6 +27,76 @@ func resetRequestCount() {
 	requestCount = 0
 }
 
+func ReadLocalCurrentConditions() (map[string]interface{}, error) {
+	b, err := ioutil.ReadFile("goResources/weatherExample/weatherReport/currentConditions.json") // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+		return nil, err
+	}
+
+	//b := []byte(`{"Name":"Bob","Food":"Pickle"}`)
+	var dat map[string]interface{}
+	err = json.Unmarshal(b, &dat)
+	if err != nil {
+		fmt.Println("Error unmarshaling Weather Report JSON", err)
+	}
+
+	return dat, nil
+}
+
+func ReadLocalWeatherReport() (map[string]interface{}, error) {
+	b, err := ioutil.ReadFile("goResources/weatherExample/weatherReport/weather.json") // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+		return nil, err
+	}
+
+	//b := []byte(`{"Name":"Bob","Food":"Pickle"}`)
+	var dat map[string]interface{}
+	err = json.Unmarshal(b, &dat)
+	if err != nil {
+		fmt.Println("Error unmarshaling Weather Report JSON", err)
+	}
+
+	return dat, nil
+}
+
+func UpdateLocalWeather(updateBoth bool) {
+	if updateBoth {
+		weatherReturn, err := GetWeather("84094")
+		if err != nil {
+			fmt.Println("Error obtaining weather!")
+		}
+		//fmt.Println(weatherReturn)
+		fmt.Println(reflect.TypeOf(weatherReturn))
+
+		weatherReturnJSON, err := json.Marshal(weatherReturn)
+		if err != nil {
+			fmt.Println("Error writing weather to file", err)
+		}
+		weatherReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/weather.json", weatherReturnJSON, 0644)
+		//writeWeather, err := os.OpenFile("goResources/weatherExample/weather.json", os.O_APPEND|os.O_WRONLY, 0600)
+		fmt.Println(weatherReturnJSONReturn)
+
+		currentConditionsReturn, err := GetCurrentConditions("84094")
+		if err != nil {
+			fmt.Println("Error obtaining current conditions!", err)
+		}
+		currentConditionsReturnJSON, err := json.Marshal(currentConditionsReturn)
+		currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
+		fmt.Println(currentConditionsReturnJSONReturn)
+	} else {
+		currentConditionsReturn, err := GetCurrentConditions("84094")
+		if err != nil {
+			fmt.Println("Error obtaining current conditions!", err)
+		}
+		currentConditionsReturnJSON, err := json.Marshal(currentConditionsReturn)
+		currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
+		fmt.Println(currentConditionsReturnJSONReturn)
+	}
+}
+
+
 func InitRequstCount() {
 	for {
 		now := time.Now()
@@ -38,7 +109,63 @@ func InitRequstCount() {
 
 		resetRequestCount()
 	}
+}
 
+func InitUpdateWeather() {
+	for {
+		//time.AfterFunc(1 * time.Hour, func() {
+		//	UpdateLocalWeather(false)
+		//} )
+		t := time.Now()
+		if t.Minute() == 00 {
+			UpdateLocalWeather(false)
+		}
+		time.Sleep(1 * time.Minute)
+	}
+}
+
+func GetCurrentConditions(location string) (map[string]interface{}, error) {
+	if CountRequest() {
+		key := "6kXpxa4RNqkTAgbRNc4ZFaZvcCOLcrM3"
+		url := fmt.Sprintf(`http://dataservice.accuweather.com/currentconditions/v1/`+location+`?apikey=`+key)
+
+		//fmt.Println("URL: ", url)
+
+		resp, err := http.Get(url)
+
+		fmt.Println("CURRENT CONDITIONS RESP: ", resp.Body)
+
+		if err != nil {
+			fmt.Println("There was an error getting the Weather Report you were looking for... ", err)
+			return nil, err
+		}
+
+		defer resp.Body.Close()
+
+		// This worked because we need to convert our *Reader to []Bytes
+		// https://stackoverflow.com/questions/38673673/access-http-response-as-string-in-go
+		bytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("Couldn't convert RESP to []Byte for your Current Conditions Request: ", err)
+		}
+
+		var test map[string]interface{}
+		err = json.Unmarshal(bytes, &test)
+		if err != nil {
+			return nil, err
+		}
+
+		finalResult := map[string]interface{}{
+			"Result":          test,
+			"Location":        location,
+		}
+
+		fmt.Println("CURRENT CONDITIONS: ", finalResult)
+
+		return finalResult, err
+	} else {
+		return nil, fmt.Errorf("Reached reached request limit for the day. Come back tomorrow when it resets!")
+	}
 }
 
 func GetWeather(location string) (map[string]interface{}, error) {
@@ -46,7 +173,7 @@ func GetWeather(location string) (map[string]interface{}, error) {
 		key := "6kXpxa4RNqkTAgbRNc4ZFaZvcCOLcrM3"
 		url := fmt.Sprintf(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/`+location+`?apikey=`+key)
 
-		fmt.Println("URL: ", url)
+		//fmt.Println("URL: ", url)
 
 		resp, err := http.Get(url)
 
@@ -74,7 +201,12 @@ func GetWeather(location string) (map[string]interface{}, error) {
 
 		//fmt.Println("WEATHER: ", test)
 
-		return test, err
+		finalResult := map[string]interface{}{
+			"Result":          test,
+			"Location":        location,
+		}
+
+		return finalResult, err
 	} else {
 		return nil, fmt.Errorf("Reached reached request limit for the day. Come back tomorrow when it resets!")
 	}

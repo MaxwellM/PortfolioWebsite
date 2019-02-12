@@ -15,7 +15,8 @@ div#angularJSExampleDisplay {
  }
 }
 
-div#angularJSExampleDisplayTitle {
+div#angularJSExampleDisplayTitle,
+div#angularJSExampleDisplayLocation{
   & h1 {
     color: #282e44;
     text-transform: capitalize;
@@ -26,6 +27,15 @@ div#angularJSExampleDisplayTitle {
     border-bottom: solid;
     border-color: #282E43;
     width: fit-content;
+    width: -moz-fit-content;
+    margin: auto;
+  }
+  & h3 {
+    color: #282e44;
+    text-transform: capitalize;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    text-align: center;
+    padding-top: 15px;
     width: -moz-fit-content;
     margin: auto;
   }
@@ -98,4 +108,11 @@ div#angularJSExampleDisplay {
   padding-right: 10px;
   padding-left: 10px;
   padding-top: 20px;
+}
+
+div#angularJSExampleDisplayCurrentConditions {
+  display: grid;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
 }

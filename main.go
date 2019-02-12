@@ -29,9 +29,14 @@ func main() {
 
 	// Linked to the Weather Example
 	router.GET("/getWeather", GetWeather)
+	router.GET("/getWeatherConditions", GetWeatherConditions)
+	router.GET("/getLocalWeather", GetLocalWeather)
+	router.GET("/getLocalCurrentConditions", GetLocalCurrentConditions)
 
 	// Timed functions!
 	go weatherExample.InitRequstCount()
+	go weatherExample.InitUpdateWeather()
+	//go weatherExample.UpdateLocalWeather(false)
 
 
 	// This is the port that runs
@@ -135,5 +140,39 @@ func GetWeather(data *gin.Context) {
 		fmt.Println("Error obtaining a weather report", err)
 	} else {
 		data.JSON(http.StatusOK, weatherReturn)
+	}
+}
+
+func GetWeatherConditions(data *gin.Context) {
+	location := data.DefaultQuery("location", "84094")
+
+	fmt.Println("Location: ", location)
+
+	weatherReturn, err := weatherExample.GetCurrentConditions(location)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining a weather conditions report", err)
+	} else {
+		data.JSON(http.StatusOK, weatherReturn)
+	}
+}
+
+func GetLocalWeather(data *gin.Context) {
+	weatherReturn, err := weatherExample.ReadLocalWeatherReport()
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error reading local weather report")
+	} else {
+		data.JSON(http.StatusOK, weatherReturn)
+	}
+}
+
+func GetLocalCurrentConditions(data *gin.Context) {
+	currentConditionsReturn, err := weatherExample.ReadLocalCurrentConditions()
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error reading local weather report")
+	} else {
+		data.JSON(http.StatusOK, currentConditionsReturn)
 	}
 }
