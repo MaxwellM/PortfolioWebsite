@@ -3,10 +3,10 @@ div#angularJSExampleDisplayInnerPageWrapper
         h1 Weather Report
             img(src='../images/weather-icon.png', alt='')
     div#angularJSExampleDisplayWrapper
-        div#angularJSExampleDisplayInputWrapper
-            label Enter Zip Code:
-            input(type='text', ng-model='weatherLocation')
-            button(ng-click='getWeather(weatherLocation)') Submit
+        //div#angularJSExampleDisplayInputWrapper
+        //    label Enter Zip Code:
+        //    input(type='text', ng-model='weatherLocation')
+        //    button(ng-click='getWeather(weatherLocation)') Submit
         div#angularJSExampleDisplayLocation
             h3 5 Day Forecast for {{ weatherData.Location }}
         div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
