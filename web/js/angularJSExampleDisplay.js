@@ -62,8 +62,9 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
         date = date.substring(0, date.indexOf("T"));
         let Datedate = new Date(date);
         //date = date.substring(0, date.indexOf("T"));
-        let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        let newDate = days[Datedate.getDay() + 1];
+        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        console.log("DAY: ", Datedate.getDay());
+        let newDate = days[Datedate.getDay()];
         return newDate;
     }
 
