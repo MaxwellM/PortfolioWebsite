@@ -40,7 +40,7 @@ func main() {
 
 
 	// This is the port that runs
-	router.Run(":80")
+	router.Run(":8080")
 }
 
 func AddCharacterToDB(data *gin.Context) {
