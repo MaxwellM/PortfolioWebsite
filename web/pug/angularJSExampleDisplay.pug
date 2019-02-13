@@ -11,13 +11,15 @@ div#angularJSExampleDisplayInnerPageWrapper
             h3 5 Day Forecast for {{ weatherData.Location }}
         div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
             div#angularJSExampleDisplayWeatherLabelWrapper
+                label Day
                 label Date
                 label High
                 label Low
                 label Day
                 label Night
             div#angularJSExampleDisplayWeatherDataWrapper
-                label {{ day.Date | date:'short'}}
+                label {{ getDayName(day.Date) }}
+                label {{ trimDate(day.Date) }}
                 label {{ day.Temperature.Maximum.Value }} {{ day.Temperature.Maximum.Unit}}
                 label {{ day.Temperature.Minimum.Value }} {{ day.Temperature.Minimum.Unit}}
                 img(src=`../images/NewWeatherIcons/{{day.Day.Icon}}-s.png`)

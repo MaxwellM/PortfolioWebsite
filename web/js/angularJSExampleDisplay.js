@@ -3,8 +3,10 @@ var ngModule = angular.module('app');
 ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
 
     $scope.getWeather = getWeather;
+    $scope.trimDate = trimDate;
+    $scope.getDayName = getDayName;
 
-    // $scope.weatherData = [];
+    $scope.weatherData = [];
     // $scope.weatherLocation = "";
 
     $scope.weatherRequestCount;
@@ -20,6 +22,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
             results = res.data;
             $scope.weatherData = results.Forecast;
             console.log("FORECAST RESULTS: ", $scope.weatherData);
+            console.log("DATE: ", $scope.weatherData[0].Date);
 
             $scope.currentConditionsWeather = results.Current;
             console.log("CURRENT RESULTS: ", $scope.currentConditionsWeather);
@@ -40,7 +43,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
         });
     }
 
-    function getCurrentConditions() {
+    function readCurrentConditions() {
         $http.get("/getLocalCurrentConditions", {params:{location}}).then(function (res) {
             let results;
             results = res.data;
@@ -51,7 +54,20 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
         });
     }
 
+    function trimDate(date) {
+        return date.substring(0, date.indexOf("T"));
+    }
+
+    function getDayName(date) {
+        date = date.substring(0, date.indexOf("T"));
+        let Datedate = new Date(date);
+        //date = date.substring(0, date.indexOf("T"));
+        let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let newDate = days[Datedate.getDay() + 1];
+        return newDate;
+    }
+
     readLocalWeatherReport();
-    getCurrentConditions();
+    readCurrentConditions();
 
 }]);
