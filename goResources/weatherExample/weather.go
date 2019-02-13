@@ -51,7 +51,6 @@ func ReadLocalWeatherReport() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	//b := []byte(`{"Name":"Bob","Food":"Pickle"}`)
 	var dat map[string]interface{}
 	err = json.Unmarshal(b, &dat)
 	if err != nil {
@@ -76,7 +75,6 @@ func UpdateLocalWeather(location string) (map[string]interface{}, error){
 			return nil, err
 		}
 		weatherReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/weather.json", weatherReturnJSON, 0644)
-		//writeWeather, err := os.OpenFile("goResources/weatherExample/weather.json", os.O_APPEND|os.O_WRONLY, 0600)
 		fmt.Println(weatherReturnJSONReturn)
 
 		currentConditionsReturn, err := GetCurrentConditions(location)
@@ -114,12 +112,13 @@ func InitRequstCount() {
 
 func InitUpdateWeather() {
 	for {
-		//time.AfterFunc(1 * time.Hour, func() {
-		//	UpdateLocalWeather(false)
-		//} )
 		t := time.Now()
 		if t.Minute() == 00 {
-			UpdateLocalWeather("84094")
+			fmt.Println("UPDATING THE WEATHER!")
+			_, err := UpdateLocalWeather("84094")
+			if err != nil {
+				fmt.Println("Error updating the weather report: ", err)
+			}
 		}
 		time.Sleep(1 * time.Minute)
 	}
