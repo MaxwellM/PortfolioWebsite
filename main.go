@@ -36,7 +36,7 @@ func main() {
 	// Timed functions!
 	go weatherExample.InitRequstCount()
 	go weatherExample.InitUpdateWeather()
-	//go weatherExample.UpdateLocalWeather(false)
+	//go weatherExample.UpdateLocalWeather(true)
 
 
 	// This is the port that runs
@@ -134,7 +134,7 @@ func GetWeather(data *gin.Context) {
 
 	fmt.Println("Location: ", location)
 
-	weatherReturn, err := weatherExample.GetWeather(location)
+	weatherReturn, err := weatherExample.UpdateLocalWeather(location)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
 		fmt.Println("Error obtaining a weather report", err)

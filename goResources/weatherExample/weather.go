@@ -61,11 +61,11 @@ func ReadLocalWeatherReport() (map[string]interface{}, error) {
 	return dat, nil
 }
 
-func UpdateLocalWeather(updateBoth bool) {
-	if updateBoth {
-		weatherReturn, err := GetWeather("84094")
+func UpdateLocalWeather(location string) (map[string]interface{}, error){
+		weatherReturn, err := GetWeather(location)
 		if err != nil {
 			fmt.Println("Error obtaining weather!")
+			return nil, err
 		}
 		//fmt.Println(weatherReturn)
 		fmt.Println(reflect.TypeOf(weatherReturn))
@@ -73,27 +73,28 @@ func UpdateLocalWeather(updateBoth bool) {
 		weatherReturnJSON, err := json.Marshal(weatherReturn)
 		if err != nil {
 			fmt.Println("Error writing weather to file", err)
+			return nil, err
 		}
 		weatherReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/weather.json", weatherReturnJSON, 0644)
 		//writeWeather, err := os.OpenFile("goResources/weatherExample/weather.json", os.O_APPEND|os.O_WRONLY, 0600)
 		fmt.Println(weatherReturnJSONReturn)
 
-		currentConditionsReturn, err := GetCurrentConditions("84094")
+		currentConditionsReturn, err := GetCurrentConditions(location)
 		if err != nil {
 			fmt.Println("Error obtaining current conditions!", err)
+			return nil, err
 		}
 		currentConditionsReturnJSON, err := json.Marshal(currentConditionsReturn)
 		currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
 		fmt.Println(currentConditionsReturnJSONReturn)
-	} else {
-		currentConditionsReturn, err := GetCurrentConditions("84094")
-		if err != nil {
-			fmt.Println("Error obtaining current conditions!", err)
+
+		// Now we return our weather report back to the frontend
+		allWeather := map[string]interface{}{
+			"Forcast": weatherReturn,
+			"Current": currentConditionsReturn,
 		}
-		currentConditionsReturnJSON, err := json.Marshal(currentConditionsReturn)
-		currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
-		fmt.Println(currentConditionsReturnJSONReturn)
-	}
+
+		return allWeather, nil
 }
 
 
@@ -118,7 +119,7 @@ func InitUpdateWeather() {
 		//} )
 		t := time.Now()
 		if t.Minute() == 00 {
-			UpdateLocalWeather(false)
+			UpdateLocalWeather("84094")
 		}
 		time.Sleep(1 * time.Minute)
 	}
@@ -149,7 +150,7 @@ func GetCurrentConditions(location string) (map[string]interface{}, error) {
 			fmt.Println("Couldn't convert RESP to []Byte for your Current Conditions Request: ", err)
 		}
 
-		var test map[string]interface{}
+		var test []map[string]interface{}
 		err = json.Unmarshal(bytes, &test)
 		if err != nil {
 			return nil, err

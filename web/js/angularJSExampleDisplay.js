@@ -18,16 +18,12 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
         $http.get("/getWeather", {params:{location}}).then(function (res) {
             let results;
             results = res.data;
-            $scope.weatherData = results;
-            console.log("BACKEND RESULTS: ", results);
-            $http.get("/getWeatherConditions", {params:{location}}).then(function (res) {
-                let results;
-                results = res.data;
-                $scope.currentConditionsWeather = results;
-                console.log("CURRENT CONDITIONS: ", results);
-            }, function (error) {
-                alert(error.data);
-            })
+            $scope.weatherData = results.Forecast;
+            console.log("FORECAST RESULTS: ", $scope.weatherData);
+
+            $scope.currentConditionsWeather = results.Current;
+            console.log("CURRENT RESULTS: ", $scope.currentConditionsWeather);
+            readLocalWeatherReport();
         }, function(error) {
            alert(error.data);
         });

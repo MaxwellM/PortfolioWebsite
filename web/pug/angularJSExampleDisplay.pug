@@ -8,27 +8,28 @@ div#angularJSExampleDisplayInnerPageWrapper
             input(type='text', ng-model='weatherLocation')
             button(ng-click='getWeather(weatherLocation)') Submit
         div#angularJSExampleDisplayLocation
-            h3 Forecast for {{ weatherData.Location }}
+            h3 5 Day Forecast for {{ weatherData.Location }}
         div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
             div#angularJSExampleDisplayWeatherLabelWrapper
-                label Day
                 label Date
-                label Day
-                label Night
                 label High
                 label Low
+                label Day
+                label Night
             div#angularJSExampleDisplayWeatherDataWrapper
-                label {{ $index + 1 }}
                 label {{ day.Date | date:'short'}}
-                label {{ day.Day.IconPhrase }}
-                label {{ day.Night.IconPhrase }}
                 label {{ day.Temperature.Maximum.Value }} {{ day.Temperature.Maximum.Unit}}
                 label {{ day.Temperature.Minimum.Value }} {{ day.Temperature.Minimum.Unit}}
+                img(src=`../images/NewWeatherIcons/{{day.Day.Icon}}-s.png`)
+                label {{ day.Day.IconPhrase }}
+                img(src=`../images/NewWeatherIcons/{{day.Night.Icon}}-s.png`)
+                label {{ day.Night.IconPhrase }}
     div#angularJSExampleDisplayCurrentConditionsWrapper
         div#angularJSExampleDisplayCurrentConditions
-            label Current Conditions
-            label {{ currentConditionsWeather[0].Result.WeatherText}}
+            h3 Current Conditions
+            img(src=`../images/NewWeatherIcons/{{currentConditionsWeather.Result[0].WeatherIcon}}-s.png`)
+            label {{ currentConditionsWeather.Result[0].WeatherText}}
             label Current Temp: {{ currentConditionsWeather.Result[0].Temperature.Imperial.Value }} {{ currentConditionsWeather.Result[0].Temperature.Imperial.Unit }}
-            label From: {{ currentConditionsWeather.Result[0].EpochTime | date:'short'}}
+            label From: {{ currentConditionsWeather.Result[0].LocalObservationDateTime | date:'short'}}
 
 

@@ -64,6 +64,27 @@ div#angularJSExampleDisplayWrapper {
   text-align: right;
 }
 
+div#angularJSExampleDisplayCurrentConditions {
+  padding-top: 10px;
+  & label {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    color: #282e44;
+    font-size: 18px;
+    text-transform: capitalize;
+    //margin-left: 10px;
+    width: max-content;
+  }
+  & h3 {
+    color: #282e44;
+    text-transform: capitalize;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    text-align: center;
+    padding-top: 15px;
+    width: -moz-fit-content;
+    margin: auto;
+  }
+}
+
 div#angularJSExampleDisplayWeatherLabelWrapper {
   display: grid;
   //padding-top: 5px;
@@ -82,6 +103,12 @@ div#angularJSExampleDisplayWeatherLabelWrapper {
     text-transform: capitalize;
     //margin-left: 10px;
     width: max-content;
+  }
+  & label:nth-child(4) {
+    margin-top: 10px;
+  }
+  & label:nth-child(5) {
+    margin-top: 45px;
   }
   //padding-bottom: 15px;
   //padding-right: 15px;
