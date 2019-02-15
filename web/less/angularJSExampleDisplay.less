@@ -9,10 +9,17 @@ div#angularJSExampleDisplayInnerPageWrapper {
 }
 
 div#angularJSExampleDisplay {
-  display: table-cell;
+  display: inline-block;
  & label {
    display: grid;
  }
+}
+
+div#angularJSExampleDisplayCurrentConditionsWrapper {
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  margin-top: 15px;
 }
 
 div#angularJSExampleDisplayTitle,
@@ -30,12 +37,13 @@ div#angularJSExampleDisplayLocation{
     width: -moz-fit-content;
     margin: auto;
   }
-  & h3 {
+  & h2 {
     color: #282e44;
     text-transform: capitalize;
     font-family: "Open Sans", Helvetica, Arial, sans-serif;
     text-align: center;
     padding-top: 15px;
+    padding-bottom: 20px;
     width: -moz-fit-content;
     margin: auto;
   }
@@ -44,6 +52,10 @@ div#angularJSExampleDisplayLocation{
     vertical-align: middle;
     margin-left: 10px;
   }
+}
+
+div#angularJSExampleDisplayLocation {
+  margin-bottom: 25px;
 }
 
 div#angularJSExampleDisplayInputWrapper {
@@ -66,6 +78,15 @@ div#angularJSExampleDisplayWrapper {
 
 div#angularJSExampleDisplayCurrentConditions {
   padding-top: 10px;
+  display: grid;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+  & img {
+    margin: auto;
+  }
   & label {
     font-family: "Open Sans", Helvetica, Arial, sans-serif;
     color: #282e44;
@@ -73,13 +94,14 @@ div#angularJSExampleDisplayCurrentConditions {
     text-transform: capitalize;
     //margin-left: 10px;
     width: max-content;
+    margin: auto;
   }
   & h3 {
     color: #282e44;
     text-transform: capitalize;
     font-family: "Open Sans", Helvetica, Arial, sans-serif;
     text-align: center;
-    padding-top: 15px;
+    //padding-top: 15px;
     width: -moz-fit-content;
     margin: auto;
   }
@@ -93,7 +115,7 @@ div#angularJSExampleDisplayWeatherLabelWrapper {
   border-right: solid;
   border-right-width: 2px;
   padding-top: 10px;
-  padding-bottom: 30px;
+  padding-bottom: 45px;
   padding-right: 5px;
   //width: 105px;
   & label {
@@ -105,9 +127,12 @@ div#angularJSExampleDisplayWeatherLabelWrapper {
     width: max-content;
   }
   & label:nth-child(4) {
-    margin-top: 10px;
+    //margin-top: 10px;
   }
   & label:nth-child(5) {
+    margin-top: 10px;
+  }
+  & label:nth-child(6) {
     margin-top: 45px;
   }
   //padding-bottom: 15px;
@@ -134,12 +159,9 @@ div#angularJSExampleDisplayWeatherDataWrapper{
 div#angularJSExampleDisplay {
   padding-right: 10px;
   padding-left: 10px;
-  padding-top: 20px;
-}
-
-div#angularJSExampleDisplayCurrentConditions {
-  display: grid;
-  width: fit-content;
-  width: -moz-fit-content;
-  margin: auto;
+  //padding-bottom: 10px;
+  margin-left: 10px;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+  margin-right: 10px;
 }

@@ -8,7 +8,7 @@ div#angularJSExampleDisplayInnerPageWrapper
         //    input(type='text', ng-model='weatherLocation')
         //    button(ng-click='getWeather(weatherLocation)') Submit
         div#angularJSExampleDisplayLocation
-            h3 5 Day Forecast for {{ weatherData.Location }}
+            h2 5 Day Forecast for {{ weatherData.Location }}
         div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
             div#angularJSExampleDisplayWeatherLabelWrapper
                 label Day
