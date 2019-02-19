@@ -60,7 +60,50 @@ func ReadLocalWeatherReport() (map[string]interface{}, error) {
 	return dat, nil
 }
 
-func UpdateLocalWeather(location string) (map[string]interface{}, error){
+func UpdateCurrnetConditions(location string) (map[string]interface{}, error) {
+	currentConditionsReturn, err := GetCurrentConditions(location)
+	if err != nil {
+		fmt.Println("Error obtaining current conditions!", err)
+		return nil, err
+	}
+	currentConditionsReturnJSON, err := json.Marshal(currentConditionsReturn)
+	if err != nil {
+		fmt.Println("Error writing weather to file", err)
+		return nil, err
+	}
+	currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
+	fmt.Println(currentConditionsReturnJSONReturn)
+	// Now we return our weather report back to the frontend
+	allWeather := map[string]interface{}{
+		"Current": currentConditionsReturn,
+	}
+
+	return allWeather, nil
+}
+
+func UpdateForecast(location string) (map[string]interface{}, error) {
+	weatherReturn, err := GetWeather(location)
+	if err != nil {
+		fmt.Println("Error obtaining weather!")
+		return nil, err
+	}
+	weatherReturnJSON, err := json.Marshal(weatherReturn)
+	if err != nil {
+		fmt.Println("Error writing weather to file", err)
+		return nil, err
+	}
+	weatherReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/weather.json", weatherReturnJSON, 0644)
+	fmt.Println(weatherReturnJSONReturn)
+	// Now we return our weather report back to the frontend
+	allWeather := map[string]interface{}{
+		"Forcast": weatherReturn,
+	}
+
+	return allWeather, nil
+}
+
+
+func UpdateAllWeather(location string) (map[string]interface{}, error){
 		weatherReturn, err := GetWeather(location)
 		if err != nil {
 			fmt.Println("Error obtaining weather!")
@@ -110,12 +153,28 @@ func InitRequstCount() {
 	}
 }
 
-func InitUpdateWeather() {
+func InitUpdateForecast() {
+	for {
+		now := time.Now()
+		next := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+
+		sleepDur := next.Sub(now)
+		fmt.Printf("Updating Forecast in %s on %s\n", sleepDur.String(), next)
+		time.Sleep(sleepDur)
+
+		_, err := UpdateForecast("84094")
+		if err != nil {
+			fmt.Println("Error fetching spotter validator stuff")
+		}
+	}
+}
+
+func InitUpdateCurrentConditions() {
 	for {
 		t := time.Now()
 		if t.Minute() == 00 {
 			fmt.Println("UPDATING THE WEATHER!")
-			_, err := UpdateLocalWeather("84094")
+			_, err := UpdateCurrnetConditions("84094")
 			if err != nil {
 				fmt.Println("Error updating the weather report: ", err)
 			}
