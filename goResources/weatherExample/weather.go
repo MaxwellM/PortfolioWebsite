@@ -96,7 +96,7 @@ func UpdateForecast(location string) (map[string]interface{}, error) {
 	fmt.Println(weatherReturnJSONReturn)
 	// Now we return our weather report back to the frontend
 	allWeather := map[string]interface{}{
-		"Forcast": weatherReturn,
+		"Forecast": weatherReturn,
 	}
 
 	return allWeather, nil
@@ -131,7 +131,7 @@ func UpdateAllWeather(location string) (map[string]interface{}, error){
 
 		// Now we return our weather report back to the frontend
 		allWeather := map[string]interface{}{
-			"Forcast": weatherReturn,
+			"Forecast": weatherReturn,
 			"Current": currentConditionsReturn,
 		}
 
@@ -139,7 +139,7 @@ func UpdateAllWeather(location string) (map[string]interface{}, error){
 }
 
 
-func InitRequstCount() {
+func InitRequestCount() {
 	for {
 		now := time.Now()
 		// We rest the counter once a day, at midnight. Well, midnight for our server which depends on the time zone.
@@ -156,12 +156,12 @@ func InitRequstCount() {
 func InitUpdateForecast() {
 	for {
 		now := time.Now()
-		next := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+		next := time.Date(now.Year(), now.Month(), now.Day()+1, 22, 0, 0, 0, now.Location())
 
 		sleepDur := next.Sub(now)
 		fmt.Printf("Updating Forecast in %s on %s\n", sleepDur.String(), next)
 		time.Sleep(sleepDur)
-
+		fmt.Println("UPDATING THE FORECAST!")
 		_, err := UpdateForecast("84094")
 		if err != nil {
 			fmt.Println("Error fetching spotter validator stuff")

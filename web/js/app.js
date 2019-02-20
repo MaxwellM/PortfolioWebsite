@@ -15,17 +15,25 @@ ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($sc
 
     function visitorCounter() {
         $http.get("/visitorCounter").then(function (res) {
-            let results;
-            results = res.data;
-            $scope.visitors = results;
-
-            console.log("IPs: ", $scope.visitors.length);
         }, function (err) {
             alert("ERROR: ", err);
         })
     }
 
+    function readVisitors() {
+        $http.get("/readVisitors").then(function (res) {
+            let results;
+            results = res.data;
+            $scope.visitors = results;
+
+            console.log("IPs: ", $scope.visitors);
+        }, function (err) {
+            alert("ERROR, /readVisitors: ", err);
+        })
+    }
+
     visitorCounter();
+    readVisitors();
     myMap();
 
 }]);

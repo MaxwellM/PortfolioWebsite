@@ -36,9 +36,10 @@ func main() {
 
 	// Linked to the Visitor Counter
 	router.GET("/visitorCounter", VisitorCounter)
+	router.GET("/readVisitors", ReadVisitors)
 
 	// Timed functions!
-	go weatherExample.InitRequstCount()
+	go weatherExample.InitRequestCount()
 	go weatherExample.InitUpdateCurrentConditions()
 	go weatherExample.InitUpdateForecast()
 	//go weatherExample.UpdateAllWeather(true)
@@ -51,7 +52,7 @@ func main() {
 func VisitorCounter(data *gin.Context) {
 	IP := data.Request.RemoteAddr
 
-	ips, err := visitorCounter.AddIPToStruct(IP)
+	ips, err := visitorCounter.AppendToIPStruct(IP)
 	if err != nil {
 		fmt.Println("Error returning IPs who visited the site! ", err)
 		data.JSON(http.StatusBadRequest, err)
@@ -60,6 +61,16 @@ func VisitorCounter(data *gin.Context) {
 		data.JSON(http.StatusOK, ips)
 	}
 
+}
+
+func ReadVisitors(data *gin.Context) {
+	visitorsReturn, err := visitorCounter.ReadVisitors()
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining visitors report", err)
+	} else {
+		data.JSON(http.StatusOK, visitorsReturn)
+	}
 }
 
 func AddCharacterToDB(data *gin.Context) {
