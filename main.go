@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PortfolioWebsite/goResources/visitorCounter"
 	"PortfolioWebsite/goResources/weatherExample"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,9 @@ func main() {
 	router.GET("/getLocalWeather", GetLocalWeather)
 	router.GET("/getLocalCurrentConditions", GetLocalCurrentConditions)
 
+	// Linked to the Visitor Counter
+	router.GET("/visitorCounter", VisitorCounter)
+
 	// Timed functions!
 	go weatherExample.InitRequstCount()
 	go weatherExample.InitUpdateCurrentConditions()
@@ -42,6 +46,20 @@ func main() {
 
 	// This is the port that runs
 	router.Run(":8080")
+}
+
+func VisitorCounter(data *gin.Context) {
+	IP := data.Request.RemoteAddr
+
+	ips, err := visitorCounter.AddIPToStruct(IP)
+	if err != nil {
+		fmt.Println("Error returning IPs who visited the site! ", err)
+		data.JSON(http.StatusBadRequest, err)
+	} else {
+		fmt.Println("IPs: ", ips)
+		data.JSON(http.StatusOK, ips)
+	}
+
 }
 
 func AddCharacterToDB(data *gin.Context) {

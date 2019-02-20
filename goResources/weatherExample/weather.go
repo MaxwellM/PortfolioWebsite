@@ -60,7 +60,7 @@ func ReadLocalWeatherReport() (map[string]interface{}, error) {
 	return dat, nil
 }
 
-func UpdateCurrnetConditions(location string) (map[string]interface{}, error) {
+func UpdateCurrentConditions(location string) (map[string]interface{}, error) {
 	currentConditionsReturn, err := GetCurrentConditions(location)
 	if err != nil {
 		fmt.Println("Error obtaining current conditions!", err)
@@ -174,7 +174,7 @@ func InitUpdateCurrentConditions() {
 		t := time.Now()
 		if t.Minute() == 00 {
 			fmt.Println("UPDATING THE WEATHER!")
-			_, err := UpdateCurrnetConditions("84094")
+			_, err := UpdateCurrentConditions("84094")
 			if err != nil {
 				fmt.Println("Error updating the weather report: ", err)
 			}
