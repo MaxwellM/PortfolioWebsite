@@ -1,106 +1,125 @@
 package visitorCounter
 
 import (
-	"encoding/json"
+	"PortfolioWebsite/goResources/db"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"time"
 )
 
-type knownIP struct {
-	IP        string    `json:"ip"`
-	TimeStamp time.Time `json:"timeStamp"`
+type IpResult struct {
+	Id        int       `json:"id"`
+	Ip        string    `json:'ip"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
-var knownIPs []knownIP
+func CheckIfIPExists(ip string) (string, error) {
+	unique := true
 
-
-func AppendToIPStruct(ip string)(*[]knownIP, error){
-
-	knownIPs = append(knownIPs, knownIP{IP: ip, TimeStamp: time.Now()})
-
-	updateIPReturn, err := UpdateVisitors(knownIPs)
+	rows, err := db.ConnPool.Query(
+		`SELECT
+				id,
+				ip,
+				timestamp
+			FROM
+				ips`)
 	if err != nil {
-		fmt.Println("Couldn't return UpdateVisitors: ", err)
-	} else {
-		fmt.Println("Update Visitors Return: ", updateIPReturn)
+		fmt.Println("There was an error reading the ips table from the database 1:", err)
+		return "", err
 	}
 
-	return &knownIPs, nil
+	counter := 0;
+
+	for rows.Next() {
+		dbID := 0
+		dbIP := ""
+		dbTimestamp := time.Now()
+		counter ++
+		err := rows.Scan(&dbID, &dbIP, &dbTimestamp)
+		if err != nil {
+			fmt.Println("Error scanning row: ", err)
+			return "", err
+		}
+		fmt.Println("DBIP: ", dbIP)
+		fmt.Println("IP: ", ip)
+		if dbIP == ip {
+			unique = false
+		}
+	}
+
+	fmt.Println("COUNTER: ", counter)
+
+	if unique {
+		fmt.Println("IP UNIQUE!")
+		message, err := WriteIPToDatabase(ip)
+		if err != nil {
+			fmt.Println("Error inserting IP to DB", message)
+			return "", err
+		}
+	}
+	fmt.Println("IP NOT UNIQUE!")
+	return "Not Unique", nil
 }
 
-//func UpdateVisitors(ipStruct []knownIP) (map[string]interface{}, error) {
-//	updateVisitorsNewJSON, err := json.Marshal(ipStruct)
-//	if err != nil {
-//		fmt.Println("Error writing weather to file", err)
-//		return nil, err
-//	}
-//
-//	file, err := os.OpenFile("goResources/visitorCounter/visitors.json", os.O_APPEND|os.O_WRONLY, 0644)
-//	if err != nil {
-//		fmt.Println("Error opening the Visitors JSON file", err)
-//		return nil, err
-//	}
-//	byteVisitorsFile, err := ioutil.ReadAll(file)
-//	if err != nil {
-//		fmt.Println("Error reading the Visitors JSON file", err)
-//		return nil, err
-//	}
-//
-//	var knownIPs []knownIP
-//
-//	err := json.Unmarshal(byteVisitorsFile, &knownIPs)
-//
-//	byteVisitorsFile = append(byteVisitorsFile, updateVisitorsNewJSON)
-//
-//}
-
-func UpdateVisitors(ipStruct []knownIP) (map[string]interface{}, error) {
-
-	updateVisitorsReturnJSON, err := json.Marshal(ipStruct)
+func WriteIPToDatabase(ip string) (string, error) {
+	lastInsertId := 0
+	now := time.Now()
+	// This inserts our quote and accompanying data into our table!
+	err := db.ConnPool.QueryRow(
+		`INSERT INTO 
+				ips(
+					ip,
+					timestamp) 
+			VALUES(
+				$1, $2) 
+			RETURNING 
+				id`,
+		ip, now).Scan(&lastInsertId)
 	if err != nil {
-		fmt.Println("Error writing weather to file", err)
+		fmt.Println("Error saving IP to database: ", err)
+		return "", err
+	}
+
+	fmt.Println("LAST INSERT ID: ", lastInsertId)
+
+	return "NEW IP, ADDED TO DB!", nil
+}
+
+func ReadIPDB() ([]*IpResult, error) {
+
+	rows, err := db.ConnPool.Query(
+		`SELECT
+				id,
+				ip,
+				timestamp
+			FROM
+				ips`)
+
+	if err != nil {
+		fmt.Println("There was an error reading the ips table from the database 2:", err)
 		return nil, err
 	}
 
-	file, err := os.OpenFile("goResources/visitorCounter/visitors.json", os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println("Error opening the Visitors JSON file", err)
-		return nil, err
+	ipResultsArray := []*IpResult{}
+
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var res IpResult
+
+		err = rows.Scan(
+			&res.Id,
+			&res.Ip,
+			&res.Timestamp)
+
+		if err != nil {
+			fmt.Println("There was an error querying that database for the IP Results:", err)
+			continue
+		}
+
+		ipResultsArray = append(ipResultsArray, &res)
 	}
 
-	defer file.Close()
+	return ipResultsArray, nil
 
-	//visitorJSONByte := []byte(updateVisitorsReturnJSON)
-	//visitorJSONReturn, err := file.Write(visitorJSONByte)
-	//if err != nil {
-	//	fmt.Println("Error writing Visitor JSON to Visitor JSON file")
-	//	return nil, err
-	//}
-
-	visitorJSONReturn := ioutil.WriteFile("goResources/visitorCounter/visitors.json", updateVisitorsReturnJSON, 0644)
-	fmt.Println(visitorJSONReturn)
-
-	allVisitors := map[string]interface{}{
-		"Visitors": visitorJSONReturn,
-	}
-
-	return allVisitors, nil
-}
-
-func ReadVisitors() ([]map[string]interface{}, error) {
-	b, err := ioutil.ReadFile("goResources/visitorCounter/visitors.json") // just pass the file name
-	if err != nil {
-		fmt.Print(err)
-		return nil, err
-	}
-
-	var dat []map[string]interface{}
-	err = json.Unmarshal(b, &dat)
-	if err != nil {
-		fmt.Println("Error unmarshaling Visitor JSON", err)
-	}
-
-	return dat, nil
 }

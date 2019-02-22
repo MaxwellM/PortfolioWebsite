@@ -16,7 +16,7 @@ ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($sc
     function visitorCounter() {
         $http.get("/visitorCounter").then(function (res) {
         }, function (err) {
-            alert("ERROR: ", err);
+            alert("ERROR /visitorCounter: ", err);
         })
     }
 

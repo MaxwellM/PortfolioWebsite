@@ -52,7 +52,7 @@ func main() {
 func VisitorCounter(data *gin.Context) {
 	IP := data.Request.RemoteAddr
 
-	ips, err := visitorCounter.AppendToIPStruct(IP)
+	ips, err := visitorCounter.CheckIfIPExists(IP)
 	if err != nil {
 		fmt.Println("Error returning IPs who visited the site! ", err)
 		data.JSON(http.StatusBadRequest, err)
@@ -64,7 +64,7 @@ func VisitorCounter(data *gin.Context) {
 }
 
 func ReadVisitors(data *gin.Context) {
-	visitorsReturn, err := visitorCounter.ReadVisitors()
+	visitorsReturn, err := visitorCounter.ReadIPDB()
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
 		fmt.Println("Error obtaining visitors report", err)
