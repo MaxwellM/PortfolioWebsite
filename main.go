@@ -50,7 +50,8 @@ func main() {
 }
 
 func VisitorCounter(data *gin.Context) {
-	IP := data.Request.RemoteAddr
+	//IP := data.Request.RemoteAddr
+	IP := data.ClientIP()
 
 	ips, err := visitorCounter.CheckIfIPExists(IP)
 	if err != nil {
