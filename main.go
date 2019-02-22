@@ -54,6 +54,8 @@ func VisitorCounter(data *gin.Context) {
 	//IP := data.ClientIP()
 	IP := data.GetHeader("X-Real-IP")
 
+	fmt.Println("FOUND IP: ", IP)
+
 	header := data.Request.Header
 	fmt.Println("HEADER: ", header)
 
