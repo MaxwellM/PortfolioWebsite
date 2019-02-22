@@ -52,6 +52,10 @@ func main() {
 func VisitorCounter(data *gin.Context) {
 	//IP := data.Request.RemoteAddr
 	//IP := data.ClientIP()
+	IP := data.GetHeader("X-Real-IP")
+
+	header := data.Request.Header
+	fmt.Println("HEADER: ", header)
 
 	IP, err := visitorCounter.GetClientIPHelper(data.Request)
 	if err != nil {
