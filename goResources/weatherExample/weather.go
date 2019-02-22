@@ -34,7 +34,6 @@ func ReadLocalCurrentConditions() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	//b := []byte(`{"Name":"Bob","Food":"Pickle"}`)
 	var dat map[string]interface{}
 	err = json.Unmarshal(b, &dat)
 	if err != nil {
@@ -156,7 +155,7 @@ func InitRequestCount() {
 func InitUpdateForecast() {
 	for {
 		now := time.Now()
-		next := time.Date(now.Year(), now.Month(), now.Day()+1, 22, 0, 0, 0, now.Location())
+		next := time.Date(now.Year(), now.Month(), now.Day()+1, 12, 0, 0, 0, now.Location())
 
 		sleepDur := next.Sub(now)
 		fmt.Printf("Updating Forecast in %s on %s\n", sleepDur.String(), next)
