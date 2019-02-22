@@ -50,8 +50,16 @@ func main() {
 }
 
 func VisitorCounter(data *gin.Context) {
-	IP := data.Request.RemoteAddr
+	//IP := data.Request.RemoteAddr
 	//IP := data.ClientIP()
+
+	IP, err := visitorCounter.GetClientIPHelper(data.Request)
+	if err != nil {
+		fmt.Println("Error parsing for IP!")
+		data.JSON(http.StatusBadRequest, err)
+	}
+
+	fmt.Println("IP: ", IP)
 
 	ips, err := visitorCounter.CheckIfIPExists(IP)
 	if err != nil {
