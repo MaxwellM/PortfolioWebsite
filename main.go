@@ -59,11 +59,11 @@ func VisitorCounter(data *gin.Context) {
 	header := data.Request.Header
 	fmt.Println("HEADER: ", header)
 
-	IP, err := visitorCounter.GetClientIPHelper(data.Request)
-	if err != nil {
-		fmt.Println("Error parsing for IP!")
-		data.JSON(http.StatusBadRequest, err)
-	}
+	//IP, err := visitorCounter.GetClientIPHelper(data.Request)
+	//if err != nil {
+	//	fmt.Println("Error parsing for IP!")
+	//	data.JSON(http.StatusBadRequest, err)
+	//}
 
 	fmt.Println("IP: ", IP)
 
