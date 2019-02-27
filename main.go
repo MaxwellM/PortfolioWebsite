@@ -175,7 +175,7 @@ func SetClickedRow(data *gin.Context) {
 }
 
 func GetWeather(data *gin.Context) {
-	location := data.DefaultQuery("location", "84094")
+	location := data.DefaultQuery("location", "351219")
 
 	fmt.Println("Location: ", location)
 
@@ -189,7 +189,7 @@ func GetWeather(data *gin.Context) {
 }
 
 func GetWeatherConditions(data *gin.Context) {
-	location := data.DefaultQuery("location", "84094")
+	location := data.DefaultQuery("location", "351219")
 
 	fmt.Println("Location: ", location)
 
