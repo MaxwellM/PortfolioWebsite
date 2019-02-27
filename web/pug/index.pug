@@ -9,7 +9,9 @@ html
         link(rel="stylesheet", href="../css/resume.css", type="text/css")
         link(rel="stylesheet", href="../css/angularJSExampleTable.css", type="text/css")
         link(rel="stylesheet", href="../css/angularJSExampleDisplay.css", type="text/css")
+        link(rel="stylesheet", href="../css/angularJSExampleChart.css", type="text/css")
         link(rel="stylesheet", href="../css/angular-datepicker.css", type="text/css")
+        link(rel="stylesheet", href="../js/node_modules/c3/c3.css")
         link(rel="shortcut icon", href="../images/favicon.png", type="image/png")
         script(src="../js/node_modules/angular/angular.js")
     body(ng-app='app', ng-controller='myCtrl')
@@ -28,7 +30,9 @@ html
                 include angularJSExampleTable
             div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-show='myCtrl.buttonName == "Display Example"')
                 include angularJSExampleDisplay
-            div#footerWrapper
+            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-show='myCtrl.buttonName == "Chart Example"')
+                include angularJSExampleChart
+            div#footerWrapper(ng-controller='angularJSExampleChartCtrl')
                 include footer
     script(src="../js/app.js")
     script(src="../js/mainePage.js")
@@ -37,5 +41,8 @@ html
     script(src="../js/resume.js")
     script(src="../js/angularJSExampleTable.js")
     script(src="../js/angularJSExampleDisplay.js")
-    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
+    script(src="../js/angularJSExampleChart.js")
     script(src="../js/node_modules/angularjs-datepicker/src/js/angular-datepicker.js")
+    script(src="../js/node_modules/d3/dist/d3.min.js" charset="utf-8")
+    script(src="../js/node_modules/c3/c3.min.js")
+    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
