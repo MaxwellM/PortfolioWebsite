@@ -4,23 +4,11 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.readVisitors = readVisitors;
 
-    $scope.allVisitors = [];
     $scope.visitors = [];
 
-    console.log("VISITOR LOADED!");
-
-    // function retrieveVisitors() {
-    //     $http.get("/getVisitors").then(function (res) {
-    //         let results;
-    //         results = res.data;
-    //         $scope.allVisitors = results;
-    //         console.log("VISITORS: ", results);
-    //     }, function(error) {
-    //         alert(error.data);
-    //     });
-    // }
-
     function drawChart() {
+        let months = getMonths($scope.visitors);
+
         var chart = c3.generate({
             bindto: '#chart',
             data: {
@@ -32,11 +20,30 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         });
     }
 
-    function visitorCounter() {
-        $http.get("/visitorCounter").then(function (res) {
-        }, function (err) {
-            alert("ERROR /visitorCounter: ", err);
-        })
+    function getMonths(data) {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        let months = [];
+        let date;
+        let month;
+
+        console.log("DATA: ", data);
+
+        for(const[index,item] of data.entries()) {
+            date = new Date(item.timestamp);
+            month = date.getMonth();
+            if (!months.includes(monthNames[month])) {
+                months.push(monthNames[month]);
+            } else {
+                console.log("Already have that month: ", month, months)
+            }
+        }
+        //let month = data.getMonth();
+
+        console.log("MONTHS: ", months);
+
+        return months;
     }
 
     function readVisitors() {
@@ -46,12 +53,13 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             $scope.visitors = results;
 
             console.log("IPs: ", $scope.visitors);
+
+            drawChart();
         }, function (err) {
             alert("ERROR, /readVisitors: ", err);
         })
     }
 
-    visitorCounter();
     readVisitors();
-    drawChart();
+    // drawChart();
 }]);
