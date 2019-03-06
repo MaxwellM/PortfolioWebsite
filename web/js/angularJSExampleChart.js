@@ -6,6 +6,8 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.visitors = [];
     $scope.monthlyVisitors = [];
+    $scope.currentMonthTotal = 0;
+    $scope.currentMonthName = "";
     $scope.chartData = [];
     $scope.currentMonth = "";
 
@@ -18,9 +20,9 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
         $scope.chartData = data;
 
-        monthCounts = getMonthCounts($scope.chartData);
-        months = $scope.chartData.map(getMonth);
-        times = $scope.chartData.map(getTimes);
+        // monthCounts = getMonthCounts($scope.chartData);
+        // months = $scope.chartData.map(getMonth);
+        // times = $scope.chartData.map(getTimes);
 
         chart = c3.generate({
             bindto: 'div#chart',
@@ -34,18 +36,18 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 columns: [
                     ['x', '2019-01', '2019-02', '2019-03', '2019-04', '2019-05', '2019-06', '2019-07', '2019-08', '2019-09', '2019-10', '2019-11', '2019-12'],
                     ['Unique Visitors',
-                        monthCounts[0],
-                        monthCounts[1],
-                        monthCounts[2],
-                        monthCounts[3],
-                        monthCounts[4],
-                        monthCounts[5],
-                        monthCounts[6],
-                        monthCounts[7],
-                        monthCounts[8],
-                        monthCounts[9],
-                        monthCounts[10],
-                        monthCounts[11]]
+                        0,
+                        $scope.chartData[0]['count'],
+                        $scope.chartData[1]['count'],
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0]
                 ]
             },
             axis: {
@@ -68,10 +70,15 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         return Date.parse(obj.timestamp);
     }
 
-    function getMonth(obj) {
+    function getMonthName() {
         const monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
+        const d = new Date();
+        return monthNames[d.getMonth()];
+    }
+
+    function getMonth(obj) {
         let month;
         let date;
 
@@ -94,48 +101,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         return monthCount;
     }
 
-    // function getVisitCount(data) {
-    //     const monthNames = ["January", "February", "March", "April", "May", "June",
-    //         "July", "August", "September", "October", "November", "December"
-    //     ];
-    //     let monthCounts = [];
-    //     let date;
-    //     let month;
-    //
-    //     for(const[index,item] of data.entries()) {
-    //         date = new Date(item.timestamp);
-    //         month = date.getMonth();
-    //     }
-    //
-    //     return monthCounts;
-    // }
-
-    // function getMonths(data) {
-    //     const monthNames = ["January", "February", "March", "April", "May", "June",
-    //         "July", "August", "September", "October", "November", "December"
-    //     ];
-    //     let months = [];
-    //     let date;
-    //     let month;
-    //
-    //     console.log("DATA: ", data);
-    //
-    //     for(const[index,item] of data.entries()) {
-    //         date = new Date(item.timestamp);
-    //         month = date.getMonth();
-    //         if (!months.includes(monthNames[month])) {
-    //             months.push(monthNames[month]);
-    //         } else {
-    //             console.log("Already have that month: ", month, months)
-    //         }
-    //     }
-    //     //let month = data.getMonth();
-    //
-    //     console.log("MONTHS: ", months);
-    //
-    //     return months;
-    // }
-
     function readVisitors() {
         $http.get("/readVisitors").then(function (res) {
             let results;
@@ -144,7 +109,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
             console.log("IPs: ", $scope.visitors);
 
-            drawChart(results);
+            //drawChart(results);
         }, function (err) {
             alert("ERROR, /readVisitors: ", err);
         })
@@ -153,9 +118,19 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     function readMonthlyVisitors() {
         $http.get("/readMonthlyVisitors").then(function (res) {
             let results;
+            let currentMonth = getMonthName();
             results = res.data;
             $scope.monthlyVisitors = results;
+            $scope.currentMonthName = currentMonth;
 
+            // Setting the total for this month!
+            for (const[index,item] of $scope.monthlyVisitors.entries()) {
+                if (item.month === currentMonth) {
+                    $scope.currentMonthTotal = item.count;
+                }
+            }
+            //$scope.currentMonthTotal = 0;
+            drawChart(results);
             console.log("Monthly Visitors: ", $scope.monthlyVisitors);
         }, function (err) {
             alert("ERROR /readMonthlyVisitors: ", err);

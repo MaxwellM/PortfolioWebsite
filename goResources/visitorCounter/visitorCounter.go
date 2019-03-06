@@ -22,14 +22,38 @@ func InitCreateMonth() {
 	for {
 		now := time.Now()
 		// We rest the counter once a day, at midnight. Well, midnight for our server which depends on the time zone.
-		next := time.Date(now.Year(), now.Month()+1, now.Day(), 0, 0, 0, 0, now.Location())
+		next := time.Date(now.Year(), now.Month()+1, now.Day(), 1, 0, 0, 0, now.Location())
 
 		sleepDur := next.Sub(now)
 		fmt.Printf("Creating Month in DB in %s on %s\n", sleepDur.String(), next)
 		time.Sleep(sleepDur)
 
-		CreateMonth()
+		createMonthReturn, err := CreateMonth()
+		if err != nil {
+			fmt.Println("Error creating new month!")
+		} else {
+			fmt.Println(createMonthReturn)
+		}
+		emptyVisitorsReturn, err := EmptyVisitors()
+		if err != nil {
+			fmt.Println("Error clearing the ips table!", err)
+		} else {
+			fmt.Println(emptyVisitorsReturn)
+		}
 	}
+}
+
+func EmptyVisitors() (string, error) {
+	commandTag, err := db.ConnPool.Exec(
+		`DELETE FROM 
+				ips`)
+	if err != nil {
+		return "", err
+	}
+	if commandTag.RowsAffected() != 1 {
+		return "", fmt.Errorf("No row found to delete")
+	}
+	return "Success!", nil
 }
 
 func CreateMonth() (string, error) {
@@ -47,15 +71,34 @@ func CreateMonth() (string, error) {
 				$1, $2, $3) 
 			RETURNING 
 				id`,
-		m, 0, y).Scan(&lastInsertId)
+		m.String(), 0, y).Scan(&lastInsertId)
 	if err != nil {
-		fmt.Println("Error saving IP to database: ", err)
+		fmt.Println("Error saving new month to database: ", err)
 		return "", err
 	}
 
 	fmt.Println("LAST INSERT ID: ", lastInsertId)
 
-	return "NEW IP, ADDED TO DB!", nil
+	return fmt.Sprintf("Added Month: %s to DB!!", m.String()), nil
+}
+
+func IncrementMonthlyVisitors() (string, error) {
+	current := time.Now().UTC()
+	_, m, _ := current.Date()
+	_, err := db.ConnPool.Exec(
+		`UPDATE 
+				monthly_visitors
+			SET 
+				count = count + 1 
+			WHERE 
+				month = $1`,
+		m.String())
+	if err != nil {
+		fmt.Println("There was an error updating the monthly visitors table in the database 1:", err)
+		return "", err
+	} else {
+		return "SUCCESS!", nil
+	}
 }
 
 func CheckIfIPExists(ip string) (string, error) {
@@ -99,7 +142,7 @@ func CheckIfIPExists(ip string) (string, error) {
 		message, err := WriteIPToDatabase(ip)
 		if err != nil {
 			fmt.Println("Error inserting IP to DB", message)
-			return "", err
+			return message, err
 		}
 	}
 	fmt.Println("IP NOT UNIQUE!")
@@ -125,9 +168,15 @@ func WriteIPToDatabase(ip string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("LAST INSERT ID: ", lastInsertId)
+	// Now we're going to increment our Monthly Visitors DB!
+	monthlyVisitorsReturn, err := IncrementMonthlyVisitors()
+	if err != nil {
+		return monthlyVisitorsReturn, err
+	} else {
+		fmt.Println("LAST INSERT ID: ", lastInsertId)
 
-	return "NEW IP, ADDED TO DB!", nil
+		return "NEW IP, ADDED TO DB!", nil
+	}
 }
 
 func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
