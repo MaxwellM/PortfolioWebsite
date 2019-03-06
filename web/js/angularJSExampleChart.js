@@ -36,9 +36,9 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 columns: [
                     ['x', '2019-01', '2019-02', '2019-03', '2019-04', '2019-05', '2019-06', '2019-07', '2019-08', '2019-09', '2019-10', '2019-11', '2019-12'],
                     ['Unique Visitors',
-                        0,
                         $scope.chartData[0]['count'],
                         $scope.chartData[1]['count'],
+                        $scope.chartData[2]['count'],
                         0,
                         0,
                         0,
@@ -54,9 +54,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 x: {
                     type: 'category',
                     tick: {
-                        culling:  {
-                            max: 12
-                        },
+                        culling: false
                         //format: '%Y-%m-%d'
                     }
                 }
