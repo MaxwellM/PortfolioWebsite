@@ -5,7 +5,9 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     $scope.readVisitors = readVisitors;
 
     $scope.visitors = [];
+    $scope.monthlyVisitors = [];
     $scope.chartData = [];
+    $scope.currentMonth = "";
 
     function drawChart(data) {
         let chart;
@@ -23,7 +25,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         chart = c3.generate({
             bindto: 'div#chart',
             size: {
-                height: 450
+                height: 300
             },
             data: {
                 x: 'x',
@@ -148,6 +150,28 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         })
     }
 
+    function readMonthlyVisitors() {
+        $http.get("/readMonthlyVisitors").then(function (res) {
+            let results;
+            results = res.data;
+            $scope.monthlyVisitors = results;
+
+            console.log("Monthly Visitors: ", $scope.monthlyVisitors);
+        }, function (err) {
+            alert("ERROR /readMonthlyVisitors: ", err);
+        })
+    }
+
+    function setCurrentMonth() {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        const d = new Date();
+        $scope.currentMonth = monthNames[d.getMonth()];
+    }
+
+    setCurrentMonth();
     readVisitors();
+    readMonthlyVisitors();
     // drawChart();
 }]);

@@ -37,11 +37,13 @@ func main() {
 	// Linked to the Visitor Counter
 	router.GET("/visitorCounter", VisitorCounter)
 	router.GET("/readVisitors", ReadVisitors)
+	router.GET("/readMonthlyVisitors", ReadMonthlyVisitors)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
 	go weatherExample.InitUpdateCurrentConditions()
 	go weatherExample.InitUpdateForecast()
+	go visitorCounter.InitCreateMonth()
 	//go weatherExample.UpdateAllWeather(true)
 
 
@@ -80,6 +82,16 @@ func VisitorCounter(data *gin.Context) {
 
 func ReadVisitors(data *gin.Context) {
 	visitorsReturn, err := visitorCounter.ReadIPDB()
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining visitors report", err)
+	} else {
+		data.JSON(http.StatusOK, visitorsReturn)
+	}
+}
+
+func ReadMonthlyVisitors(data *gin.Context) {
+	visitorsReturn, err := visitorCounter.ReadMonthlyVisitorsDB()
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
 		fmt.Println("Error obtaining visitors report", err)
