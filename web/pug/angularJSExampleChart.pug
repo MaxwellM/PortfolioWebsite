@@ -6,7 +6,12 @@ div#angularJSExampleChartInnerPageWrapper
             div#chart
     div#angularJSExampleChartBottomWrapper
         div#angularJSExampleChartVisitorCount
-            h2 Unique Visitors for {{ currentMonthName }}
-            h2 {{ currentMonthTotal }}
+            h3 Unique Visitors for {{ currentMonthName }}
+            h3 {{ currentMonthTotal }}
+        div#angularJSExampleChartVisitorLocation
+            h3 Unique Visitor Locations
+            div#angularJSExampleChartVisitors(ng-repeat='visitor in visitors')
+                label {{ $index+1 }}) {{ visitor.Ip }}
+                //label {{ visitor.Ip }}
 
 

@@ -38,6 +38,7 @@ func main() {
 	router.GET("/visitorCounter", VisitorCounter)
 	router.GET("/readVisitors", ReadVisitors)
 	router.GET("/readMonthlyVisitors", ReadMonthlyVisitors)
+	router.GET("/getIPLocation", GetIPLocation)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
@@ -231,5 +232,19 @@ func GetLocalCurrentConditions(data *gin.Context) {
 		fmt.Println("Error reading local weather report")
 	} else {
 		data.JSON(http.StatusOK, currentConditionsReturn)
+	}
+}
+
+func GetIPLocation(data *gin.Context) {
+	ip := data.DefaultQuery("ip", "")
+
+	fmt.Println("IP: ", ip)
+
+	weatherReturn, err := visitorCounter.GetIPLocation(ip)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err)
+		fmt.Println("Error obtaining a location for an IP", err)
+	} else {
+		data.JSON(http.StatusOK, weatherReturn)
 	}
 }
