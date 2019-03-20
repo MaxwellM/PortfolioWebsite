@@ -10,8 +10,14 @@ div#angularJSExampleChartInnerPageWrapper
             h3 {{ currentMonthTotal }}
         div#angularJSExampleChartVisitorLocation
             h3 Unique Visitor Locations
-            div#angularJSExampleChartVisitors(ng-repeat='visitor in visitors')
-                label {{ $index+1 }}) {{ visitor.Ip }}
+            div#angularJSExampleChartVisitors(ng-repeat='visitor in ipLocationList')
+                label {{ $index+1 }})
+                label {{ visitor.ip }}
+                label {{ visitor.isp }}
+                label {{ visitor.as.name }}
+                label {{ visitor.location.city }}
+                label {{ visitor.location.region }}
+                label {{ visitor.location.county }}
                 //label {{ visitor.Ip }}
 
 

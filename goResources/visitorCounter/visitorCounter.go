@@ -16,66 +16,51 @@ type IpResult struct {
 }
 
 type VisitorResult struct {
-	Id int `json:"id"`
+	Id    int    `json:"id"`
 	Month string `json:"month"`
-	Count int `json:"count"`
+	Count int    `json:"count"`
 }
 
-//{
-//	"ip": "110.170.64.0",
-//	"location": {
-//	"country": "TH",
-//	"region": "Bangkok",
-//	"city": "Bangkok",
-//	"lat": 13.7083,
-//	"lng": 100.4562,
-//	"postalCode": "10120",
-//	"timezone": "Asia/Bangkok"
-//},
-//	"isp": "True Internet",
-//	"domains": [
-//		"110-170-64-0.static.asianet.co.th"
-//	],
-//	"as": {
-//		"asn": 7470,
-//		"name": "TRUE INTERNET Co.,Ltd.",
-//		"route": "110.170.64.0/18",
-//		"domain": "trueinternet.co.th"
-//	}
-//}
-
-type VisitorLocation struct {
-	VisitorLocationIPInfo
+type VisitorLocationResult struct {
+	As       VisitorLocationAs       `json:"as"`
+	Ip       string                  `json:"ip"`
+	Isp      string                  `json:"isp"`
+	Location VisitorLocationLocation `json:"location"`
 }
 
-type VisitorLocationIPInfo struct {
-	IP string `json:"ip"`
-	Location VisitorLocationLocationInfo `json:"location"`
-	ISP string `json:"isp"`
-	Domains []VisitorLocationDomainsInfo `json:"domains"`
-	AS VisitorLocationASInfo `json:"as"`
-}
-
-type VisitorLocationLocationInfo struct {
-	County string `json:"county"`
-	Region string `json:"region"`
-	City string `json:"city"`
-	Lat float64 `json:"lat"`
-	Lng float64 `json:"lng"`
-	PostalCode string `json:"postalCode"`
-	Timezone string `json:"timezone"`
-}
-
-type VisitorLocationDomainsInfo struct {
+type VisitorLocationAs struct {
+	Asn    int    `json:"asn"`
 	Domain string `json:"domain"`
+	Name   string `json:"name"`
+	Route  string `json:"route"`
 }
 
-type VisitorLocationASInfo struct {
-	ASN int `json:"asn"`
-	Name string `json:"name"`
-	Route string `json:"route"`
-	Domain string `json:"domain"`
+type VisitorLocationLocation struct {
+	City       string  `json:"city"`
+	Country    string  `json:"country"`
+	Lat        float64 `json:"lat"`
+	Lng        float64 `json:"lng"`
+	PostalCode string  `json:"postalcode"`
+	Region     string  `json:"region"`
+	Timezone   string  `json:"timezone"`
 }
+
+type VisitorLocationDB struct {
+	Id                 int     `json:"id"`
+	AsAsn              int     `json:"as_asn"`
+	AsDomain           string  `json:"as_domain"`
+	AsName             string  `json:"as_name"`
+	AsRoute            string  `json:"as_route"`
+	Ip                 string  `json:"ip"`
+	LocationCity       string  `json:"location_city"`
+	LocationCountry    string  `json:"location_country"`
+	LocationLat        float64 `json:"location_lat"`
+	LocationLng        float64 `json:"location_lng"`
+	LocationPostalcode string  `json:"location_postalcode"`
+	LocationRegion     string  `json:"location_region"`
+	LocationTimezone   string  `json:"location_timezone"`
+}
+
 
 func InitCreateMonth() {
 	for {
@@ -99,6 +84,12 @@ func InitCreateMonth() {
 		} else {
 			fmt.Println(emptyVisitorsReturn)
 		}
+		emptyIPlocationsReturn ,err := EmptyIPLocations()
+		if err != nil {
+			fmt.Println("Error clearing the ip_locations table!", err)
+		} else {
+			fmt.Println(emptyIPlocationsReturn)
+		}
 	}
 }
 
@@ -112,7 +103,20 @@ func EmptyVisitors() (string, error) {
 	if commandTag.RowsAffected() != 1 {
 		return "", fmt.Errorf("No row found to delete")
 	}
-	return "Success!", nil
+	return "Successfully deleted the ips table!", nil
+}
+
+func EmptyIPLocations() (string, error) {
+	commandTag, err := db.ConnPool.Exec(
+		`DELETE FROM
+				ip_locations`)
+	if err != nil {
+		return "", err
+	}
+	if commandTag.RowsAffected() != 1 {
+		return "", fmt.Errorf("No row found to delete")
+	}
+	return "Successfully deleted the ip_locations table!", nil
 }
 
 func CreateMonth() (string, error) {
@@ -202,6 +206,10 @@ func CheckIfIPExists(ip string) (string, error) {
 		if err != nil {
 			fmt.Println("Error inserting IP to DB", message)
 			return message, err
+		}
+		updateIPLocation, err := WriteIPLocationToDB(ip)
+		if err != nil {
+			fmt.Println("Error updating the IP Location to DB", updateIPLocation)
 		}
 	}
 	fmt.Println("IP NOT UNIQUE!")
@@ -316,6 +324,66 @@ func ReadIPDB() ([]*IpResult, error) {
 
 }
 
+func ReadIPLocationDB() ([]*VisitorLocationResult, error) {
+
+	rows, err := db.ConnPool.Query(
+		`SELECT
+				as_asn,
+				as_domain,
+				as_name,
+				as_route,
+				ip,
+				location_city,
+				location_country,
+				location_lat,
+				location_lng,
+				location_postalcode,
+				location_region,
+				location_timezone,
+				isp
+			FROM
+				ip_locations`)
+
+	if err != nil {
+		fmt.Println("There was an error reading the ip_locations table from the database:", err)
+		return nil, err
+	}
+
+	ipLocationResultsArray := []*VisitorLocationResult{}
+
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var res VisitorLocationResult
+
+		err = rows.Scan(
+			&res.As.Asn,
+			&res.As.Domain,
+			&res.As.Name,
+			&res.As.Route,
+			&res.Ip,
+			&res.Location.City,
+			&res.Location.Country,
+			&res.Location.Lat,
+			&res.Location.Lng,
+			&res.Location.PostalCode,
+			&res.Location.Region,
+			&res.Location.Timezone,
+			&res.Isp)
+
+		if err != nil {
+			fmt.Println("There was an error querying that database for the IP Location Results:", err)
+			continue
+		}
+
+		ipLocationResultsArray = append(ipLocationResultsArray, &res)
+	}
+
+	return ipLocationResultsArray, nil
+}
+
+
 func GetIPLocationRequest(ip string) (map[string]interface{}, error) {
 		fmt.Println("LOCATION IP: ", ip)
 		//key := "at_pruWCmEUi97TIwBtqGswfJokFFZ6M"
@@ -359,23 +427,89 @@ func GetIPLocationRequest(ip string) (map[string]interface{}, error) {
 		return test, err
 }
 
-func GetIPLocation(ip string) (map[string]interface{}, error) {
-	ipLocationReturn, err := GetIPLocationRequest(ip)
+func GetIPLocation() (map[string]interface{}, error) {
+	b, err := ioutil.ReadFile("goResources/visitorCounter/ipLocations.json") // just pass the file name
 	if err != nil {
-		fmt.Println("Error obtaining IP location!", err)
+		fmt.Print(err)
 		return nil, err
-	}
-	ipLocationReturnJSON, err := json.Marshal(ipLocationReturn)
-	if err != nil {
-		fmt.Println("Error writing weather to file", err)
-		return nil, err
-	}
-	currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/visitorCounter/ipLocations.json", ipLocationReturnJSON, 0644)
-	fmt.Println(currentConditionsReturnJSONReturn)
-	// Now we return our weather report back to the frontend
-	allWeather := map[string]interface{}{
-		"Current": ipLocationReturn,
 	}
 
-	return allWeather, nil
+	var dat map[string]interface{}
+	err = json.Unmarshal(b, &dat)
+	if err != nil {
+		fmt.Println("Error unmarshaling IP Locations JSON", err)
+	}
+
+	return dat, nil
+}
+
+// Functions for our IP Locations
+
+func WriteIPLocationToDB(ip string) (string, error) {
+	lastInsertId := 0
+
+	ipLocationReturn, err := GetIPLocationRequest(ip)
+	if err != nil {
+		fmt.Println("Error obtaining IP Location", err)
+		return "", err
+	}
+	fmt.Println("IP LOCATION BEFORE: ", ipLocationReturn)
+
+	ipLocationReturnJSON, err := json.Marshal(ipLocationReturn)
+	if err != nil {
+		fmt.Println("Error marshaling IP Location", err)
+		return "", err
+	}
+	//ipLocationReturnJSONString := string(ipLocationReturnJSON)
+	//fmt.Println("IP LOCATION AFTER: ", string(ipLocationReturnJSON))
+
+	// Putting our IP Location information to a struct
+	var ipLocationResult VisitorLocationResult
+	unmarshalErr := json.Unmarshal(ipLocationReturnJSON, &ipLocationResult)
+	if unmarshalErr != nil {
+		fmt.Println("Error unmarshaling IP Location JSON", unmarshalErr)
+		return "", unmarshalErr
+	}
+
+	// This inserts our quote and accompanying data into our table!
+	dbErr := db.ConnPool.QueryRow(
+		`INSERT INTO 
+				ip_locations(
+					as_asn,
+					as_domain,
+					as_name,
+					as_route,
+					ip,
+					location_city,
+					location_country,
+					location_lat,
+					location_lng,
+					location_postalcode,
+					location_region,
+					location_timezone,
+					isp) 
+			VALUES(
+				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
+			RETURNING 
+				id`,
+		ipLocationResult.As.Asn,
+		ipLocationResult.As.Domain,
+		ipLocationResult.As.Name,
+		ipLocationResult.As.Route,
+		ipLocationResult.Ip,
+		ipLocationResult.Location.City,
+		ipLocationResult.Location.Country,
+		ipLocationResult.Location.Lat,
+		ipLocationResult.Location.Lng,
+		ipLocationResult.Location.PostalCode,
+		ipLocationResult.Location.Region,
+		ipLocationResult.Location.Timezone,
+		ipLocationResult.Isp).Scan(&lastInsertId)
+	if dbErr != nil {
+		fmt.Println("Error saving IP to database: ", err)
+		return "", err
+	}
+
+
+	return "Success writing IP location to DB!", nil
 }

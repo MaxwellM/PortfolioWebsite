@@ -236,15 +236,15 @@ func GetLocalCurrentConditions(data *gin.Context) {
 }
 
 func GetIPLocation(data *gin.Context) {
-	ip := data.DefaultQuery("ip", "")
+	//ip := data.DefaultQuery("ip", "")
 
-	fmt.Println("IP: ", ip)
+	//fmt.Println("IP: ", ip)
 
-	weatherReturn, err := visitorCounter.GetIPLocation(ip)
+	ipLocationReturn, err := visitorCounter.ReadIPLocationDB()
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
 		fmt.Println("Error obtaining a location for an IP", err)
 	} else {
-		data.JSON(http.StatusOK, weatherReturn)
+		data.JSON(http.StatusOK, ipLocationReturn)
 	}
 }

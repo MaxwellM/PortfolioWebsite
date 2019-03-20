@@ -146,18 +146,18 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     }
 
     function getIPLocations(ips) {
-        let ip;
-        for (const [index,item] of ips.entries()) {
-            ip = item.Ip;
-            $http.get("/getIPLocation", {params:{ip}}).then(function (res) {
-                let results;
-                results = res.data;
-            }, function (err) {
-               alert("Error obtaining the location for that IP: ", err);
-            });
-        }
+        //let ip;
+        $http.get("/getIPLocation").then(function (res) {
+            let results;
+            results = res.data;
+            $scope.ipLocationList = results;
+            console.log("IP LOCATION: ", results);
+        }, function (err) {
+           alert("Error obtaining the location for that IP: ", err);
+        });
     }
 
+    getIPLocations();
     setCurrentMonth();
     readVisitors();
     readMonthlyVisitors();
