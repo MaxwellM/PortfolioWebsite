@@ -3,6 +3,7 @@ var ngModule = angular.module('app');
 ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
 
     $scope.readVisitors = readVisitors;
+    $scope.selectIPLocation = selectIPLocation;
 
     $scope.visitors = [];
     $scope.monthlyVisitors = [];
@@ -11,6 +12,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     $scope.chartData = [];
     $scope.currentMonth = "";
     $scope.ipLocationList = [];
+    $scope.selectedIP = [];
 
     function drawChart(data) {
         let chart;
@@ -155,6 +157,14 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         }, function (err) {
            alert("Error obtaining the location for that IP: ", err);
         });
+    }
+
+    function selectIPLocation(ip) {
+        $scope.selectedIP = $scope.ipLocationList.filter(function (ipNumber) {
+            return ipNumber.ip === ip;
+        });
+
+        console.log("SELECTED IP: ", $scope.selectedIP);
     }
 
     getIPLocations();
