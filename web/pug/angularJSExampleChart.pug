@@ -15,20 +15,18 @@ div#angularJSExampleChartInnerPageWrapper
             h3 Unique Visitor Locations
             div#angularJSExampleChartVisitors(ng-repeat='visitor in selectedIP')
                 div#angularJSExampleChartLocationLabelWrapper
-                    label Index
-                    label IP
-                    label ISP
-                    label Name
-                    label City
-                    label Region
-                    label Country
+                    label(ng-show='visitor.ip') IP
+                    label(ng-show='visitor.isp') ISP
+                    label(ng-show='visitor.as.name') Name
+                    label(ng-show='visitor.location.city') City
+                    label(ng-show='visitor.location.region') Region
+                    label(ng-show='visitor.location.county') Country
                 div#angularJSExampleChartLocationInfoWrapper
-                    label {{ $index + 1 }}
-                    label {{ visitor.ip }}
-                    label {{ visitor.isp }}
-                    label {{ visitor.as.name }}
-                    label {{ visitor.location.city }}
-                    label {{ visitor.location.region }}
-                    label {{ visitor.location.county }}
+                    label(ng-show='visitor.ip') {{ visitor.ip }}
+                    label(ng-show='visitor.isp') {{ visitor.isp }}
+                    label(ng-show='visitor.as.name') {{ visitor.as.name }}
+                    label(ng-show='visitor.location.city') {{ visitor.location.city }}
+                    label(ng-show='visitor.location.region') {{ visitor.location.region }}
+                    label(ng-show='visitor.location.county') {{ visitor.location.county }}
 
 
