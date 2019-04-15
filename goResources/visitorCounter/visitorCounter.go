@@ -66,7 +66,7 @@ func InitCreateMonth() {
 	for {
 		now := time.Now()
 		// We rest the counter once a day, at midnight. Well, midnight for our server which depends on the time zone.
-		next := time.Date(now.Year(), now.Month()+1, now.Day(), 1, 0, 0, 0, now.Location())
+		next := time.Date(now.Year(), now.Month()+1, now.Day(), 0, 0, 0, 0, now.Location())
 
 		sleepDur := next.Sub(now)
 		fmt.Printf("Creating Month in DB in %s on %s\n", sleepDur.String(), next)
