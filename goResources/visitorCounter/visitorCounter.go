@@ -11,7 +11,7 @@ import (
 
 type IpResult struct {
 	Id        int       `json:"id"`
-	Ip        string    `json:'ip"`
+	Ip        string    `json:"ip"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
