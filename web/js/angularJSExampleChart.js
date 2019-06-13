@@ -44,7 +44,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                         $scope.chartData[2]['count'],
                         $scope.chartData[3]['count'],
                         $scope.chartData[4]['count'],
-                        0,
+                        $scope.chartData[5]['count'],
                         0,
                         0,
                         0,
