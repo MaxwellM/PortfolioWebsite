@@ -102,30 +102,50 @@ func EmptyVisitors() (string, error) {
 	}
 	if commandTag.RowsAffected() != 1 {
 		return "", fmt.Errorf("No row found to delete")
+	} else {
+		return "Successfully deleted the ips table!", nil
 	}
-	return "Successfully deleted the ips table!", nil
 }
 
 func EmptyIPLocations() (string, error) {
 	commandTag, err := db.ConnPool.Exec(
 		`DELETE FROM
-				ip_locations`)
+				ip_locations
+			RETURNING *`)
 	if err != nil {
 		return "", err
 	}
 	if commandTag.RowsAffected() != 1 {
 		return "", fmt.Errorf("No row found to delete")
+	} else {
+		return "Successfully deleted the ip_locations table!", nil
 	}
-	return "Successfully deleted the ip_locations table!", nil
 }
 
 func CreateMonth() (string, error) {
 	lastInsertId := 0
 	current := time.Now().UTC()
 	y, m, _:= current.Date()
-	// This inserts our quote and accompanying data into our table!
+
+	// First lets check to make sure that the month we're looking to add isn't already in the table
+	var exists bool
 	err := db.ConnPool.QueryRow(
-		`INSERT INTO 
+		`SELECT EXISTS(
+				SELECT
+					month
+				FROM
+					monthly_visitors
+				WHERE
+					month = $1
+					AND 
+					year = $2)`,
+		m.String(), y).Scan(&exists)
+	fmt.Println("EXISTS: ", exists)
+	// If the row doesn't exist, we're going to create it!
+	if !exists {
+		// This inserts our quote and accompanying data into our table!
+		err = db.ConnPool.QueryRow(
+			`INSERT INTO 
 				monthly_visitors(
 					month,
 					count,
@@ -134,15 +154,18 @@ func CreateMonth() (string, error) {
 				$1, $2, $3) 
 			RETURNING 
 				id`,
-		m.String(), 0, y).Scan(&lastInsertId)
-	if err != nil {
-		fmt.Println("Error saving new month to database: ", err)
-		return "", err
+			m.String(), 0, y).Scan(&lastInsertId)
+		if err != nil {
+			fmt.Println("Error saving new month to database: ", err)
+			return "", err
+		}
+
+		fmt.Println("LAST INSERT ID: ", lastInsertId)
+
+		return fmt.Sprintf("Added Month: %s to DB!!", m.String()), nil
+	} else {
+		return "Row already in table!", nil
 	}
-
-	fmt.Println("LAST INSERT ID: ", lastInsertId)
-
-	return fmt.Sprintf("Added Month: %s to DB!!", m.String()), nil
 }
 
 func IncrementMonthlyVisitors() (string, error) {
