@@ -105,15 +105,15 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
             $scope.showAddCharacter = true;
             $scope.showViewCharacters = false;
             add.style.backgroundColor = '#52658F';
-            add.style.color = '#F7F5E6';
-            view.style.backgroundColor = '#F7F5E6';
+            add.style.color = '#f5f8fa';
+            view.style.backgroundColor = '#f5f8fa';
             view.style.color = '#282e44';
         } else if (!section) {
             $scope.showViewCharacters = true;
             $scope.showAddCharacter = false;
             view.style.backgroundColor = '#52658F';
-            view.style.color = '#F7F5E6';
-            add.style.backgroundColor = '#F7F5E6';
+            view.style.color = '#f5f8fa';
+            add.style.backgroundColor = '#f5f8fa';
             add.style.color = '#282e44';
         } else {
             console.log("Not sure what you selected there?");

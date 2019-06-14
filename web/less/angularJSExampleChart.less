@@ -5,13 +5,15 @@ div#angularJSExampleChartPage {
 div#angularJSExampleChartInnerPageWrapper {
   height: 100%;
   overflow: auto;
-  background-color: #F7F5E6;
+  background-color: white;
 }
 
 div#angularJSExampleChartTitle {
   & h1, h2 {
     font-size: 1.5rem;
     font-family: open sans, sans-serif;
+    margin: 0px;
+    text-align: center;
   }
 }
 
@@ -21,11 +23,31 @@ div#angularJSExampleChartVisitorCount {
   margin: auto;
   margin-right: 25px;
   margin-top: 0px;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+  padding: 10px;
+  & h3:nth-child(2) {
+    text-align: center;
+  }
 }
 
 div#angularJSExampleChartVisitorLocation {
   display: grid;
   margin-left: 25px;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+div#angularJSExampleChartWrapper {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(0, 0, 0, 0.125);
+  margin-bottom: 10px;
+}
+
+div#angularJSExampleChartTopWrapper {
+  background-color: #f5f8fa;
 }
 
 div#angularJSExampleChartBottomWrapper {
@@ -36,7 +58,12 @@ div#angularJSExampleChartBottomWrapper {
   & h3 {
     font-size: 1.5rem;
     font-family: open sans, sans-serif;
+    margin-top: 0px;
+    margin-bottom: 5px;
   }
+  //& h3:first-child {
+  //  text-align: center;
+  //}
 }
 
 div#angularJSExampleChartLocationInfoWrapper {
@@ -60,4 +87,10 @@ div#angularJSExampleChartLocationLabelWrapper {
 
 div#angularJSExampleChartVisitorList {
   display: grid;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+  padding: 10px;
+  height: fit-content;
+  max-height: 200px;
+  overflow: auto;
 }
