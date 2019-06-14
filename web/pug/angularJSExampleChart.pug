@@ -11,7 +11,7 @@ div#angularJSExampleChartInnerPageWrapper
         div#angularJSExampleChartVisitorList
             h3 Unique Visitor List
             label(ng-repeat='ip in ipLocationList', ng-click='selectIPLocation(ip.ip)') {{ $index + 1 }}) {{ ip.ip }}
-        div#angularJSExampleChartVisitorLocation
+        div#angularJSExampleChartVisitorLocation(ng-show='selectedIP.length > 0')
             h3 Unique Visitor Locations
             div#angularJSExampleChartVisitors(ng-repeat='visitor in selectedIP')
                 div#angularJSExampleChartLocationLabelWrapper
