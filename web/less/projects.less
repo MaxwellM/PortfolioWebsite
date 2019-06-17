@@ -1,3 +1,11 @@
+div#projectPage {
+  font-family: open sans, sans-serif;
+  & img:hover {
+    transform: scale(1.5);
+    transition: transform .2s;
+  }
+}
+
 div#projectPage h2 {
   font-family: open sans,sans-serif;
 }
@@ -37,6 +45,24 @@ div#projectPagePlusOneRow {
   margin-bottom: 15px;
 }
 
+div#quoteBuilderWrapper {
+  text-align: center;
+  & img {
+    width: 400px;
+  }
+  & h2 {
+    text-align: center;
+  }
+  & label {
+    text-align: left;
+  }
+}
+
+div#quoteBuilderLabelWrapper {
+  text-align: left;
+  display: grid;
+}
+
 div#projectPagePlusTwoRow {
   border-top-style: solid;
   border-top-width: 2px;
@@ -44,9 +70,14 @@ div#projectPagePlusTwoRow {
   margin-bottom: 15px;
 }
 
+div#porjectPagePlusOneRow {
+  overflow: auto;
+  margin-bottom: 15px;
+}
+
 div#projectPagePlusThreeRow {
-  //border-top-style: solid;
-  //border-top-width: 2px;
+  border-top-style: solid;
+  border-top-width: 2px;
   overflow: auto;
   margin-bottom: 15px;
 }
