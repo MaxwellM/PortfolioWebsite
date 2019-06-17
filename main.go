@@ -20,6 +20,7 @@ func main() {
 	router.Static("/js", "./web/js")
 	router.Static("/images", "./web/images")
 	router.Static("/html", "./web/html")
+	router.Static("/unityGames", "./unityGames")
 	router.StaticFile("/", "./web/html/index.html")
 
 	// Linked to the Star Wars Character Example
