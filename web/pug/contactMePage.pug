@@ -2,11 +2,15 @@ div#contactMeInsideWrapper
     //h1 Contact Me
     div#contactMeInfoWrapper
         div#map
-        div#contactMeInfoPreface
-            h3 Phone
-            h3 Email
-            h3 Address
-        div#contactMeInfo
-            h3 (207) 745-5698
-            h3 maxwellrmorin@gmail.com
-            h3 9042 South Liberty Bend Dr #303, Sandy, UT 84094
+        div#contactMeWrapper
+            div#contactMeTitle
+                h3 Contact Me
+            div#contactMeTop
+                input(ng-model='name')
+                input(ng-model='email')
+            div#contactMeMiddle
+                input(ng-model='phone')
+            div#contactMeBottom
+                input(ng-model='message')
+            div#contactMeButton
+                button#contactMeSubmitButton(ng-click='sendMessage(name, email, phone, message)') Send Email

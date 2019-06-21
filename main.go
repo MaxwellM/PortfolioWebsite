@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PortfolioWebsite/goResources/contactMe"
 	"PortfolioWebsite/goResources/visitorCounter"
 	"PortfolioWebsite/goResources/weatherExample"
 	"fmt"
@@ -41,6 +42,9 @@ func main() {
 	router.GET("/readMonthlyVisitors", ReadMonthlyVisitors)
 	router.GET("/getIPLocation", GetIPLocation)
 
+	// Linked to the Contact Me Page
+	router.POST("/sendMessage", SendMessage)
+
 	// Timed functions!
 	go weatherExample.InitRequestCount()
 	go weatherExample.InitUpdateCurrentConditions()
@@ -74,7 +78,7 @@ func VisitorCounter(data *gin.Context) {
 	ips, err := visitorCounter.CheckIfIPExists(IP)
 	if err != nil {
 		fmt.Println("Error returning IPs who visited the site! ", err)
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 	} else {
 		fmt.Println("IPs: ", ips)
 		data.JSON(http.StatusOK, ips)
@@ -86,7 +90,7 @@ func ReadVisitors(data *gin.Context) {
 	visitorsReturn, err := visitorCounter.ReadIPDB()
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
-		fmt.Println("Error obtaining visitors report", err)
+		fmt.Println("Error obtaining visitors report", err.Error())
 	} else {
 		data.JSON(http.StatusOK, visitorsReturn)
 	}
@@ -96,7 +100,7 @@ func ReadMonthlyVisitors(data *gin.Context) {
 	visitorsReturn, err := visitorCounter.ReadMonthlyVisitorsDB()
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
-		fmt.Println("Error obtaining visitors report", err)
+		fmt.Println("Error obtaining visitors report", err.Error())
 	} else {
 		data.JSON(http.StatusOK, visitorsReturn)
 	}
@@ -133,7 +137,7 @@ func AddCharacterToDB(data *gin.Context) {
 		info.Masters,
 		info.Apprentices)
 	if err != nil {
-		data.String(http.StatusBadRequest, "Failed to add character.", err)
+		data.String(http.StatusBadRequest, "Failed to add character.", err.Error())
 	} else {
 		data.String(http.StatusOK, "successfully added Charcter!", characterReturn)
 	}
@@ -151,7 +155,7 @@ func UpdateCharacter(data *gin.Context) {
 
 	characterReturn, err := starWarsCharacterTableEample.ResubmitCharacter(info.Character)
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error re-submitting the character", err)
 	} else {
 		data.JSON(http.StatusOK, characterReturn)
@@ -161,7 +165,7 @@ func UpdateCharacter(data *gin.Context) {
 func LoadAngularJSExampleTableResults(data *gin.Context) {
 	starWarsCharactersReturn, err := starWarsCharacterTableEample.LoadAllStarWarsCharacters()
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error obtaining all Star Wars Characters", err)
 	} else {
 		data.JSON(http.StatusOK, starWarsCharactersReturn)
@@ -181,7 +185,7 @@ func SetClickedRow(data *gin.Context) {
 	fmt.Println("ID AFTER: ", idInt)
 	quoteBuilderReturn, err := starWarsCharacterTableEample.RetreiveCharacter(idInt)
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error obtaining a particular Quote", err)
 	} else {
 		data.JSON(http.StatusOK, quoteBuilderReturn)
@@ -195,7 +199,7 @@ func GetWeather(data *gin.Context) {
 
 	weatherReturn, err := weatherExample.UpdateAllWeather(location)
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error obtaining a weather report", err)
 	} else {
 		data.JSON(http.StatusOK, weatherReturn)
@@ -209,7 +213,7 @@ func GetWeatherConditions(data *gin.Context) {
 
 	weatherReturn, err := weatherExample.GetCurrentConditions(location)
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error obtaining a weather conditions report", err)
 	} else {
 		data.JSON(http.StatusOK, weatherReturn)
@@ -219,7 +223,7 @@ func GetWeatherConditions(data *gin.Context) {
 func GetLocalWeather(data *gin.Context) {
 	weatherReturn, err := weatherExample.ReadLocalWeatherReport()
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error reading local weather report")
 	} else {
 		data.JSON(http.StatusOK, weatherReturn)
@@ -229,7 +233,7 @@ func GetLocalWeather(data *gin.Context) {
 func GetLocalCurrentConditions(data *gin.Context) {
 	currentConditionsReturn, err := weatherExample.ReadLocalCurrentConditions()
 	if err != nil {
-		data.JSON(http.StatusBadRequest, err)
+		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error reading local weather report")
 	} else {
 		data.JSON(http.StatusOK, currentConditionsReturn)
@@ -244,8 +248,25 @@ func GetIPLocation(data *gin.Context) {
 	ipLocationReturn, err := visitorCounter.ReadIPLocationDB()
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err)
-		fmt.Println("Error obtaining a location for an IP", err)
+		fmt.Println("Error obtaining a location for an IP", err.Error())
 	} else {
 		data.JSON(http.StatusOK, ipLocationReturn)
+	}
+}
+
+func SendMessage(data *gin.Context) {
+	type MessageContents struct {
+		Name string `json:"name"`
+		Email string `json:"email"`
+		Phone string `json:"phone"`
+		Message string `json:"message"`
+	}
+
+	var info MessageContents
+	data.Bind(&info)
+
+	mailErr := contactMe.SendEmail(info.Name, info.Email, info.Phone, info.Message)
+	if mailErr != nil {
+		data.JSON(http.StatusBadRequest, mailErr.Error())
 	}
 }

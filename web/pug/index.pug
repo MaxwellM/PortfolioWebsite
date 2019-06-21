@@ -26,7 +26,7 @@ html
                 include projectPage
             div#resumePage(ng-controller='resumeCtrl', ng-cloak ,ng-show='myCtrl.buttonName == "Resume"')
                 include resume
-            div#contactMePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Contact Me"')
+            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Contact Me"')
                 include contactMePage
             div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Table Example"')
                 include angularJSExampleTable
