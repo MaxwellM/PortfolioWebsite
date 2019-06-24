@@ -31,13 +31,33 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
         })
     }
 
+    // This will check that the email looks like an email. Found this here:
+    // https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+    function validEmail(email) {
+        let re = /^[a-zA-Z0-9\-_]+(\.[a-zA-Z0-9\-_]+)*@[a-z0-9]+(\-[a-z0-9]+)*(\.[a-z0-9]+(\-[a-z0-9]+)*)*\.[a-z]{2,4}$/;
+        return re.test(email);
+    }
+
     function checkArguments(arguments) {
-        for (const [index,item] of arguments) {
-            if (item === undefined) {
+        for (const property in arguments) {
+            console.log("THIS: ", arguments[property]);
+            if (arguments[property] === undefined) {
                 return false;
+            } else if (parseInt(property) === 1) {
+                // this is the email one
+                if (!validEmail(arguments[property])) {
+                    return false;
+                }
             }
         }
         return true;
+
+        // for (const [item] of arguments) {
+        //     if (item === undefined) {
+        //         return false;
+        //     }
+        // }
+        // return true;
 
         // for (var key in obj) {
         //     console.log(obj[key]);

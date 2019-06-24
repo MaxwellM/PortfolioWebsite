@@ -59,6 +59,7 @@ div#map {
 div#contactMeWrapper {
   display: grid;
   width: fit-content;
+  width: -moz-fit-content;
   margin: auto;
   & input {
     font-family: open sans, sans-serif;
@@ -69,14 +70,17 @@ div#contactMeWrapper {
 
 div#contactMeTop {
   & input {
-    width: 44%;
+    //width: 44%;
   }
 }
 
 div#contactMeMiddle,
 div#contactMeBottom {
+  width: 100%;
   & input {
-    width: 94%;
+    //width: 94%;
+    width: -moz-available;
+    width: -webkit-fill-available;
   }
 }
 
