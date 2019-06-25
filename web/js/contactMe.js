@@ -51,17 +51,6 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
             }
         }
         return true;
-
-        // for (const [item] of arguments) {
-        //     if (item === undefined) {
-        //         return false;
-        //     }
-        // }
-        // return true;
-
-        // for (var key in obj) {
-        //     console.log(obj[key]);
-        // }
     }
 
 }]);
