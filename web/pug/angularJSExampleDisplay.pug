@@ -22,14 +22,14 @@ div#angularJSExampleDisplayInnerPageWrapper
                 label {{ ::trimDate(day.Date) }}
                 label {{ ::day.Temperature.Maximum.Value }} {{ ::day.Temperature.Maximum.Unit}}
                 label {{ ::day.Temperature.Minimum.Value }} {{ ::day.Temperature.Minimum.Unit}}
-                img(src=`../images/NewWeatherIcons/{{::day.Day.Icon}}-s.png`)
+                img(ng-src=`../images/NewWeatherIcons/{{::day.Day.Icon}}-s.png`, alt='')
                 label {{ ::day.Day.IconPhrase }}
-                img(src=`../images/NewWeatherIcons/{{::day.Night.Icon}}-s.png`)
+                img(ng-src=`../images/NewWeatherIcons/{{::day.Night.Icon}}-s.png`, alt='')
                 label {{ ::day.Night.IconPhrase }}
     div#angularJSExampleDisplayCurrentConditionsWrapper(ng-if='currentConditionsWeather')
         div#angularJSExampleDisplayCurrentConditions
             h3 Current Conditions
-            img(src=`../images/NewWeatherIcons/{{::currentConditionsWeather.WeatherIcon}}-s.png`)
+            img(ng-src=`../images/NewWeatherIcons/{{::currentConditionsWeather.WeatherIcon}}-s.png`, alt='')
             label {{ ::currentConditionsWeather.WeatherText}}
             label Current Temp: {{ ::currentConditionsWeather.Temperature.Imperial.Value }} {{ ::currentConditionsWeather.Temperature.Imperial.Unit }}
             label From: {{ ::currentConditionsWeather.LocalObservationDateTime | date:'short'}}
