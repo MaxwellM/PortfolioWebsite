@@ -47,7 +47,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
         $http.get("/getLocalCurrentConditions", {params:{location}}).then(function (res) {
             let results;
             results = res.data;
-            $scope.currentConditionsWeather = results;
+            $scope.currentConditionsWeather = results.Result[0];
             console.log("CURRENT CONDITIONS: ", results);
         }, function(error) {
             alert(error.data);

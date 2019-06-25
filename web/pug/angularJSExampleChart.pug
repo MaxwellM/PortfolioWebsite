@@ -6,11 +6,11 @@ div#angularJSExampleChartInnerPageWrapper
             div#chart
     div#angularJSExampleChartBottomWrapper
         div#angularJSExampleChartVisitorCount
-            h3 Unique Visitors for {{ currentMonthName }}
-            h3 {{ currentMonthTotal }}
+            h3 Unique Visitors for {{ ::currentMonthName }}
+            h3 {{ ::currentMonthTotal }}
         div#angularJSExampleChartVisitorList
             h3 Unique Visitor List
-            label(ng-repeat='ip in ipLocationList', ng-click='selectIPLocation(ip.ip)') {{ $index + 1 }}) {{ ip.ip }}
+            label(ng-repeat='ip in ipLocationList', ng-click='selectIPLocation(ip.ip)') {{ ::$index + 1 }}) {{ ::ip.ip }}
         div#angularJSExampleChartVisitorLocation(ng-show='selectedIP.length > 0')
             h3 Unique Visitor Locations
             div#angularJSExampleChartVisitors(ng-repeat='visitor in selectedIP')
@@ -22,11 +22,11 @@ div#angularJSExampleChartInnerPageWrapper
                     label(ng-show='visitor.location.region') Region
                     label(ng-show='visitor.location.county') Country
                 div#angularJSExampleChartLocationInfoWrapper
-                    label(ng-show='visitor.ip') {{ visitor.ip }}
-                    label(ng-show='visitor.isp') {{ visitor.isp }}
-                    label(ng-show='visitor.as.name') {{ visitor.as.name }}
-                    label(ng-show='visitor.location.city') {{ visitor.location.city }}
-                    label(ng-show='visitor.location.region') {{ visitor.location.region }}
-                    label(ng-show='visitor.location.county') {{ visitor.location.county }}
+                    label(ng-show='visitor.ip') {{ ::visitor.ip }}
+                    label(ng-show='visitor.isp') {{ ::visitor.isp }}
+                    label(ng-show='visitor.as.name') {{ ::visitor.as.name }}
+                    label(ng-show='visitor.location.city') {{ ::visitor.location.city }}
+                    label(ng-show='visitor.location.region') {{ ::visitor.location.region }}
+                    label(ng-show='visitor.location.county') {{ ::visitor.location.county }}
 
 

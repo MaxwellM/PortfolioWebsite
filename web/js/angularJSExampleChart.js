@@ -7,7 +7,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.visitors = [];
     $scope.monthlyVisitors = [];
-    $scope.currentMonthTotal = 0;
+    $scope.currentMonthTotal = undefined;
     $scope.currentMonthName = "";
     $scope.chartData = [];
     $scope.currentMonth = "";

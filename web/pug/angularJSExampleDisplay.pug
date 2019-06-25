@@ -2,7 +2,7 @@ div#angularJSExampleDisplayInnerPageWrapper
     div#angularJSExampleDisplayTitle
         h1 Weather Report
             img(src='../images/weather-icon.png', alt='')
-    div#angularJSExampleDisplayWrapper
+    div#angularJSExampleDisplayWrapper(ng-if='weatherData')
         //div#angularJSExampleDisplayInputWrapper
         //    label Enter Zip Code:
         //    input(type='text', ng-model='weatherLocation')
@@ -18,20 +18,20 @@ div#angularJSExampleDisplayInnerPageWrapper
                 label Day
                 label Night
             div#angularJSExampleDisplayWeatherDataWrapper
-                label {{ getDayName(day.Date) }}
-                label {{ trimDate(day.Date) }}
-                label {{ day.Temperature.Maximum.Value }} {{ day.Temperature.Maximum.Unit}}
-                label {{ day.Temperature.Minimum.Value }} {{ day.Temperature.Minimum.Unit}}
-                img(src=`../images/NewWeatherIcons/{{day.Day.Icon}}-s.png`)
-                label {{ day.Day.IconPhrase }}
-                img(src=`../images/NewWeatherIcons/{{day.Night.Icon}}-s.png`)
-                label {{ day.Night.IconPhrase }}
-    div#angularJSExampleDisplayCurrentConditionsWrapper
+                label {{ ::getDayName(day.Date) }}
+                label {{ ::trimDate(day.Date) }}
+                label {{ ::day.Temperature.Maximum.Value }} {{ ::day.Temperature.Maximum.Unit}}
+                label {{ ::day.Temperature.Minimum.Value }} {{ ::day.Temperature.Minimum.Unit}}
+                img(src=`../images/NewWeatherIcons/{{::day.Day.Icon}}-s.png`)
+                label {{ ::day.Day.IconPhrase }}
+                img(src=`../images/NewWeatherIcons/{{::day.Night.Icon}}-s.png`)
+                label {{ ::day.Night.IconPhrase }}
+    div#angularJSExampleDisplayCurrentConditionsWrapper(ng-if='currentConditionsWeather')
         div#angularJSExampleDisplayCurrentConditions
             h3 Current Conditions
-            img(src=`../images/NewWeatherIcons/{{currentConditionsWeather.Result[0].WeatherIcon}}-s.png`)
-            label {{ currentConditionsWeather.Result[0].WeatherText}}
-            label Current Temp: {{ currentConditionsWeather.Result[0].Temperature.Imperial.Value }} {{ currentConditionsWeather.Result[0].Temperature.Imperial.Unit }}
-            label From: {{ currentConditionsWeather.Result[0].LocalObservationDateTime | date:'short'}}
+            img(src=`../images/NewWeatherIcons/{{::currentConditionsWeather.WeatherIcon}}-s.png`)
+            label {{ ::currentConditionsWeather.WeatherText}}
+            label Current Temp: {{ ::currentConditionsWeather.Temperature.Imperial.Value }} {{ ::currentConditionsWeather.Temperature.Imperial.Unit }}
+            label From: {{ ::currentConditionsWeather.LocalObservationDateTime | date:'short'}}
 
 

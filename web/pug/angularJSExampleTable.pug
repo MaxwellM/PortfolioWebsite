@@ -28,9 +28,9 @@ div#angularJSExampleTableWrapper
                     thead
                         tbody
                             tr(ng-repeat="character in allCharacters | orderBy: 'born':true | limitTo: 250", ng-click='setClickedRow(character.id)')
-                                td(width=100) {{ character.name }}
-                                td(width=100) {{ character.species }}
-                                td(width=0) {{ character.born | date:'short'}}
+                                td(width=100) {{ ::character.name }}
+                                td(width=100) {{ ::character.species }}
+                                td(width=0) {{ ::character.born | date:'short'}}
                 h2#angularJSExampleTableResultsEmptyTable(ng-show='allCharacters.length == 0') NO CHARACTERS FOUND
     div#angularJSExampleTablePageWrapper
         div#angularJSExampleTableInnerTitle
