@@ -132,12 +132,20 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 }
             }
             //$scope.currentMonthTotal = 0;
+            // sort our results by month
+            results.sort(function(a,b) {
+               return a.id > b.id;
+            });
             drawChart(results);
             console.log("Monthly Visitors: ", $scope.monthlyVisitors);
         }, function (err) {
             alert("ERROR /readMonthlyVisitors: ", err);
         })
     }
+
+    // function sortResults(results) {
+    //     return results
+    // }
 
     function setCurrentMonth() {
         const monthNames = ["January", "February", "March", "April", "May", "June",
