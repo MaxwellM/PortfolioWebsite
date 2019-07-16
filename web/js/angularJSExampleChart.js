@@ -21,7 +21,18 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         let times;
         let months;
 
-        $scope.chartData = data;
+        // Lets fill out our array with 0s, then fill it with data!
+        let n = 12;
+        for (var i=0; i < n; i++) {
+            $scope.chartData.push({count: 0});
+        }
+
+        for (const [index,item] of data.entries()) {
+            $scope.chartData[index] = item;
+        }
+
+        //$scope.chartData.fill(0, 0, 11);
+        //$scope.chartData.push(data);
 
         // monthCounts = getMonthCounts($scope.chartData);
         // months = $scope.chartData.map(getMonth);
@@ -46,11 +57,11 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                         $scope.chartData[4]['count'],
                         $scope.chartData[5]['count'],
                         $scope.chartData[6]['count'],
-                        0,
-                        0,
-                        0,
-                        0,
-                        0]
+                        $scope.chartData[7]['count'],
+                        $scope.chartData[8]['count'],
+                        $scope.chartData[9]['count'],
+                        $scope.chartData[10]['count'],
+                        $scope.chartData[11]['count']]
                 ]
             },
             axis: {
