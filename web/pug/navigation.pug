@@ -40,6 +40,15 @@
                     ng-class='{selected: myCtrl.buttonName == "Chart Example"}') Chart Example
     ul.top-level-menu
         li
+            a Golang Examples &#9660;
+            ul.second-level-menu
+                li
+                    a(
+                    ng-click='log(button);myCtrl.buttonName = "Phrase Occurrence";',
+                    id='NAVButtonGoExampleFindOccurrences',
+                    ng-class='{selected: myCtrl.buttonName == "Phrase Occurrence"}') Phrase Occurrence
+    ul.top-level-menu
+        li
             a(
             ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";',
             id='NAVButtonUnityLostInSpaceExample',

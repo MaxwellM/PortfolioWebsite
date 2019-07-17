@@ -2,6 +2,7 @@ package main
 
 import (
 	"PortfolioWebsite/goResources/contactMe"
+	"PortfolioWebsite/goResources/goExamples"
 	"PortfolioWebsite/goResources/visitorCounter"
 	"PortfolioWebsite/goResources/weatherExample"
 	"fmt"
@@ -44,6 +45,9 @@ func main() {
 
 	// Linked to the Contact Me Page
 	router.POST("/sendMessage", SendMessage)
+
+	// Linked to the Go Examples Page!
+	router.GET("/getOccurrences", GetOccurrences)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
@@ -268,5 +272,25 @@ func SendMessage(data *gin.Context) {
 	mailErr := contactMe.SendEmail(info.Name, info.Email, info.Phone, info.Message)
 	if mailErr != nil {
 		data.JSON(http.StatusBadRequest, mailErr.Error())
+	} else {
+		data.JSON(http.StatusOK, nil)
+	}
+}
+
+func GetOccurrences(data *gin.Context) {
+	type SearchString struct {
+		SplitString []string `json:"splitString"`
+	}
+
+	var info SearchString
+	data.Bind(&info)
+
+	fmt.Println("STRING 1: ", info.SplitString)
+
+	stringOccurrenceReturn, err := goExamples.GetStringOccurrences(info.SplitString)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err.Error())
+	} else {
+		data.JSON(http.StatusOK, stringOccurrenceReturn)
 	}
 }
