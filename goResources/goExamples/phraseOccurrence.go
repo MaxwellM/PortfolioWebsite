@@ -1,16 +1,6 @@
 package goExamples
 
-import (
-	"fmt"
-	//"strings"
-)
-
 func GetStringOccurrences(searchString []string) (map[string]int, error) {
-
-	fmt.Println("STRING 2: ", searchString)
-
-	// Split string in an array
-	//splitString := strings.Fields(searchString)
 
 	duplicationFrequency := make(map[string]int)
 
