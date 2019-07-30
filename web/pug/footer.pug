@@ -1,18 +1,29 @@
 div#footer
-    div#footerInfo
-        h4 Website built on
-        a(href='https://www.linode.com') Linode
-        h4 with
-        a(href='https://www.golang.org') Golang
-        h4 ,
-        a(href='https://www.javascript.com') JavaScript
-        h4 ,
-        a(href='https://angularjs.org/') AngularJS
-        h4 ,
-        a(href='https://pugjs.org/') Pug(HTML)
-        h4 , and
-        a(href='http://lesscss.org/') Less(CSS)
-    div#footerCopyright
-        h5 Copyright All Rights Reserved © 2019
-    div#footerVisitors
-        h5 Monthly Unique Visitors: {{ visitors.length }}
+    div#footerUpperLeft
+        div#footerInfo
+            h4 Website built on
+            a(href='https://www.linode.com') Linode
+            h4 with
+            a(href='https://www.golang.org') Golang
+            h4 ,
+            a(href='https://www.javascript.com') JavaScript
+            h4 ,
+            a(href='https://angularjs.org/') AngularJS
+            h4 ,
+            a(href='https://pugjs.org/') Pug(HTML)
+            h4 , and
+            a(href='http://lesscss.org/') Less(CSS)
+        div#footerCopyright
+            h5 © Maxwell Ross Morin 2019
+    div#footerUpperRight
+        div#footerSocialLinks
+            a(href='https://www.facebook.com/MaxwellMorin')
+                img(src='../images/facebook.png', alt='')
+            a(href='https://www.linkedin.com/in/maxwell-morin-35159266/')
+                img(src='../images/linkedin.png', alt='')
+            a(href='https://www.youtube.com/channel/UCZcDNatmZ8BpjnJmmiEHQKQ')
+                img(src='../images/youtube.png', alt='')
+            a(href='https://github.com/MaxwellM')
+                img(src='../images/github.png', alt='')
+        div#footerVisitors
+            h5 Monthly Unique Visitors: {{ visitors.length }}
