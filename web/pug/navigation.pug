@@ -48,7 +48,10 @@
                     id='NAVButtonGoExampleFindOccurrences',
                     ng-class='{selected: myCtrl.buttonName == "Phrase Occurrence"}') Phrase Occurrence
         li
-            a(
-            ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";',
-            id='NAVButtonUnityLostInSpaceExample',
-            ng-class='{selected: myCtrl.buttonName == "Unity Lost In Space"}') Unity Lost In Space
+            a Unity Example &#9660;
+            ul.second-level-menu
+                li
+                    a(
+                    ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";',
+                    id='NAVButtonUnityLostInSpaceExample',
+                    ng-class='{selected: myCtrl.buttonName == "Unity Lost In Space"}') Lost In Space
