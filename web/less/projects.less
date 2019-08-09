@@ -102,6 +102,13 @@ div#nioSettingsWrapper {
   }
 }
 
+div#quoteBuilderPic,
+div#nioStabliltyPic,
+div#nioSettingsPic {
+  display: grid;
+  margin-bottom: 10px;
+}
+
 div#nioStabilityWrapper {
   width: 50%;
   //height: 800px;
@@ -116,10 +123,16 @@ div#nioStabilityWrapper {
     //border-radius: 100%;
     border: 3px solid white;
   }
-  & div#nioStabilityLabelWrapper {
-    display: grid;
-    float: right;
+  & label {
+    width: fit-content;
+    width: -moz-fit-content;
+    //margin: auto;
   }
+}
+
+div#quoteBuilderPic {
+  width: fit-content;
+  margin: auto;
 }
 
 div#lostInSpaceWrapper {
