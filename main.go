@@ -1,16 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+
 	"PortfolioWebsite/goResources/contactMe"
 	"PortfolioWebsite/goResources/goExamples"
 	"PortfolioWebsite/goResources/visitorCounter"
 	"PortfolioWebsite/goResources/weatherExample"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
-
 	"PortfolioWebsite/goResources/starWarsCharacterTableEample"
+
 )
 
 func main() {

@@ -66,7 +66,7 @@ func InitCreateMonth() {
 	for {
 		now := time.Now()
 		// We rest the counter once a day, at midnight. Well, midnight for our server which depends on the time zone.
-		next := time.Date(now.Year(), now.Month()+1, now.Day(), 0, 0, 0, 0, now.Location())
+		next := time.Date(now.Year(), now.Month()+1, 1, 3, 0, 0, 0, now.Location())
 
 		sleepDur := next.Sub(now)
 		fmt.Printf("Creating Month in DB in %s on %s\n", sleepDur.String(), next)
@@ -76,19 +76,19 @@ func InitCreateMonth() {
 		if err != nil {
 			fmt.Println("Error creating new month!")
 		} else {
-			fmt.Println(createMonthReturn)
+			fmt.Println("Successfully created month in DB", createMonthReturn)
 		}
 		emptyVisitorsReturn, err := EmptyVisitors()
 		if err != nil {
 			fmt.Println("Error clearing the ips table!", err)
 		} else {
-			fmt.Println(emptyVisitorsReturn)
+			fmt.Println("Successfully emptied visitors in DB", emptyVisitorsReturn)
 		}
 		emptyIPlocationsReturn ,err := EmptyIPLocations()
 		if err != nil {
 			fmt.Println("Error clearing the ip_locations table!", err)
 		} else {
-			fmt.Println(emptyIPlocationsReturn)
+			fmt.Println("Successfully emptied IP Locations in DB", emptyIPlocationsReturn)
 		}
 	}
 }
