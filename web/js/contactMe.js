@@ -53,4 +53,16 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
         return true;
     }
 
+    function myMap() {
+        let mapOptions = {
+            center: new google.maps.LatLng(40.586667, -111.861244),
+            zoom: 10,
+            mapTypeId: google.maps.MapTypeId.HYBRID
+        };
+        let map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    }
+
+    myMap();
+
+
 }]);
