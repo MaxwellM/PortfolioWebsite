@@ -1,0 +1,14 @@
+meta(name='description', content="Golang String Translation")
+meta(name='keywords', content="HTML,CSS,JavaScript,AngularJS,Go")
+meta(name='author', content="Maxwell Morin")
+div#goExampleTranslatePageWrapper
+    div#goExampleTranslateTitle
+        h1 Translate
+            img(src='../images/golang.png', alt='')
+    div#goExampleTranslateInputWrapper
+        h3 Enter a string to translate to French!
+        div#goExampleTranslateInnerWrapper
+            input#goExampleTranslateInput(type='text', ng-model='string')
+            input#goExampleTranslateSubmit(type='button', value='Submit', ng-click='translate(string)')
+    div#goExampleTranslateReturnWrapper
+        label {{ translation }}

@@ -15,6 +15,7 @@ html
         link(rel="stylesheet", href="../css/angularJSExampleChart.css", type="text/css")
         link(rel="stylesheet", href="../css/unityLostInSpace.css", type="text/css")
         link(rel="stylesheet", href="../css/phraseOccurrence.css", type="text/css")
+        link(rel="stylesheet", href="../css/translate.css", type="text/css")
         link(rel='stylesheet', href='../../unityGames/LostInSpaceWebGL/TemplateData/style.css')
         link(rel="stylesheet", href="../css/angular-datepicker.css", type="text/css")
         link(rel="stylesheet", href="../css/c3.css")
@@ -42,6 +43,8 @@ html
                 include unityLostInSpace
             div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-show='myCtrl.buttonName == "String Duplication"')
                 include goExamples/phraseOccurrence
+            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-show='myCtrl.buttonName == "Translate"')
+                include goExamples/translate
             div#footerWrapper(ng-controller='footerCtrl')
                 include footer
     script(src="../js/app.js")
@@ -54,6 +57,7 @@ html
     script(src="../js/angularJSExampleChart.js")
     script(src="../js/unityLostInSpace.js")
     script(src="../js/phraseOccurrence.js")
+    script(src="../js/translate.js")
     script(src="../js/footer.js")
     script(src="../js/node_modules/angularjs-datepicker/src/js/angular-datepicker.js")
     script(src="../js/node_modules/d3/dist/d3.min.js" charset="utf-8")

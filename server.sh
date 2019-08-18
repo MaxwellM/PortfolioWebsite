@@ -9,6 +9,7 @@ export PGPASSWORD=Maxwellmorin1
 export PGPORT=5432
 export PGDATABASE=portfoliowebsite_db
 export PATH=$PATH:/usr/local/go/bin
+export GOOGLE_APPLICATION_CREDENTIALS="googleKey.json"
 
 whoami
 

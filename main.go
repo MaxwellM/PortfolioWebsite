@@ -50,6 +50,7 @@ func main() {
 
 	// Linked to the Go Examples Page!
 	router.GET("/getOccurrences", GetOccurrences)
+	router.GET("/translate", Translate)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
@@ -294,5 +295,23 @@ func GetOccurrences(data *gin.Context) {
 		data.JSON(http.StatusBadRequest, err.Error())
 	} else {
 		data.JSON(http.StatusOK, stringOccurrenceReturn)
+	}
+}
+
+func Translate(data *gin.Context) {
+	type TranslateString struct {
+		SplitString string `json:"splitString"`
+	}
+
+	var info TranslateString
+	data.Bind(&info)
+
+	fmt.Println("String Before: ", info.SplitString)
+
+	translationReturn, err := goExamples.TranslateString(info.SplitString)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err.Error())
+	} else {
+		data.JSON(http.StatusOK, translationReturn)
 	}
 }
