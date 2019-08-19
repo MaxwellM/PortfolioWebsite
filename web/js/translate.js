@@ -1,6 +1,6 @@
 var ngModule = angular.module('app');
 
-ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
+ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter', '$sanitize', function ($scope, $http, $q, $filter, $sanitize) {
 
     $scope.translate = translate;
     $scope.translation = "";
@@ -12,7 +12,7 @@ ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter'
         $http.get("/translate", {params:{SplitString}}).then(function (res) {
             let results;
             results = res.data;
-            $scope.translation = JSON.stringify(results, null, 2);
+            $scope.translation = results;
 
         }, function(error) {
             alert(error.data);

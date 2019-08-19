@@ -1,6 +1,7 @@
 meta(name='description', content="Golang String Translation")
 meta(name='keywords', content="HTML,CSS,JavaScript,AngularJS,Go")
 meta(name='author', content="Maxwell Morin")
+meta(charset="UTF-8")
 div#goExampleTranslatePageWrapper
     div#goExampleTranslateTitle
         h1 Translate
@@ -11,4 +12,5 @@ div#goExampleTranslatePageWrapper
             input#goExampleTranslateInput(type='text', ng-model='string')
             input#goExampleTranslateSubmit(type='button', value='Submit', ng-click='translate(string)')
     div#goExampleTranslateReturnWrapper
-        label {{ translation }}
+        label Conversion:
+        label(ng-bind-html="translation")
