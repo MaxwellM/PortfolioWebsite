@@ -9,9 +9,10 @@ import (
 	"golang.org/x/text/language"
 )
 
-func TranslateString (stringToTranslate string) (string, error) {
+func TranslateString (stringToTranslate, lang string) (string, error) {
 
 	fmt.Println("String After: ", stringToTranslate)
+	fmt.Println("Lang After: ", lang)
 
 	ctx := context.Background()
 
@@ -24,7 +25,7 @@ func TranslateString (stringToTranslate string) (string, error) {
 	// Sets the text to translate.
 	text := stringToTranslate
 	// Sets the target language.
-	target, err := language.Parse("fr")
+	target, err := language.Parse(lang)
 	if err != nil {
 		log.Fatalf("Failed to parse target language: %v", err)
 	}

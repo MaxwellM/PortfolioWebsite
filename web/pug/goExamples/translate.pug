@@ -9,8 +9,9 @@ div#goExampleTranslatePageWrapper
     div#goExampleTranslateInputWrapper
         h3 Enter a string to translate to French!
         div#goExampleTranslateInnerWrapper
-            input#goExampleTranslateInput(type='text', ng-model='string')
-            input#goExampleTranslateSubmit(type='button', value='Submit', ng-click='translate(string)')
+            form(ng-submit='translate(string, lg)')
+                input#goExampleTranslateInput(type='text', ng-model='string')
+                select#goExampleTranslateSelect(ng-model='lg', ng-options='lang.code as lang.Name for lang in languages')
     div#goExampleTranslateReturnWrapper
         label Translation:
         label(ng-bind-html="translation")

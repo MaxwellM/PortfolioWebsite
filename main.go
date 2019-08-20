@@ -9,10 +9,9 @@ import (
 
 	"PortfolioWebsite/goResources/contactMe"
 	"PortfolioWebsite/goResources/goExamples"
+	"PortfolioWebsite/goResources/starWarsCharacterTableEample"
 	"PortfolioWebsite/goResources/visitorCounter"
 	"PortfolioWebsite/goResources/weatherExample"
-	"PortfolioWebsite/goResources/starWarsCharacterTableEample"
-
 )
 
 func main() {
@@ -301,14 +300,16 @@ func GetOccurrences(data *gin.Context) {
 func Translate(data *gin.Context) {
 	type TranslateString struct {
 		SplitString string `json:"splitString"`
+		Lang         string `json:"lng"`
 	}
 
 	var info TranslateString
 	data.Bind(&info)
 
 	fmt.Println("String Before: ", info.SplitString)
+	fmt.Println("Lang Before: ", info.Lang)
 
-	translationReturn, err := goExamples.TranslateString(info.SplitString)
+	translationReturn, err := goExamples.TranslateString(info.SplitString, info.Lang)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
 	} else {
