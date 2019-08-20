@@ -7,11 +7,11 @@ div#goExampleTranslatePageWrapper
         h1 Translate
             img(src='../images/golang.png', alt='')
     div#goExampleTranslateInputWrapper
-        h3 Enter a string to translate to French!
+        h3 Enter a string and choose a language to translate!
         div#goExampleTranslateInnerWrapper
-            form(ng-submit='translate(string, lg)')
+            form(ng-submit='translate()')
                 input#goExampleTranslateInput(type='text', ng-model='string')
-                select#goExampleTranslateSelect(ng-model='lg', ng-options='lang.code as lang.Name for lang in languages')
+                select#goExampleTranslateSelect(ng-model='lngSelected', ng-options='lang for lang in languages')
     div#goExampleTranslateReturnWrapper
         label Translation:
         label(ng-bind-html="translation")
