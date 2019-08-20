@@ -12,6 +12,7 @@ ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter'
         // Splitting string
         let SplitString = $scope.string;
         let Lang = getLanguageCode($scope.lngSelected);
+        $scope.translation = "";
 
         $http.get("/translate", {params:{SplitString, Lang}}).then(function (res) {
             let results;
@@ -20,6 +21,7 @@ ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter'
 
         }, function(error) {
             alert(error.data);
+            $scope.translation = "";
         });
     }
 
