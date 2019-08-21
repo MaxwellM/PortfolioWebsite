@@ -22,41 +22,36 @@
             id='NAVButtonProjects',
             ng-class='{selected: myCtrl.buttonName == "Projects"}') Projects
         li
-            a AngularJS Examples &#9660;
+            a Programming Examples &#9660;
             ul.second-level-menu
                 li
                     a(
                     ng-click='log(button);myCtrl.buttonName = "Table Example";',
                     id='NAVButtonAngularJSTableExample',
-                    ng-class='{selected: myCtrl.buttonName == "Table Example"}') Table Example
+                    ng-class='{selected: myCtrl.buttonName == "Table Example"}') Table
                 li
                     a(
                     ng-click='log(button);myCtrl.buttonName = "Display Example";',
                     id='NAVButtonAngularJSDisplayExample',
-                    ng-class='{selected: myCtrl.buttonName == "Display Example"}') Display Example
+                    ng-class='{selected: myCtrl.buttonName == "Display Example"}') Display
                 li
                     a(
                     ng-click='log(button);myCtrl.buttonName = "Chart Example";',
                     id='NAVButtonAngularJSChartExample',
-                    ng-class='{selected: myCtrl.buttonName == "Chart Example"}') Chart Example
-        li
-            a Golang Examples &#9660;
-            ul.second-level-menu
+                    ng-class='{selected: myCtrl.buttonName == "Chart Example"}') Chart
                 li
                     a(
-                    ng-click='log(button);myCtrl.buttonName = "String Duplication";',
-                    id='NAVButtonGoExampleFindOccurrences',
-                    ng-class='{selected: myCtrl.buttonName == "String Duplication"}') String Duplication
+                        ng-click='log(button);myCtrl.buttonName = "String Duplication";',
+                        id='NAVButtonGoExampleFindOccurrences',
+                        ng-class='{selected: myCtrl.buttonName == "String Duplication"}') String Duplication
                 li
                     a(
-                    ng-click='log(button);myCtrl.buttonName = "Translate";',
-                    id='NAVButtonGoExampleTranslate',
-                    ng-class='{selected: myCtrl.buttonName == "Translate"}') Translate
-        li
-            a Unity Example &#9660;
-            ul.second-level-menu
-                li
-                    a(
-                    ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";',
-                    id='NAVButtonUnityLostInSpaceExample',
-                    ng-class='{selected: myCtrl.buttonName == "Unity Lost In Space"}') Lost In Space
+                        ng-click='log(button);myCtrl.buttonName = "Translate";',
+                        id='NAVButtonGoExampleTranslate',
+                        ng-class='{selected: myCtrl.buttonName == "Translate"}') Translate
+                ul.second-level-menu
+                    li
+                        a(
+                            ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";',
+                            id='NAVButtonUnityLostInSpaceExample',
+                            ng-class='{selected: myCtrl.buttonName == "Unity Lost In Space"}') Lost In Space
