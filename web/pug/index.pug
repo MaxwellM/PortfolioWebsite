@@ -47,7 +47,7 @@ html
                 include goExamples/phraseOccurrence
             div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-show='myCtrl.buttonName == "Translate"')
                 include goExamples/translate
-            div#footerWrapper(ng-controller='footerCtrl')
+            div#footerWrapper(ng-controller='footerCtrl', ng-cloak)
                 include footer
     script(src="../js/app.js")
     script(src="../js/mainePage.js")
