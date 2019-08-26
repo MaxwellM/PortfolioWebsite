@@ -9,12 +9,13 @@ div#contactMeInsideWrapper
         div#contactMeWrapper
             div#contactMeTitle
                 h3 Contact Me
+                label Have a question or want to work together?
             div#contactMeTop
-                input(ng-model='name')
-                input(ng-model='email')
+                input(ng-model='name', placeholder='Name')
+                input(ng-model='email', placeholder='Email Address')
             div#contactMeMiddle
-                input(ng-model='phone')
+                input(ng-model='phone', placeholder='Phone Number')
             div#contactMeBottom
-                input(ng-model='message')
+                input(ng-model='message', placeholder='Message')
             div#contactMeButton
                 button#contactMeSubmitButton(ng-click='sendMessage(name, email, phone, message)') Send Email
