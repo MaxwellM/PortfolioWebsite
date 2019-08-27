@@ -16,6 +16,6 @@ div#contactMeInsideWrapper
             div#contactMeMiddle
                 input(ng-model='phone', placeholder='Phone Number')
             div#contactMeBottom
-                input(ng-model='message', placeholder='Message')
+                textarea(ng-model='message', placeholder='Message')
             div#contactMeButton
                 button#contactMeSubmitButton(ng-click='sendMessage(name, email, phone, message)') Send Email
