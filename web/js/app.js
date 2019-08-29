@@ -1,4 +1,4 @@
-var ngModule = angular.module('app', ['720kb.datepicker', 'ngSanitize']);
+var ngModule = angular.module('app', ['720kb.datepicker', 'ngSanitize', 'ngtweet']);
 
 ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
     $scope.launchLostInSpace = launchLostInSpace;

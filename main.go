@@ -50,6 +50,8 @@ func main() {
 	// Linked to the Go Examples Page!
 	router.GET("/getOccurrences", GetOccurrences)
 	router.GET("/translate", Translate)
+	router.POST("/postTweet", PostTweet)
+	//router.POST("/postTweet", PostTweet)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
@@ -299,7 +301,7 @@ func GetOccurrences(data *gin.Context) {
 
 func Translate(data *gin.Context) {
 	type TranslateString struct {
-		SplitString string `json:"splitString"`
+		SplitString  string `json:"splitString"`
 		Lang         string `json:"lng"`
 	}
 
@@ -314,5 +316,23 @@ func Translate(data *gin.Context) {
 		data.JSON(http.StatusBadRequest, err.Error())
 	} else {
 		data.JSON(http.StatusOK, translationReturn)
+	}
+}
+
+func PostTweet(data *gin.Context) {
+	type Tweet struct {
+		Tweet string `json:"tweet"`
+	}
+
+	var info Tweet
+	data.Bind(&info)
+
+	fmt.Println("INFO: ", info.Tweet)
+
+	SubmitTweet, err := goExamples.SubmitTweet(info.Tweet)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err.Error())
+	} else {
+		data.JSON(http.StatusOK, SubmitTweet)
 	}
 }
