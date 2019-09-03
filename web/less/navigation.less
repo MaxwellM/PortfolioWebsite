@@ -45,7 +45,7 @@ div#nav_bar {
 .second-level-menu
 {
   position: absolute;
-  top: 48px;
+  top: 44px;
   left: 0;
   width: max-content;
   list-style: none;
@@ -95,6 +95,7 @@ div#nav_bar {
 {
   font-family: Montserrat,helvetica neue,Helvetica,Arial,sans-serif;
   font-weight: 700;
+  text-transform: uppercase;
   //font-family: "Open Sans", Helvetica, Arial, sans-serif;
   //font-size: 18px;
   //color: #F7F5E6;
@@ -107,8 +108,13 @@ div#nav_bar {
   /* Make the link cover the entire list item-container */
   display: block;
   //line-height: 50px;
-  padding: 15px 14px 15px 16px;
+  //padding: 15px 14px 15px 16px;
 }
+
+a#NAVButtonMaxwellMorin {
+  padding: 13px 14px 13px 16px;
+}
+
 .top-level-menu a:hover {
   color:#52658F;
   //background-color: #F7F5E6;
@@ -121,4 +127,8 @@ ul.second-level-menu a {
 
 ul.top-level-menu:nth-child(2) {
   float: right;
+  font-size: .75rem;
+  & a {
+    padding: 15px 14px 15px 16px;
+  }
 }
