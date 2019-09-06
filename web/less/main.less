@@ -1,8 +1,5 @@
 body {
   background-color: #ffffff;
-  /* min-height: 100%; */
-  /* margin: 0 auto; */
-  /* width: fit-content; */
   height: 100vh;
   width: 100vh;
   margin: 0px;
@@ -11,17 +8,8 @@ body {
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-    ng-cloak {
    display: none !important;
  }
-//div#MainWrapper {
-//  position:fixed;
-//  top:0;
-//  bottom:0;
-//  left:0;
-//  right:0;
-//}
 
 div#MainWrapper {
-  //height: calc(100% - 100px);
-  //height: calc(100% - 50px);
   height: 100%;
   width: 100%;
 }
@@ -36,35 +24,24 @@ div#InsiteMainPageWrapper {
   padding-bottom: 2rem;
   text-align: center;
   width: 100%;
-  //position: absolute;
-  //top: 30%;
-  //left: 20%;
-  //z-index: 1;
-  //display: flex;
 }
 
 div#MEWrapper {
-  //width: 200px;
   width: 110px;
   height: 110px;
   margin: auto;
   border-radius: 100%;
   border: 2px solid rgba(0, 0, 0, 0.125);
   & img#ME {
-    //background: url(../images/me.jpg) no-repeat;
-    //background-size: cover;
     height: 100px;
     width: 100px;
     z-index: 1;
     border-radius: 100%;
     border: 5px solid white;
-    //position: absolute;
   }
 }
 
 div#AboutMeWrapper {
-  //margin-left: 20px;
-  //color: white;
   & h1 {
     font-weight: 700;
     line-height: 1.25;
@@ -86,22 +63,7 @@ div#AboutMeWrapper {
 
 div#mainPage {
   width: 100%;
-  //display: grid;
-  //height: 100%;
   height: calc(100% - 100px);
-  //margin-left: -1rem;
-  //margin-right: -1rem;
-  //background-color: blue;
-  //background-color: #f5f8fa;
-  //& img#mainPageBackground {
-  //  height: 100%;
-  //  width: 100%;
-  //  background: url(../images/desk3.jpg) no-repeat;
-  //  background-size: cover;
-  //  filter: blur(5px);
-  //  z-index: -1;
-  //  position: absolute;
-  //}
 }
 
 div#AboutMeDetails {
@@ -137,10 +99,7 @@ div#AboutMeContacts {
   }
   & a {
     font-size: 1rem;
-    //margin-top: .5rem;
     margin-bottom: 1rem;
-    //margin-left: 5px;
-    //margin-bottom: 1rem;
     color: #111;
     display: inline;
     vertical-align: super;
@@ -176,22 +135,3 @@ div#MEBorder {
   border-radius: 100%;
   border: 2px solid rgba(0, 0, 0, 0.125);
 }
-
-/* 2688x1242px at 458ppi */
-//@media only screen
-//and (device-width : 414px)
-//and (device-height : 896px)
-//and (-webkit-device-pixel-ratio : 3) {
-//  div#AboutMeBottomWrapper{
-//    width: 100%;
-//    max-width: fit-content;
-//    background-color: #7BC6FC;
-//  }
-//}
-
-//@media (max-width: 600px) {
-//  div#AboutMeBottomWrapper{
-//    width: 100%;
-//    max-width: fit-content;
-//  }
-//}
