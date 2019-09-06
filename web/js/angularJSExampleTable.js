@@ -87,6 +87,8 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
             console.log("CHARACTER RESULTS: ", results);
 
             $scope.allCharacters = results;
+            // Pre-selects a character.
+            $scope.selectedCharacter = results;
 
             // $scope.allCharacters.forEach(function (res) {
             //     res.born = Date.parse(res.born);
