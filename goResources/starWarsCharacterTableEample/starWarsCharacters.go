@@ -71,7 +71,9 @@ func AddCharacter(name string, homeworld string, born string, died string, gende
 	return lastInsertId, nil
 }
 
-func LoadAllStarWarsCharacters() ([]*CharacterResult, error) {
+func LoadAllStarWarsCharacters(Name, Species string) ([]*CharacterResult, error) {
+	fmt.Println("NAME: ", Name)
+	fmt.Println("Species: ", Species)
 	rows, err := db.ConnPool.Query(
 		`SELECT 
 				id, 
@@ -86,7 +88,10 @@ func LoadAllStarWarsCharacters() ([]*CharacterResult, error) {
 				masters, 
 				apprentices 
 			FROM 
-				star_wars_characters`)
+				star_wars_characters
+			WHERE (name = $1 OR $1 = '') 
+			AND   (species = $2 OR $2 = '')`,
+		Name, Species)
 
 	if err != nil {
 		fmt.Println("There was an error reading the star_wars_characters table from the database:", err)

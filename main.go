@@ -171,7 +171,10 @@ func UpdateCharacter(data *gin.Context) {
 }
 
 func LoadAngularJSExampleTableResults(data *gin.Context) {
-	starWarsCharactersReturn, err := starWarsCharacterTableEample.LoadAllStarWarsCharacters()
+	Name := data.DefaultQuery("Name", "")
+	Species := data.DefaultQuery("Species", "")
+
+	starWarsCharactersReturn, err := starWarsCharacterTableEample.LoadAllStarWarsCharacters(Name, Species)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
 		fmt.Println("Error obtaining all Star Wars Characters", err)

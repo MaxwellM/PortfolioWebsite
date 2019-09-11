@@ -13,8 +13,6 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.searchName = "";
     $scope.searchSpecies = "";
-    $scope.searchBorn = "";
-    $scope.searchDied = "";
     $scope.allCharacters = [];
     $scope.selectedCharacter = [];
 
@@ -76,12 +74,10 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     }
 
     function refreshAngularJSExampleTableResults() {
-        let name = $scope.searchName;
-        let species = $scope.searchSpecies;
-        let born = $scope.searchBorn;
-        let died = $scope.searchDied;
+        let Name = $scope.searchName;
+        let Species = $scope.searchSpecies;
 
-        $http.get("/loadAngularJSExampleTableResults", {params: {name, species, born, died}}).then(function (res) {
+        $http.get("/loadAngularJSExampleTableResults", {params: {Name, Species}}).then(function (res) {
             let results = res.data;
 
             console.log("CHARACTER RESULTS: ", results);

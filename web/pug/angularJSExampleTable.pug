@@ -7,14 +7,11 @@ div#angularJSExampleTableWrapper
             div#angularJSExampleTableSidebarFilterLabels
                 label Name
                 label Species
-                label Born
-                label Died
             div#angularJSExampleTableSidebarInputs
-                input(type='text', ng-model='name')
-                input(type='text', ng-model='species')
-                input(type='number', ng-model='searchBorn')
-                input(type='number', ng-model='searchDied')
-                input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
+                form(ng-submit='refreshAngularJSExampleTableResults()')
+                    input(type='text', ng-model='searchName')
+                    input(type='text', ng-model='searchSpecies')
+                    input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
         div#angularJSExampleTableSidebarTableTitleWrapper
             h1 Character Selection
         div#angularJSExampleTableSidebarTableWrapper
