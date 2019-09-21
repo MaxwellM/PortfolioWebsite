@@ -8,6 +8,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     $scope.visitors = [];
     $scope.monthlyVisitors = [];
     $scope.currentMonthTotal = undefined;
+    $scope.currentPageMonthTotal = undefined;
     $scope.currentMonthName = "";
     $scope.chartData = [];
     $scope.currentMonth = "";
@@ -140,6 +141,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             for (const[index,item] of $scope.monthlyVisitors.entries()) {
                 if (item.month === currentMonth) {
                     $scope.currentMonthTotal = item.count;
+                    $scope.currentPageMonthTotal = item.pageCount;
                 }
             }
             //$scope.currentMonthTotal = 0;

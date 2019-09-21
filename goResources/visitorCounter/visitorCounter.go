@@ -16,9 +16,10 @@ type IpResult struct {
 }
 
 type VisitorResult struct {
-	Id    int    `json:"id"`
-	Month string `json:"month"`
-	Count int    `json:"count"`
+	Id        int    `json:"id"`
+	Month     string `json:"month"`
+	Count     int    `json:"count"`
+	PageCount int    `json:"pageCount"`
 }
 
 type VisitorLocationResult struct {
@@ -149,12 +150,13 @@ func CreateMonth() (string, error) {
 				monthly_visitors(
 					month,
 					count,
-					year) 
+					year,
+					page_count) 
 			VALUES(
-				$1, $2, $3) 
+				$1, $2, $3, $4) 
 			RETURNING 
 				id`,
-			m.String(), 0, y).Scan(&lastInsertId)
+			m.String(), 0, y, 0).Scan(&lastInsertId)
 		if err != nil {
 			fmt.Println("Error saving new month to database: ", err)
 			return "", err
@@ -168,6 +170,26 @@ func CreateMonth() (string, error) {
 	}
 }
 
+func IncrementMonthlyPageCount() (string, error) {
+	current := time.Now().UTC()
+	_, m, _ := current.Date()
+	message, err := db.ConnPool.Exec(
+		`UPDATE 
+				monthly_visitors
+			SET
+				page_count = page_count + 1
+			WHERE 
+				month = $1`,
+		m.String())
+	if err != nil {
+		fmt.Println("There was an error updating the monthly visitors table in the database 1:", err)
+		return "", err
+	} else {
+		fmt.Println("Success in updating the page_count!", message, m.String())
+		return "SUCCESS!", nil
+	}
+}
+
 func IncrementMonthlyVisitors() (string, error) {
 	current := time.Now().UTC()
 	_, m, _ := current.Date()
@@ -175,7 +197,7 @@ func IncrementMonthlyVisitors() (string, error) {
 		`UPDATE 
 				monthly_visitors
 			SET 
-				count = count + 1 
+				count = count + 1, page_count = page_count + 1
 			WHERE 
 				month = $1`,
 		m.String())
@@ -234,8 +256,15 @@ func CheckIfIPExists(ip string) (string, error) {
 		if err != nil {
 			fmt.Println("Error updating the IP Location to DB", updateIPLocation)
 		}
+	} else if !unique {
+		// Not unique, but we want to increment page_count!
+		fmt.Println("IP NOT UNIQUE!")
+		pageCountReturn, err := IncrementMonthlyPageCount()
+		if err != nil {
+			fmt.Println("Error inserting IP into DB", pageCountReturn)
+			return pageCountReturn, err
+		}
 	}
-	fmt.Println("IP NOT UNIQUE!")
 	return "Not Unique", nil
 }
 
@@ -274,7 +303,8 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 		`SELECT
 				id,
 				month,
-				count
+				count,
+				page_count
 			FROM
 				monthly_visitors`)
 
@@ -294,7 +324,8 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 		err = rows.Scan(
 			&res.Id,
 			&res.Month,
-			&res.Count)
+			&res.Count,
+			&res.PageCount)
 
 		if err != nil {
 			fmt.Println("There was an error querying that database for the Monthly Visitors Results:", err)
