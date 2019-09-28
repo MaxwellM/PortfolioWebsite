@@ -1,0 +1,13 @@
+div#resumeWrapper {
+  height: 100%;
+  width: 8.5in;
+  margin: auto;
+  font-family: open sans, sans-serif;
+}
+div#resumeWrapper embed {
+  width: 8.5in;
+  height: 100%;
+}
+div#resumePage {
+  height: calc(100% - 100px);
+}

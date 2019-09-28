@@ -1,0 +1,1 @@
+INSERT INTO public.monthly_visitors (id, month, count, year) VALUES (1, 'February', 8, 2019);
