@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+const (
+	JSON_FILE_DIR = "./src/go/weatherExample/weatherReport/"
+)
+
 var requestCount = 0
 
 func CountRequest() bool {
@@ -28,7 +32,7 @@ func resetRequestCount() {
 }
 
 func ReadLocalCurrentConditions() (map[string]interface{}, error) {
-	b, err := ioutil.ReadFile("goResources/weatherExample/weatherReport/currentConditions.json") // just pass the file name
+	b, err := ioutil.ReadFile(JSON_FILE_DIR + "currentConditions.json") // just pass the file name
 	if err != nil {
 		fmt.Print(err)
 		return nil, err
@@ -44,7 +48,7 @@ func ReadLocalCurrentConditions() (map[string]interface{}, error) {
 }
 
 func ReadLocalWeatherReport() (map[string]interface{}, error) {
-	b, err := ioutil.ReadFile("goResources/weatherExample/weatherReport/weather.json") // just pass the file name
+	b, err := ioutil.ReadFile(JSON_FILE_DIR + "weather.json") // just pass the file name
 	if err != nil {
 		fmt.Print(err)
 		return nil, err
@@ -70,7 +74,7 @@ func UpdateCurrentConditions(location string) (map[string]interface{}, error) {
 		fmt.Println("Error writing weather to file", err)
 		return nil, err
 	}
-	currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
+	currentConditionsReturnJSONReturn := ioutil.WriteFile(JSON_FILE_DIR+"currentConditions.json", currentConditionsReturnJSON, 0644)
 	fmt.Println(currentConditionsReturnJSONReturn)
 	// Now we return our weather report back to the frontend
 	allWeather := map[string]interface{}{
@@ -91,7 +95,7 @@ func UpdateForecast(location string) (map[string]interface{}, error) {
 		fmt.Println("Error writing weather to file", err)
 		return nil, err
 	}
-	weatherReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/weather.json", weatherReturnJSON, 0644)
+	weatherReturnJSONReturn := ioutil.WriteFile(JSON_FILE_DIR+"weather.json", weatherReturnJSON, 0644)
 	fmt.Println(weatherReturnJSONReturn)
 	// Now we return our weather report back to the frontend
 	allWeather := map[string]interface{}{
@@ -115,7 +119,7 @@ func UpdateAllWeather(location string) (map[string]interface{}, error) {
 		fmt.Println("Error writing weather to file", err)
 		return nil, err
 	}
-	weatherReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/weather.json", weatherReturnJSON, 0644)
+	weatherReturnJSONReturn := ioutil.WriteFile(JSON_FILE_DIR+"weather.json", weatherReturnJSON, 0644)
 	fmt.Println(weatherReturnJSONReturn)
 
 	currentConditionsReturn, err := GetCurrentConditions(location)
@@ -124,7 +128,7 @@ func UpdateAllWeather(location string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	currentConditionsReturnJSON, err := json.Marshal(currentConditionsReturn)
-	currentConditionsReturnJSONReturn := ioutil.WriteFile("goResources/weatherExample/weatherReport/currentConditions.json", currentConditionsReturnJSON, 0644)
+	currentConditionsReturnJSONReturn := ioutil.WriteFile(JSON_FILE_DIR+"currentConditions.json", currentConditionsReturnJSON, 0644)
 	fmt.Println(currentConditionsReturnJSONReturn)
 
 	// Now we return our weather report back to the frontend
