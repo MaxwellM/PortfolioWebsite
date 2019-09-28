@@ -24,7 +24,6 @@ This website shows all of the projects I've created and to be an example of the 
 ---
 ### How To Build
 ```
-# code block
 cd src
 ./create_website_pages.py
 ./database_utils.py -c
