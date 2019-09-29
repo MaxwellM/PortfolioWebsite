@@ -16,15 +16,16 @@ import (
 type DatabaseInfo struct {
 	DatabaseName string `json:"databaseName"`
 	Username     string `json:"username"`
+	Password     string `json:"password"`
 	Port         string `json:"port"`
 }
 
 // createConnectionUrl creates a postgres url that can be used to access a database
 func (databaseInfo DatabaseInfo) createConnectionUrl() string {
-	return fmt.Sprintf("postgres://%s@localhost:%s/%s", databaseInfo.Username, databaseInfo.Port, databaseInfo.DatabaseName)
+	return fmt.Sprintf("postgres://%s:%s@localhost:%s/%s", databaseInfo.Username, databaseInfo.Password, databaseInfo.Port, databaseInfo.DatabaseName)
 }
 
-const SYSTEMFILE = "./system.json"
+const SYSTEMFILE = "./database_settings.json"
 
 var ConnPool *pgxpool.Pool
 

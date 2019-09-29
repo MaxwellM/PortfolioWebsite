@@ -1,5 +1,6 @@
 {
     "databaseName": "portfoliowebsite_db",
     "port": "5432",
-    "username": "postgres"
+    "username": "tim",
+    "password": "postgres"
 }
