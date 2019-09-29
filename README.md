@@ -28,6 +28,8 @@ cd src
 ./create_website_pages.py
 ./database_utils.py -c
 ./runServer.py -b
+cd ..
+./runServer OR ./runServer release
 ```
 DONE! Type localhost:8080 into the browser to view
 
