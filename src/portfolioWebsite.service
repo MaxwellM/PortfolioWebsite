@@ -9,8 +9,8 @@ Type=simple
 RemainAfterExit=true
 #Restart=on-failure
 
-WorkingDirectory=/root/src/PortfolioWebsite
-ExecStart=/root/src/PortfolioWebsite/runServer release
+WorkingDirectory=/root/go/src/PortfolioWebsite
+ExecStart=/root/go/src/PortfolioWebsite/runServer release
 Environment="HOME=/root
 
 [Install]
