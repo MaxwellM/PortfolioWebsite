@@ -1,0 +1,17 @@
+[Unit]
+User=root
+Description=Portfolio Website Service
+After=network.target postgres.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+RemainAfterExit=true
+#Restart=on-failure
+
+WorkingDirectory=/root/src/PortfolioWebsite
+ExecStart=/root/src/PortfolioWebsite/runServer release
+Environment="HOME=/root
+
+[Install]
+WantedBy=multi-user.target
