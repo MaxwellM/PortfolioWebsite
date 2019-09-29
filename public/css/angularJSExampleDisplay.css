@@ -1,0 +1,144 @@
+div#angularJSExampleDisplayPage {
+  height: calc(100% - 100px);
+}
+div#angularJSExampleDisplayInnerPageWrapper {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: #f5f8fa;
+}
+div#angularJSExampleDisplay {
+  display: inline-block;
+}
+div#angularJSExampleDisplay label {
+  display: grid;
+}
+div#angularJSExampleDisplayCurrentConditionsWrapper {
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  margin-top: 15px;
+}
+div#angularJSExampleDisplayTitle h1,
+div#angularJSExampleDisplayLocation h1 {
+  color: #282e44;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: center;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  border-bottom: solid;
+  border-color: #282E43;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+}
+div#angularJSExampleDisplayTitle h2,
+div#angularJSExampleDisplayLocation h2 {
+  color: #282e44;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: center;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  width: -moz-fit-content;
+  margin: auto;
+}
+div#angularJSExampleDisplayTitle img,
+div#angularJSExampleDisplayLocation img {
+  width: 50px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+div#angularJSExampleDisplayLocation {
+  margin-bottom: 25px;
+}
+div#angularJSExampleDisplayInputWrapper {
+  display: flex;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+}
+div#angularJSExampleDisplayWrapper {
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: -moz-right;
+  text-align: -webkit-right;
+  text-align: right;
+}
+div#angularJSExampleDisplayCurrentConditions {
+  padding-top: 10px;
+  display: grid;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+}
+div#angularJSExampleDisplayCurrentConditions img {
+  margin: auto;
+}
+div#angularJSExampleDisplayCurrentConditions label {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  color: #282e44;
+  font-size: 18px;
+  text-transform: capitalize;
+  width: max-content;
+  margin: auto;
+}
+div#angularJSExampleDisplayCurrentConditions h3 {
+  color: #282e44;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: center;
+  width: -moz-fit-content;
+  margin: auto;
+}
+div#angularJSExampleDisplayWeatherLabelWrapper {
+  display: grid;
+  text-align: right;
+  float: left;
+  border-right: solid;
+  border-right-width: 2px;
+  padding-top: 10px;
+  padding-bottom: 45px;
+  padding-right: 5px;
+}
+div#angularJSExampleDisplayWeatherLabelWrapper label {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  color: #282e44;
+  font-size: 18px;
+  text-transform: capitalize;
+  width: max-content;
+}
+div#angularJSExampleDisplayWeatherLabelWrapper label:nth-child(5) {
+  margin-top: 10px;
+}
+div#angularJSExampleDisplayWeatherLabelWrapper label:nth-child(6) {
+  margin-top: 45px;
+}
+div#angularJSExampleDisplayWeatherDataWrapper {
+  float: left;
+  display: grid;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin-top: 10px;
+}
+div#angularJSExampleDisplayWeatherDataWrapper label {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  color: #282e44;
+  font-size: 18px;
+  text-transform: capitalize;
+  margin-left: 10px;
+  width: max-content;
+}
+div#angularJSExampleDisplay {
+  padding-right: 10px;
+  padding-left: 10px;
+  background-color: rgba(0, 0, 0, 0.125);
+  border-radius: 10px;
+  margin-right: 10px;
+}

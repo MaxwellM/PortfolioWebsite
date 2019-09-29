@@ -1,0 +1,84 @@
+doctype html
+html
+    meta(name='description', content="Maxwell Morin's portfolio website")
+    meta(name='keywords', content="HTML,CSS,JavaScript,AngularJS,Go,PostgreSQL")
+    meta(name='author', content="Maxwell Morin")
+    //meta(name='viewport' content='width=device-width, "initial-scale=1.0')
+    head
+        link(rel="stylesheet", href="./css/main.css", type="text/css")
+        link(rel="stylesheet", href="./css/projects.css", type="text/css")
+        link(rel="stylesheet", href="./css/footer.css", type="text/css")
+        link(rel="stylesheet", href="./css/navigation.css", type="text/css")
+        link(rel="stylesheet", href="./css/contactMe.css", type="text/css")
+        link(rel="stylesheet", href="./css/resume.css", type="text/css")
+        link(rel="stylesheet", href="./css/angularJSExampleTable.css", type="text/css")
+        link(rel="stylesheet", href="./css/angularJSExampleDisplay.css", type="text/css")
+        link(rel="stylesheet", href="./css/angularJSExampleChart.css", type="text/css")
+        link(rel="stylesheet", href="./css/unityLostInSpace.css", type="text/css")
+        link(rel="stylesheet", href="./css/phraseOccurrence.css", type="text/css")
+        link(rel="stylesheet", href="./css/translate.css", type="text/css")
+        link(rel="stylesheet", href="./unityGames/LostInSpaceWebGL/TemplateData/style.css")
+        link(rel="stylesheet", href="./css/twitter.css", type="text/css")
+        link(rel="stylesheet", href="./css/angular-datepicker.css", type="text/css")
+        link(rel="stylesheet", href="./js/node_modules/angular-tooltips/dist/angular-tooltips.css", type="text/css")
+        link(rel="stylesheet", href="./css/c3.css")
+        link(rel="shortcut icon", href="./images/favicon.png", type="image/png")
+        script(src="./js/node_modules/angular/angular.js")
+    body(ng-app='app', ng-controller='myCtrl')
+        div#MainWrapper
+            div#nav_bar
+                include includes/navigation
+            div#mainPage(ng-controller='mainPageCtrl', ng-show='myCtrl.buttonName == "Maxwell Morin"')
+                include includes/main
+            div#projectPage(ng-controller='projectCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Projects"')
+                include includes/projectPage
+            div#resumePage(ng-controller='resumeCtrl', ng-cloak ,ng-show='myCtrl.buttonName == "Resume"')
+                include includes/resume
+            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Contact Me"')
+                include includes/contactMePage
+            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Table Example"')
+                include includes/angularJSExampleTable
+            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Display Example"')
+                include includes/angularJSExampleDisplay
+            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Chart Example"')
+                include includes/angularJSExampleChart
+            div#untyGameLostInSpacePage(ng-cloak, ng-show='myCtrl.buttonName == "Unity Lost In Space"')
+                include includes/unityLostInSpace
+            div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-show='myCtrl.buttonName == "String Duplication"')
+                include includes/phraseOccurrence
+            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-show='myCtrl.buttonName == "Translate"')
+                include includes/translate
+            div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-clock, ng-show='myCtrl.buttonName == "Twitter"')
+                include includes/twitter
+            div#footerWrapper(ng-controller='footerCtrl', ng-cloak)
+                include includes/footer
+    script(src="./js/node_modules/angular-sanitize/angular-sanitize.js")
+    script(src="./js/node_modules/angular-tooltips/dist/angular-tooltips.min.js")
+    script(src="./js/node_modules/ngtweet/dist/ngtweet.js")
+    script(src="./js/app.js")
+    script(src="./js/mainePage.js")
+    script(src="./js/contactMe.js")
+    script(src="./js/project.js")
+    script(src="./js/resume.js")
+    script(src="./js/angularJSExampleTable.js")
+    script(src="./js/angularJSExampleDisplay.js")
+    script(src="./js/angularJSExampleChart.js")
+    script(src="./js/unityLostInSpace.js")
+    script(src="./js/phraseOccurrence.js")
+    script(src="./js/translate.js")
+    script(src="./js/twitter.js")
+    script(src="./js/footer.js")
+    script(src="./js/node_modules/angularjs-datepicker/src/js/angular-datepicker.js")
+    script(src="./js/node_modules/d3/dist/d3.min.js" charset="utf-8")
+    script(src="./js/node_modules/c3/c3.min.js")
+    script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
+    script(src='./unityGames/LostInSpaceWebGL/TemplateData/UnityProgress.js')
+    // Global site tag (gtag.js) - Google Analytics
+    script(async='' src='https://www.googletagmanager.com/gtag/js?id=UA-19197796-1')
+    script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'UA-19197796-1');

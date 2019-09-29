@@ -1,0 +1,68 @@
+a#footerLink {
+  margin-left: 5px;
+}
+div#footerInfo {
+  display: flex;
+  margin-top: 5px;
+}
+div#footerInfo img {
+  height: 20px;
+  margin-left: 5px;
+}
+div#footerCopyright {
+  margin-bottom: 5px;
+}
+div#footerInfo h4:nth-child(1) {
+  margin-left: 1.5rem;
+}
+div#footerInfo h4:nth-child(3) {
+  margin-left: 5px;
+}
+div#footerWrapper {
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: rgba(0, 0, 0, 0.125);
+  width: 100%;
+  height: 48px;
+  color: #aaa;
+}
+div#footer h4 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  text-transform: capitalize;
+  font-size: 14px;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+div#footer h5 {
+  margin-left: 1.5rem;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  text-transform: capitalize;
+  font-size: 12px;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+div#footer a {
+  color: #0096cc;
+  text-decoration: none;
+}
+div#footerVisitors {
+  margin-right: 1.5rem;
+}
+div#footerSocialLinks {
+  margin-top: 5px;
+  margin-right: 1.5rem;
+  float: right;
+}
+div#footerUpperLeft {
+  float: left;
+}
+div#footerUpperRight {
+  float: right;
+}
+div#footerUpperRight img {
+  width: 20px;
+  opacity: 0.5;
+}
+div#footerUpperRight a {
+  margin-left: 0.5rem;
+}

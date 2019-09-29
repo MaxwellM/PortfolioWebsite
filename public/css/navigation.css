@@ -1,0 +1,94 @@
+div#nav_bar {
+  position: relative;
+  display: grid;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(0, 0, 0, 0.125);
+  width: 100%;
+}
+.navbar {
+  display: flow-root;
+  z-index: 1;
+}
+.third-level-menu {
+  position: absolute;
+  top: 0;
+  right: -275px;
+  width: 275px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+}
+.third-level-menu > li {
+  height: 30px;
+  background: #999999;
+}
+.third-level-menu > li:hover {
+  background: #CCCCCC;
+}
+.second-level-menu {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: max-content;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+  z-index: 1;
+}
+.second-level-menu > li {
+  position: relative;
+  z-index: 1;
+}
+.second-level-menu > li:hover {
+  background: #CCCCCC;
+}
+.top-level-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1;
+}
+.top-level-menu > li {
+  position: relative;
+  float: left;
+  width: auto;
+  z-index: 1;
+}
+.top-level-menu > li:hover {
+  background: #CCCCCC;
+}
+.top-level-menu li:hover > ul {
+  /* On hover, display the next level's menu */
+  display: inline;
+}
+/* Menu Link Styles */
+.top-level-menu a {
+  font-family: Montserrat, helvetica neue, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  z-index: 1;
+  letter-spacing: 1px;
+  /* Make the link cover the entire list item-container */
+  display: block;
+}
+a#NAVButtonMaxwellMorin {
+  padding: 13px 14px 13px 16px;
+}
+.top-level-menu a:hover {
+  color: #52658F;
+}
+ul.second-level-menu a {
+  background-color: white;
+}
+ul.top-level-menu:nth-child(2) {
+  float: right;
+  font-size: 0.75rem;
+}
+ul.top-level-menu:nth-child(2) a {
+  padding: 15px 14px 15px 16px;
+}
