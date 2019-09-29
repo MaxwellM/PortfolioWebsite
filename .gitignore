@@ -1,6 +1,10 @@
 # complied web things
 web/html
 web/css
+./googleEmailPassword.json
+./googleKey.json
+./googleKey2.json
+
 
 # editor things
 .idea/
