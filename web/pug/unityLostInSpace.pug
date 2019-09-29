@@ -1,0 +1,14 @@
+title Unity3D WebGL Game!
+div#unityLostInSpaceLabelWrapper
+    label(ng-show='playLostInSpace') Refresh Web Page to Quit Game
+div#unityLostInSpaceWrapper
+    button#playLostInSpace(ng-show='!playLostInSpace', ng-click='launchLostInSpace()') Play Lost in Space
+    //button#closeLostInSpace(ng-show='playLostInSpace', ng-click='launchLostInSpace()') Close Lost in Space
+div#showLostInSpace(ng-if='playLostInSpace')
+    .template-wrap.clear
+        canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')
+        br
+        .logo
+        .fullscreen
+            img(src='../../unityGames/LostInSpaceWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
+        .title Lost in Space

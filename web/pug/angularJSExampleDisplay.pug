@@ -1,0 +1,38 @@
+title AngularJS and AcuweatherAPI Example!
+div#angularJSExampleDisplayInnerPageWrapper
+    div#angularJSExampleDisplayTitle
+        h1 Weather Report
+            img(src='../images/weather-icon.png', alt='')
+    div#angularJSExampleDisplayWrapper(ng-if='weatherData')
+        //div#angularJSExampleDisplayInputWrapper
+        //    label Enter Zip Code:
+        //    input(type='text', ng-model='weatherLocation')
+        //    button(ng-click='getWeather(weatherLocation)') Submit
+        div#angularJSExampleDisplayLocation
+            h2 5 Day Forecast for Sandy, UT 84094
+        div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
+            div#angularJSExampleDisplayWeatherLabelWrapper
+                label Day
+                label Date
+                label High
+                label Low
+                label Day
+                label Night
+            div#angularJSExampleDisplayWeatherDataWrapper
+                label {{ ::getDayName(day.Date) }}
+                label {{ ::trimDate(day.Date) }}
+                label {{ ::day.Temperature.Maximum.Value }} {{ ::day.Temperature.Maximum.Unit}}
+                label {{ ::day.Temperature.Minimum.Value }} {{ ::day.Temperature.Minimum.Unit}}
+                img(ng-src=`../images/NewWeatherIcons/{{::day.Day.Icon}}-s.png`, alt='')
+                label {{ ::day.Day.IconPhrase }}
+                img(ng-src=`../images/NewWeatherIcons/{{::day.Night.Icon}}-s.png`, alt='')
+                label {{ ::day.Night.IconPhrase }}
+    div#angularJSExampleDisplayCurrentConditionsWrapper(ng-if='currentConditionsWeather')
+        div#angularJSExampleDisplayCurrentConditions
+            h3 Current Conditions
+            img(ng-src=`../images/NewWeatherIcons/{{::currentConditionsWeather.WeatherIcon}}-s.png`, alt='')
+            label {{ ::currentConditionsWeather.WeatherText}}
+            label Current Temp: {{ ::currentConditionsWeather.Temperature.Imperial.Value }} {{ ::currentConditionsWeather.Temperature.Imperial.Unit }}
+            label From: {{ ::currentConditionsWeather.LocalObservationDateTime | date:'short'}}
+
+
