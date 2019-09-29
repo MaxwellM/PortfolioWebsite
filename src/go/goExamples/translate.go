@@ -2,13 +2,14 @@ package goExamples
 
 import (
 	"context"
-	"encoding/json"
+	_ "encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 
 	"cloud.google.com/go/translate"
 	"golang.org/x/text/language"
+	"google.golang.org/api/option"
 )
 
 type GoogleInfo struct {
@@ -23,36 +24,29 @@ type GoogleInfo struct {
 	ClientX509CertURL       string
 }
 
-func getGoogleInfo() (GoogleInfo, error) {
+func getGoogleInfo() []byte {
 	file, err := ioutil.ReadFile("googleKey.json")
 	if err != nil {
 		fmt.Println("Error reading JSON file: ", err)
 	}
-	data := GoogleInfo{}
-	err = json.Unmarshal([]byte(file), &data)
-	return data, nil
+	//data := GoogleInfo{}
+	//err = json.Unmarshal(file, &data)
+	return file
 }
 
-func TranslateString (stringToTranslate, lang string) (string, error) {
+func TranslateString(stringToTranslate, lang string) (string, error) {
 
 	fmt.Println("String After: ", stringToTranslate)
 	fmt.Println("Lang After: ", lang)
 
-
 	// Brody, this contains all of the googleKey.json informaiton. Please use this?
 	// Thank you!
-	googleInfo, err := getGoogleInfo()
-	if err != nil {
-		fmt.Println("Error obtaining our Google Info! ", err.Error())
-		return "", err
-	}
-
-	fmt.Println("Google Info: ", googleInfo)
 
 	ctx := context.Background()
+	clientOption := option.WithCredentialsFile("./googleKey.json")
 
 	// Creates a client.
-	client, err := translate.NewClient(ctx)
+	client, err := translate.NewClient(ctx, clientOption)
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
