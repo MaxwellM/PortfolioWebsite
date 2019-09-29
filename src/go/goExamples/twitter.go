@@ -20,16 +20,8 @@ func getTwitterInfo() (TwitterInfo, error) {
 	if err != nil {
 		fmt.Println("Error reading JSON file: ", err)
 	}
-
-	//fmt.Println("File: ", file)
-
 	data := TwitterInfo{}
-
 	err = json.Unmarshal([]byte(file), &data)
-	//fmt.Println("Error unmarshinlg JSON: ", err)
-
-	//fmt.Println("DATA: ", data)
-
 	return data, nil
 }
 
