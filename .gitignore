@@ -5,6 +5,8 @@ web/css
 ./googleKey.json
 ./googleKey2.json
 
+# weather things
+./src/json
 
 # editor things
 .idea/
