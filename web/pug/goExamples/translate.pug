@@ -1,0 +1,15 @@
+meta(charset="UTF-8")
+div#goExampleTranslatePageWrapper
+    div#goExampleTranslateTitle
+        h1 Translate
+            img(src='../images/golang.png', alt='')
+    div#goExampleTranslateInputWrapper
+        h3 Enter a string and choose a language to translate!
+        div#goExampleTranslateInnerWrapper
+            form(ng-submit='translate()')
+                input#goExampleTranslateInput(type='text', ng-model='string')
+                select#goExampleTranslateSelect(ng-model='lngSelected', ng-options='lang for lang in languages')
+                input#goExampleTranslateSubmit(type='button', value='Submit', ng-click='translate()')
+    div#goExampleTranslateReturnWrapper
+        label Translation:
+        label(ng-bind-html="translation")

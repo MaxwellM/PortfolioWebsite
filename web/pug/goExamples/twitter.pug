@@ -1,0 +1,22 @@
+div#goExampleTwitterPageWrapper
+    div#goExampleTwitterTitle
+        h1 Twitter
+            img(src='../images/golang.png', alt='')
+    div#goExampleTwitterSubmitTweet
+        label Tweet for MAXintosh.org!
+        div#goExampleTwitterSubmitInput
+            form(ng-submit='postTweet()')
+                input(type='text', ng-model='tweet')
+                input#goExampleTranslateSubmit(type='button', value='Tweet!', ng-click='postTweet()')
+        div#goExampleTwitterPostedTweetWrapper(ng-if='tweetID')
+            label Posted Tweet!
+            div#goExampleTwitterPostedTweet
+                twitter-widget(twitter-widget-id="tweetID")
+    div#goExampleTwitterRecentTweetWrapper
+        label Tweet by MAXintosh2010 (...me)
+        div#goExampleTwitterRecentTweet
+            twitter-widget(twitter-widget-id="'1166837255685599233'")
+
+
+
+

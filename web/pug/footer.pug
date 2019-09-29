@@ -1,0 +1,35 @@
+div#footer
+    div#footerUpperLeft
+        div#footerInfo
+            h4 Website built on
+            a(href='https://www.linode.com', tooltips='' tooltip-template='Linode')
+                img(src='../images/TechnologyIcons/linode.png', alt='')
+            h4 with
+            a(href='https://www.golang.org', tooltips='' tooltip-template='GoLang')
+                img(src='../images/TechnologyIcons/golang.png', alt='')
+            h4 ,
+            a(href='https://www.javascript.com', tooltips='' tooltip-template='JavaScript')
+                img(src='../images/TechnologyIcons/javascript.png', alt='')
+            h4 ,
+            a(href='https://angularjs.org/', tooltips='' tooltip-template='AngularJS')
+                img(src='../images/TechnologyIcons/angular.png', alt='')
+            h4 ,
+            a(href='http://html5.com/', tooltips='' tooltip-template='HTML5')
+                img(src='../images/TechnologyIcons/html.png', alt='')
+            h4 , and
+            a(href='https://www.w3.org/Style/CSS/', tooltips='' tooltip-template='CSS3')
+                img(src='../images/TechnologyIcons/css.png', alt='')
+        div#footerCopyright
+            h5 © Maxwell Ross Morin 2019
+    div#footerUpperRight
+        div#footerSocialLinks
+            a(href='https://www.facebook.com/MaxwellMorin', tooltips='' tooltip-template='FaceBook', target="_blank")
+                img(src='../images/facebook.png', alt='')
+            a(href='https://www.linkedin.com/in/maxwell-morin-35159266/', tooltips='' tooltip-template='LinkedIn', target="_blank")
+                img(src='../images/linkedin.png', alt='')
+            a(href='https://github.com/MaxwellM', tooltips='' tooltip-template='GitHub', tooltip-append-to-body="true", target="_blank")
+                img(src='../images/github.png', alt='')
+            a(href='https://www.codewars.com/users/MaxwellM', tooltips='' tooltip-template='CodeWars', target="_blank")
+                img(src='../images/codewars.png', alt='')
+        div#footerVisitors
+            h5 Monthly Unique Visitors: {{ visitors.length }}
