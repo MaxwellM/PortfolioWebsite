@@ -21,7 +21,7 @@ func main() {
 	// Linked to the Star Wars Character Example
 	router.POST("/addCharacterToDB", routes.AddCharacterToDB)
 	router.POST("/updateCharacter", routes.UpdateCharacter)
-	//router.GET("/loadAngularJSExampleTableResults", routes.LoadAngularJSExampleTableResults)
+	router.GET("/loadAngularJSExampleTableResults", routes.LoadAngularJSExampleTableResults)
 	router.GET("/setClickedRow", routes.SetClickedRow)
 
 	// Linked to the Weather Example
@@ -31,10 +31,10 @@ func main() {
 	router.GET("/getLocalCurrentConditions", routes.GetLocalCurrentConditions)
 
 	// Linked to the Visitor Counter
-	//router.GET("/visitorCounter", routes.VisitorCounter)
-	//router.GET("/readVisitors", routes.ReadVisitors)
-	//router.GET("/readMonthlyVisitors", routes.ReadMonthlyVisitors)
-	//router.GET("/getIPLocation", routes.GetIPLocation)
+	router.GET("/visitorCounter", routes.VisitorCounter)
+	router.GET("/readVisitors", routes.ReadVisitors)
+	router.GET("/readMonthlyVisitors", routes.ReadMonthlyVisitors)
+	router.GET("/getIPLocation", routes.GetIPLocation)
 
 	// Linked to the Contact Me Page
 	router.POST("/sendMessage", routes.SendMessage)
@@ -42,8 +42,7 @@ func main() {
 	// Linked to the Go Examples Page!
 	router.GET("/getOccurrences", routes.GetOccurrences)
 	router.GET("/translate", routes.Translate)
-	router.POST("/postTweet", routes.PostTweet)
-	//router.POST("/postTweet", PostTweet)
+	//router.POST("/postTweet", routes.PostTweet)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
