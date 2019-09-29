@@ -1,0 +1,71 @@
+@charset "UTF-8";
+div#goExampleTranslatePage {
+  height: calc(100% - 100px);
+}
+div#goExampleTranslatePageWrapper {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: #f5f8fa;
+}
+div#goExampleTranslateTitle h1 {
+  color: #282e44;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: center;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  border-bottom: solid;
+  border-color: #282E43;
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+}
+div#goExampleTranslateTitle img {
+  width: 50px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+div#goExampleTranslateInputWrapper h3 {
+  color: #282e44;
+  text-transform: capitalize;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  text-align: center;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  width: -moz-fit-content;
+  margin: auto;
+}
+div#goExampleTranslateInnerWrapper,
+div#goExampleTranslateReturnWrapper {
+  width: fit-content;
+  width: -moz-fit-content;
+  margin: auto;
+  padding-top: 10px;
+}
+div#goExampleTranslateInnerWrapper input,
+div#goExampleTranslateReturnWrapper input {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 18px;
+}
+div#goExampleTranslateInnerWrapper input:hover,
+div#goExampleTranslateReturnWrapper input:hover,
+div#goExampleTranslateInnerWrapper input:focus,
+div#goExampleTranslateReturnWrapper input:focus {
+  background-color: #52658F;
+  color: #F7F5E6;
+}
+div#goExampleTranslateInnerWrapper label,
+div#goExampleTranslateReturnWrapper label {
+  font-family: open sans, sans-serif;
+  margin-right: 5px;
+}
+div#goExampleTranslateInnerWrapper select,
+div#goExampleTranslateReturnWrapper select {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 18px;
+}

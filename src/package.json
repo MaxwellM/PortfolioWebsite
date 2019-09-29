@@ -1,0 +1,24 @@
+{
+  "name": "PortfolioWebsite",
+  "version": "1.0.0",
+  "description": "## Installing Guide * Golang",
+  "main": "index.js",
+  "dependencies": {
+    "angularjs-datepicker": "^2.1.23"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxwellM/portfolioWebsite-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MaxwellM/portfolioWebsite-/issues"
+  },
+  "homepage": "https://github.com/MaxwellM/portfolioWebsite-#readme"
+}
