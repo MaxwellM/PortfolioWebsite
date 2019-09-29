@@ -2,17 +2,52 @@ package goExamples
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 
 	"cloud.google.com/go/translate"
 	"golang.org/x/text/language"
 )
 
+type GoogleInfo struct {
+	Type                    string
+	ProjectID               string
+	PrivateKeyID            string
+	ClientEmail             string
+	ClientID                string
+	AuthURI                 string
+	TokenURI                string
+	AuthProviderX509CertURL string
+	ClientX509CertURL       string
+}
+
+func getGoogleInfo() (GoogleInfo, error) {
+	file, err := ioutil.ReadFile("googleKey.json")
+	if err != nil {
+		fmt.Println("Error reading JSON file: ", err)
+	}
+	data := GoogleInfo{}
+	err = json.Unmarshal([]byte(file), &data)
+	return data, nil
+}
+
 func TranslateString (stringToTranslate, lang string) (string, error) {
 
 	fmt.Println("String After: ", stringToTranslate)
 	fmt.Println("Lang After: ", lang)
+
+
+	// Brody, this contains all of the googleKey.json informaiton. Please use this?
+	// Thank you!
+	googleInfo, err := getGoogleInfo()
+	if err != nil {
+		fmt.Println("Error obtaining our Google Info! ", err.Error())
+		return "", err
+	}
+
+	fmt.Println("Google Info: ", googleInfo)
 
 	ctx := context.Background()
 

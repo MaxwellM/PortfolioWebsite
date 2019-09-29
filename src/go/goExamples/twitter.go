@@ -25,10 +25,6 @@ func getTwitterInfo() (TwitterInfo, error) {
 	return data, nil
 }
 
-func GetMostRecentTweet() (){
-
-}
-
 func SubmitTweet(tweetToSend string) (*twitter.Tweet, error) {
 	fmt.Println("Submitting Tweet! ", tweetToSend)
 
