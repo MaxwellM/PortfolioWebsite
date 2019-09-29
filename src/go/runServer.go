@@ -42,7 +42,7 @@ func main() {
 	// Linked to the Go Examples Page!
 	router.GET("/getOccurrences", routes.GetOccurrences)
 	router.GET("/translate", routes.Translate)
-	//router.POST("/postTweet", routes.PostTweet)
+	router.POST("/postTweet", routes.PostTweet)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
