@@ -1,3 +1,0 @@
-INSERT INTO public.star_wars_characters (id, name, home_world, born, died, species, gender, associated, affiliation, masters, apprentices) VALUES (5, 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', '""', '"TEST"', '""', '""');
-INSERT INTO public.star_wars_characters (id, name, home_world, born, died, species, gender, associated, affiliation, masters, apprentices) VALUES (6, 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', 'TEST', 'TEST');
-INSERT INTO public.star_wars_characters (id, name, home_world, born, died, species, gender, associated, affiliation, masters, apprentices) VALUES (7, '1', '2', '3', '4', '5', '6', '7, 8, 9, 10', '7, 8, 9, 10', '7, 8, 9, 10', '7, 8, 9, 10');
