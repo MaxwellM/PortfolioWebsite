@@ -25,7 +25,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         // Lets fill out our array with 0s, then fill it with data!
         let n = 12;
         for (var i=0; i < n; i++) {
-            $scope.chartData.push({count: 0});
+            $scope.chartData.push({count: 0, pageCount: 0});
         }
 
         for (const [index,item] of data.entries()) {
@@ -62,7 +62,20 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                         $scope.chartData[8]['count'],
                         $scope.chartData[9]['count'],
                         $scope.chartData[10]['count'],
-                        $scope.chartData[11]['count']]
+                        $scope.chartData[11]['count']],
+                    ['Page Views',
+                        $scope.chartData[0]['pageCount'],
+                        $scope.chartData[1]['pageCount'],
+                        $scope.chartData[2]['pageCount'],
+                        $scope.chartData[3]['pageCount'],
+                        $scope.chartData[4]['pageCount'],
+                        $scope.chartData[5]['pageCount'],
+                        $scope.chartData[6]['pageCount'],
+                        $scope.chartData[7]['pageCount'],
+                        $scope.chartData[8]['pageCount'],
+                        $scope.chartData[9]['pageCount'],
+                        $scope.chartData[10]['pageCount'],
+                        $scope.chartData[11]['pageCount']]
                 ]
             },
             axis: {
@@ -154,10 +167,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         })
     }
 
-    // function sortResults(results) {
-    //     return results
-    // }
-
     function setCurrentMonth() {
         const monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -174,7 +183,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             $scope.ipLocationList = results;
             console.log("IP LOCATION: ", results);
         }, function (err) {
-           alert("Error obtaining the location for that IP: ", err);
+            alert("Error obtaining the location for that IP: ", err);
         });
     }
 
