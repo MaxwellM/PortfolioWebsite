@@ -10,7 +10,7 @@ css_dir = public_dir + "css/"
 dir_to_be_moved = ["js", "json", "images", "unityGames", "node_modules"]
 for directory in dir_to_be_moved:
     print("moving {} to public/{}".format(directory, directory))
-    os.system("cp -n -r {} ../public/".format(directory))
+    os.system("cp -r {} ../public/".format(directory))
 
 # processes the html files from the pug files
 print("Converting pug files to HTML...")
