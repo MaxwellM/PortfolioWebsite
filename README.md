@@ -13,14 +13,27 @@ This website shows all of the projects I've created and to be an example of the 
 * [Arch Linux download](https://wiki.archlinux.org/index.php/Go)
 
 ### Javascript Tools Installation
-* TODO
+```
+sudo npm install -g less pug pug-cli
+```
+Pug is a HTML preprocessor that will take pug files and render them to HTML
+[Pugjs](https://pugjs.org/api/getting-started.html)
+
+Less is a CSS preprocessor that will render less files into CSS
+[LessJS](http://lesscss.org/)
 
 ### Python 3 Installation
 * [Python Download](https://www.python.org/downloads/)
 * [Arch Linux Python Download](https://wiki.archlinux.org/index.php/Python#Python_3)
 
 ### Postgresql Installation
-
+[Postgresql Download](https://www.postgresql.org/download/)
+* Arch Download
+[Arch Postgresql Install](https://wiki.archlinux.org/index.php/PostgreSQL)
+```
+sudo pacman -S postgresql
+```
+*
 ---
 ### How To Build
 ```
