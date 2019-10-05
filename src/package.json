@@ -4,7 +4,8 @@
   "description": "## Installing Guide * Golang",
   "main": "index.js",
   "dependencies": {
-    "angularjs-datepicker": "^2.1.23"
+    "angularjs-datepicker": "^2.1.23",
+    "package.json": "^2.0.1"
   },
   "devDependencies": {},
   "scripts": {

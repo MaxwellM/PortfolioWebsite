@@ -15,6 +15,8 @@ This website shows all of the projects I've created and to be an example of the 
 ### Javascript Tools Installation
 ```
 sudo npm install -g less pug pug-cli
+cd src
+npm install package.json
 ```
 Pug is a HTML preprocessor that will take pug files and render them to HTML
 [Pugjs](https://pugjs.org/api/getting-started.html)
