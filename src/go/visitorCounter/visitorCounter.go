@@ -1,13 +1,14 @@
 package visitorCounter
 
 import (
-	"PortfolioWebsite/src/go/db"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"PortfolioWebsite/src/go/db"
 )
 
 type IpResult struct {
@@ -20,7 +21,9 @@ type VisitorResult struct {
 	Id        int    `json:"id"`
 	Month     string `json:"month"`
 	Count     int    `json:"count"`
+	Year      int    `json:"year"`
 	PageCount int    `json:"pageCount"`
+	DateStamp time.Time `json:"date_stamp"`
 }
 
 type VisitorLocationResult struct {
@@ -304,9 +307,13 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 				id,
 				month,
 				count,
-				page_count
+				year,
+				page_count,
+				date_stamp
 			FROM
-				monthly_visitors`)
+				monthly_visitors
+			ORDER BY
+			   id ASC`)
 
 	if err != nil {
 		fmt.Println("There was an error reading the ips table from the database 2:", err)
@@ -325,7 +332,9 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 			&res.Id,
 			&res.Month,
 			&res.Count,
-			&res.PageCount)
+			&res.Year,
+			&res.PageCount,
+			&res.DateStamp)
 
 		if err != nil {
 			fmt.Println("There was an error querying that database for the Monthly Visitors Results:", err)
