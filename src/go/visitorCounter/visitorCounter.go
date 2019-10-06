@@ -18,12 +18,14 @@ type IpResult struct {
 }
 
 type VisitorResult struct {
-	Id        int    `json:"id"`
-	Month     string `json:"month"`
-	Count     int    `json:"count"`
-	Year      int    `json:"year"`
-	PageCount int    `json:"pageCount"`
-	DateStamp time.Time `json:"date_stamp"`
+	Id           int       `json:"id"`
+	Month        string    `json:"month"`
+	Count        int       `json:"count"`
+	Year         int       `json:"year"`
+	PageCount    int       `json:"pageCount"`
+	DateStamp    time.Time `json:"date_stamp"`
+	AvgCount     float64   `json:"avgCount"`
+	AvgPageCount float64   `json:"avgPageCount"`
 }
 
 type VisitorLocationResult struct {
@@ -302,6 +304,9 @@ func WriteIPToDatabase(ip string) (string, error) {
 }
 
 func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
+	// Getting a rolling AVG from this URL:
+	// https://www.compose.com/articles/metrics-maven-calculating-a-moving-average-in-postgresql/
+	// Should be calculating a Rolling AVG from the previous 2 entries and the current entry.
 	rows, err := db.ConnPool.Query(context.Background(),
 		`SELECT
 				id,
@@ -309,14 +314,18 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 				count,
 				year,
 				page_count,
-				date_stamp
+				date_stamp,
+				AVG(count)
+            		OVER(ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_count,
+				AVG(page_count)
+            		OVER(ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_page_count
 			FROM
 				monthly_visitors
 			ORDER BY
 			   id ASC`)
 
 	if err != nil {
-		fmt.Println("There was an error reading the ips table from the database 2:", err)
+		fmt.Println("There was an error reading the monthly_visitors table from the database 2:", err)
 		return nil, err
 	}
 
@@ -334,7 +343,9 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 			&res.Count,
 			&res.Year,
 			&res.PageCount,
-			&res.DateStamp)
+			&res.DateStamp,
+			&res.AvgCount,
+			&res.AvgPageCount)
 
 		if err != nil {
 			fmt.Println("There was an error querying that database for the Monthly Visitors Results:", err)

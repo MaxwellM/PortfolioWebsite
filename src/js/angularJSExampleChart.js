@@ -17,10 +17,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     function drawChart(data) {
         let chart;
-        let countSum = sumObjectProperty("count");
-        let pageCountSum = sumObjectProperty("pageCount");
-        let countAvg = countSum/$scope.monthlyVisitors.length;
-        let pageCountAvg = pageCountSum/$scope.monthlyVisitors.length;
 
         chart = c3.generate({
             bindto: 'div#chart',
@@ -40,12 +36,20 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 xFormat: '%Y-%m-%dT%H:%M:%SZ',
                 keys: {
                     x: 'date_stamp', // it's possible to specify 'x' when category axis
-                    value: ['count', 'pageCount'],
+                    value: ['count', 'pageCount', 'avgCount', 'avgPageCount'],
                 },
                 names: {
                     count: 'Unique Visitors',
-                    pageCount: 'Page Views'
-                }
+                    pageCount: 'Page Views',
+                    avgCount: 'Rolling AVG Unique Visitors',
+                    avgPageCount: 'Rolling AVG Page Views'
+                },
+                colors: {
+                    count: '#ff0000',
+                    pageCount: '#0000ff',
+                    avgCount: '#ffcccb',
+                    avgPageCount: '#add8e6'
+                },
             },
             axis: {
                 x: {
@@ -58,14 +62,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                     }
                 }
             },
-            grid: {
-                y: {
-                    lines: [
-                        {value: countAvg, text: 'Average Unique Visitors', position: 'middle'},
-                        {value: pageCountAvg, text: 'Average Page Views', position: 'middle'}
-                    ]
-                }
-            }
         });
     }
 
