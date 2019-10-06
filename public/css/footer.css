@@ -47,22 +47,24 @@ div#footer a {
 }
 div#footerVisitors {
   margin-right: 1.5rem;
+  display: flex;
 }
 div#footerSocialLinks {
   margin-top: 5px;
   margin-right: 1.5rem;
-  float: right;
+  text-align: end;
 }
 div#footerUpperLeft {
   float: left;
 }
 div#footerUpperRight {
   float: right;
+  display: grid;
 }
 div#footerUpperRight img {
   width: 20px;
   opacity: 0.5;
 }
 div#footerUpperRight a {
-  margin-left: 0.5rem;
+  margin-left: .5rem;
 }

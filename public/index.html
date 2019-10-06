@@ -278,7 +278,7 @@
       <div id="resumePage" ng-controller="resumeCtrl" ng-cloak ng-show="myCtrl.buttonName == &quot;Resume&quot;">
         <title>Maxwell Ross Morin's Resume</title>
         <div id="resumeWrapper">
-          <embed src="./images/MaxsCV.pdf">
+          <embed src="./images/MaxsCV.pdf" type="application/pdf">
         </div>
       </div>
       <div id="contactMePage" ng-controller="contactMeCtrl" ng-cloak ng-show="myCtrl.buttonName == &quot;Contact Me&quot;">
@@ -482,7 +482,7 @@
         <div id="angularJSExampleChartInnerPageWrapper">
           <div id="angularJSExampleChartTopWrapper">
             <div id="angularJSExampleChartTitle">
-              <h1>Unique Visitors by Month</h1>
+              <h1>Website Traffic</h1>
             </div>
             <div id="angularJSExampleChartWrapper">
               <div id="chart"></div>
@@ -490,11 +490,11 @@
           </div>
           <div id="angularJSExampleChartBottomWrapper">
             <div id="angularJSExampleChartPageCount">
-              <h3>Total Page Hits</h3>
+              <h3>{{ currentMonthName }} Page Views</h3>
               <h3>{{ ::currentPageMonthTotal }}</h3>
             </div>
             <div id="angularJSExampleChartVisitorCount">
-              <h3>Unique Visitors</h3>
+              <h3>{{ currentMonthName }} Unique Visitors</h3>
               <h3>{{ ::currentMonthTotal }}</h3>
             </div>
             <div id="angularJSExampleChartVisitorList">
@@ -504,7 +504,7 @@
               </div>
             </div>
             <div id="angularJSExampleChartVisitorLocation" ng-show="selectedIP.length &gt; 0">
-              <h3>Unique Visitor Information</h3>
+              <h3>Unique Visitor Info</h3>
               <div id="angularJSExampleChartVisitors" ng-repeat="visitor in selectedIP">
                 <div id="angularJSExampleChartLocationLabelWrapper">
                   <label ng-show="visitor.ip">IP</label>

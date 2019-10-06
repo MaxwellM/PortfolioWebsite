@@ -13,6 +13,7 @@ div#angularJSExampleChartTitle h2 {
   font-family: open sans, sans-serif;
   margin: 0px;
   text-align: center;
+  padding-top: 10px;
 }
 div#angularJSExampleChartVisitorCount,
 div#angularJSExampleChartPageCount {

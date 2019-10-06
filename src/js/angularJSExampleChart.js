@@ -17,6 +17,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     function drawChart(data) {
         let chart;
+<<<<<<< Updated upstream
 
         let monthCounts;
         let times;
@@ -38,13 +39,26 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         // monthCounts = getMonthCounts($scope.chartData);
         // months = $scope.chartData.map(getMonth);
         // times = $scope.chartData.map(getTimes);
+=======
+        let countSum = sumObjectProperty("count");
+        let pageCountSum = sumObjectProperty("pageCount");
+        let countAvg = countSum/$scope.monthlyVisitors.length;
+        let pageCountAvg = pageCountSum/$scope.monthlyVisitors.length;
+>>>>>>> Stashed changes
 
         chart = c3.generate({
             bindto: 'div#chart',
             size: {
                 height: 300
             },
+            padding: {
+                top: 20,
+                right: 50,
+                bottom: 20,
+                left: 50,
+            },
             data: {
+<<<<<<< Updated upstream
                 x: 'x',
                 xFormat: '%Y-%m',
                 //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
@@ -77,23 +91,59 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                         $scope.chartData[10]['pageCount'],
                         $scope.chartData[11]['pageCount']]
                 ]
+=======
+                url: '/readMonthlyVisitors',
+                mimeType: 'json',
+                x: 'X',
+                xFormat: '%Y-%m-%dT%H:%M:%SZ',
+                keys: {
+                    x: 'date_stamp', // it's possible to specify 'x' when category axis
+                    value: ['count', 'pageCount'],
+                },
+                names: {
+                    count: 'Unique Visitors',
+                    pageCount: 'Page Views'
+                }
+>>>>>>> Stashed changes
             },
             axis: {
                 x: {
                     type: 'category',
                     tick: {
+<<<<<<< Updated upstream
                         culling: false
                         //format: '%Y-%m-%d'
+=======
+                        rotate: 75,
+                        multiline: false,
+                        culling: false,
+                        format: '%Y-%m'
+>>>>>>> Stashed changes
                     }
+                }
+            },
+            grid: {
+                y: {
+                    lines: [
+                        {value: countAvg, text: 'Average Unique Visitors', position: 'middle'},
+                        {value: pageCountAvg, text: 'Average Page Views', position: 'middle'}
+                    ]
                 }
             }
         });
+<<<<<<< Updated upstream
 
         chart.load($scope.visitors);
+=======
+>>>>>>> Stashed changes
     }
 
-    function getTimes(obj) {
-        return Date.parse(obj.timestamp);
+    function sumObjectProperty(type) {
+        let sum = 0;
+        for(const[index,item] of $scope.monthlyVisitors.entries()) {
+            sum += item[type];
+        }
+        return sum;
     }
 
     function getMonthName() {
@@ -102,29 +152,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         ];
         const d = new Date();
         return monthNames[d.getMonth()];
-    }
-
-    function getMonth(obj) {
-        let month;
-        let date;
-
-        date = new Date(obj.timestamp);
-
-        month = date.getMonth();
-        return date;
-    }
-
-    function getMonthCounts(obj) {
-        let monthCount = [0,0,0,0,0,0,0,0,0,0,0,0];
-        let date;
-
-        for(const[index,item] of obj.entries()) {
-            date = new Date(item.timestamp);
-            monthCount[date.getMonth()] += 1;
-        }
-
-        console.log("DATE COUNT: ", monthCount);
-        return monthCount;
     }
 
     function readVisitors() {
@@ -199,5 +226,4 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     setCurrentMonth();
     readVisitors();
     readMonthlyVisitors();
-    // drawChart();
 }]);

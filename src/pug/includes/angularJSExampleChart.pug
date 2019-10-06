@@ -7,17 +7,17 @@ div#angularJSExampleChartInnerPageWrapper
             div#chart
     div#angularJSExampleChartBottomWrapper
         div#angularJSExampleChartPageCount
-            h3 Total Page Hits
+            h3 {{ currentMonthName }} Page Views
             h3 {{ ::currentPageMonthTotal }}
         div#angularJSExampleChartVisitorCount
-            h3 Unique Visitors
+            h3 {{ currentMonthName }} Unique Visitors
             h3 {{ ::currentMonthTotal }}
         div#angularJSExampleChartVisitorList
             h3 Unique Visitor List
             div#angularJSExampleCharVisitors
                 label(ng-repeat='ip in ipLocationList', ng-click='selectIPLocation(ip.ip)') {{ ::$index + 1 }}) {{ ::ip.ip }}
         div#angularJSExampleChartVisitorLocation(ng-show='selectedIP.length > 0')
-            h3 Unique Visitor Information
+            h3 Unique Visitor Info
             div#angularJSExampleChartVisitors(ng-repeat='visitor in selectedIP')
                 div#angularJSExampleChartLocationLabelWrapper
                     label(ng-show='visitor.ip') IP
