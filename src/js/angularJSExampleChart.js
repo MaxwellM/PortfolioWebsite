@@ -17,34 +17,10 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     function drawChart(data) {
         let chart;
-<<<<<<< Updated upstream
-
-        let monthCounts;
-        let times;
-        let months;
-
-        // Lets fill out our array with 0s, then fill it with data!
-        let n = 12;
-        for (var i=0; i < n; i++) {
-            $scope.chartData.push({count: 0, pageCount: 0});
-        }
-
-        for (const [index,item] of data.entries()) {
-            $scope.chartData[index] = item;
-        }
-
-        //$scope.chartData.fill(0, 0, 11);
-        //$scope.chartData.push(data);
-
-        // monthCounts = getMonthCounts($scope.chartData);
-        // months = $scope.chartData.map(getMonth);
-        // times = $scope.chartData.map(getTimes);
-=======
         let countSum = sumObjectProperty("count");
         let pageCountSum = sumObjectProperty("pageCount");
         let countAvg = countSum/$scope.monthlyVisitors.length;
         let pageCountAvg = pageCountSum/$scope.monthlyVisitors.length;
->>>>>>> Stashed changes
 
         chart = c3.generate({
             bindto: 'div#chart',
@@ -58,40 +34,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 left: 50,
             },
             data: {
-<<<<<<< Updated upstream
-                x: 'x',
-                xFormat: '%Y-%m',
-                //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
-                columns: [
-                    ['x', '2019-01', '2019-02', '2019-03', '2019-04', '2019-05', '2019-06', '2019-07', '2019-08', '2019-09', '2019-10', '2019-11', '2019-12'],
-                    ['Unique Visitors',
-                        $scope.chartData[0]['count'],
-                        $scope.chartData[1]['count'],
-                        $scope.chartData[2]['count'],
-                        $scope.chartData[3]['count'],
-                        $scope.chartData[4]['count'],
-                        $scope.chartData[5]['count'],
-                        $scope.chartData[6]['count'],
-                        $scope.chartData[7]['count'],
-                        $scope.chartData[8]['count'],
-                        $scope.chartData[9]['count'],
-                        $scope.chartData[10]['count'],
-                        $scope.chartData[11]['count']],
-                    ['Page Views',
-                        $scope.chartData[0]['pageCount'],
-                        $scope.chartData[1]['pageCount'],
-                        $scope.chartData[2]['pageCount'],
-                        $scope.chartData[3]['pageCount'],
-                        $scope.chartData[4]['pageCount'],
-                        $scope.chartData[5]['pageCount'],
-                        $scope.chartData[6]['pageCount'],
-                        $scope.chartData[7]['pageCount'],
-                        $scope.chartData[8]['pageCount'],
-                        $scope.chartData[9]['pageCount'],
-                        $scope.chartData[10]['pageCount'],
-                        $scope.chartData[11]['pageCount']]
-                ]
-=======
                 url: '/readMonthlyVisitors',
                 mimeType: 'json',
                 x: 'X',
@@ -104,21 +46,15 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                     count: 'Unique Visitors',
                     pageCount: 'Page Views'
                 }
->>>>>>> Stashed changes
             },
             axis: {
                 x: {
-                    type: 'category',
+                    type: 'timeseries',
                     tick: {
-<<<<<<< Updated upstream
-                        culling: false
-                        //format: '%Y-%m-%d'
-=======
                         rotate: 75,
                         multiline: false,
                         culling: false,
                         format: '%Y-%m'
->>>>>>> Stashed changes
                     }
                 }
             },
@@ -131,11 +67,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 }
             }
         });
-<<<<<<< Updated upstream
-
-        chart.load($scope.visitors);
-=======
->>>>>>> Stashed changes
     }
 
     function sumObjectProperty(type) {
