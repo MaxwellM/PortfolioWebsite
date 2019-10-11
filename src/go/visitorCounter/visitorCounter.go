@@ -316,9 +316,9 @@ func ReadMonthlyVisitorsDB() ([]*VisitorResult, error) {
 				page_count,
 				date_stamp,
 				AVG(count)
-            		OVER(ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_count,
+				OVER(ORDER BY id ASC ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_count,
 				AVG(page_count)
-            		OVER(ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_page_count
+            	OVER(ORDER BY id ASC ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_page_count
 			FROM
 				monthly_visitors
 			ORDER BY

@@ -41,8 +41,8 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 names: {
                     count: 'Unique Visitors',
                     pageCount: 'Page Views',
-                    avgCount: 'Rolling AVG Unique Visitors',
-                    avgPageCount: 'Rolling AVG Page Views'
+                    avgCount: '3 Month Rolling AVG Unique Visitors',
+                    avgPageCount: '3 Month Rolling AVG Page Views'
                 },
                 colors: {
                     count: '#ff0000',
