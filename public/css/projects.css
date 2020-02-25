@@ -4,7 +4,7 @@ div#projectPage {
 }
 div#projectPage img:hover {
   transform: scale(1.5);
-  transition: transform .2s;
+  transition: transform 0.2s;
 }
 div#projectPage h2 {
   font-family: open sans, sans-serif;

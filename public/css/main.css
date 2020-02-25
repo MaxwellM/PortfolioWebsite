@@ -43,13 +43,21 @@ div#MEWrapper img#ME {
   border-radius: 100%;
   border: 5px solid white;
 }
+div#GithubContributions h3 {
+  font-size: 1.5rem;
+  font-family: open sans, sans-serif;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+  text-align: center;
+}
 div#AboutMeWrapper h1 {
   font-weight: 700;
   line-height: 1.25;
   color: #3a4145;
   font-family: open sans, sans-serif;
   margin-top: 0;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   font-size: 3rem;
 }
 div#AboutMeWrapper h3 {
@@ -79,6 +87,8 @@ div#AboutMeDetails {
 div#AboutMeDetails h3 {
   font-size: 1.5rem;
   font-family: open sans, sans-serif;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 div#AboutMeContacts {
   width: 25%;
@@ -89,6 +99,8 @@ div#AboutMeContacts {
 div#AboutMeContacts h3 {
   font-size: 1.5rem;
   font-family: open sans, sans-serif;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 div#AboutMeContacts img {
   width: 30px;
@@ -111,7 +123,7 @@ div#AboutMeContacts a:hover {
 }
 div#AboutMeContacts label {
   vertical-align: inherit;
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }
 div#AboutMeContacts label:hover {
   cursor: pointer;

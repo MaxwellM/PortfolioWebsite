@@ -87,7 +87,7 @@ ul.second-level-menu a {
 }
 ul.top-level-menu:nth-child(2) {
   float: right;
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 ul.top-level-menu:nth-child(2) a {
   padding: 15px 14px 15px 16px;

@@ -35,7 +35,7 @@ div#angularJSExampleChartPageCount h3:nth-child(2) {
   text-align: center;
 }
 div#angularJSExampleCharVisitors {
-  max-height: 265px;
+  max-height: 260px;
   overflow: auto;
   height: fit-content;
   display: grid;
