@@ -29,7 +29,7 @@ html
         script(src="./js/node_modules/angular/angular.js")
     body(ng-app='app', ng-controller='myCtrl')
         div#MainWrapper
-            div#nav_bar
+            div#nav_bar(ng-cloak)
                 include includes/navigation
             div#mainPage(ng-controller='mainPageCtrl', ng-show='myCtrl.buttonName == "Maxwell Morin"')
                 include includes/main
