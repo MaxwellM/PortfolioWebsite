@@ -1,6 +1,6 @@
 div(ng-init='myCtrl.buttonName = "Maxwell Morin"')
     md-content.md-padding
-        md-nav-bar(md-selected-nav-item='currentNavItem' nav-bar-aria-label='navigation links')
+        md-nav-bar(md-selected-nav-item='myCtrl.currentNavItem')
             md-nav-item(md-nav-click='log(button);myCtrl.buttonName = "Maxwell Morin";')
                 | Maxwell Morin
             md-nav-item(md-nav-click='log(button);myCtrl.buttonName = "Contact Me";')
@@ -9,28 +9,28 @@ div(ng-init='myCtrl.buttonName = "Maxwell Morin"')
                 | Resume
             md-nav-item(md-nav-click='log(button);myCtrl.buttonName = "Projects";')
                 | Projects
-            md-menu(md-position-mode="target-right bottom")
+            md-menu(md-position-mode="target-right bottom", ng-controller='myCtrl')
                 md-button#navButton(ng-click='$mdMenu.open()')
-                    | Examples ▼
-                md-menu-content()
+                    | {{ !examples.includes(myCtrl.buttonName) ? "Examples ▼" : currentMenuItem + " ▼"}}
+                md-menu-content
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "Table Example";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "Table Example";currentMenuItem="Table Example";')
                             | Table Example
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "Display Example";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "Display Example";currentMenuItem="Display Example";')
                             | Display Example
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "Chart Example";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "Chart Example";currentMenuItem="Chart Example";')
                             | Chart Example
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "String Duplication";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "String Duplication";currentMenuItem="String Duplication";')
                             | String Duplication
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "Translate";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "Translate";currentMenuItem="Translate";')
                             | Translate
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "Twitter";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "Twitter";currentMenuItem="Twitter";')
                             | Twitter
                     md-menu-item
-                        md-button(ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";')
+                        md-button(ng-click='log(button);myCtrl.buttonName = "Unity Lost In Space";currentMenuItem="Unity Lost In Space";')
                             | Unity Lost In Space

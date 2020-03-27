@@ -5,6 +5,18 @@ ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($sc
 
     $scope.playLostInSpace = false;
 
+    $scope.currentMenuItem = '';
+
+    $scope.examples = [
+      "Table Example",
+      "Display Example",
+      "Chart Example",
+      "String Duplication",
+      "Translate",
+      "Twitter",
+      "Unity Lost In Space"
+    ];
+
     // Took a while, but found how to load a Unity game on button click, not on page load...
     // https://forum.unity.com/threads/start-unity-player-on-button-click.425180/
     function launchLostInSpace() {
