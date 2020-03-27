@@ -1,13 +1,13 @@
-import clipAntimeridian from "../clip/antimeridian";
-import clipCircle from "../clip/circle";
-import clipRectangle from "../clip/rectangle";
-import compose from "../compose";
-import identity from "../identity";
-import {cos, degrees, radians, sin, sqrt} from "../math";
-import {rotateRadians} from "../rotation";
-import {transformer} from "../transform";
-import {fitExtent, fitSize, fitWidth, fitHeight} from "./fit";
-import resample from "./resample";
+import clipAntimeridian from "../clip/antimeridian.js";
+import clipCircle from "../clip/circle.js";
+import clipRectangle from "../clip/rectangle.js";
+import compose from "../compose.js";
+import identity from "../identity.js";
+import {cos, degrees, radians, sin, sqrt} from "../math.js";
+import {rotateRadians} from "../rotation.js";
+import {transformer} from "../transform.js";
+import {fitExtent, fitSize, fitWidth, fitHeight} from "./fit.js";
+import resample from "./resample.js";
 
 var transformRadians = transformer({
   point: function(x, y) {

@@ -21,11 +21,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
             let results;
             results = res.data;
             $scope.weatherData = results.Forecast;
-            console.log("FORECAST RESULTS: ", $scope.weatherData);
-            console.log("DATE: ", $scope.weatherData[0].Date);
-
             $scope.currentConditionsWeather = results.Current;
-            console.log("CURRENT RESULTS: ", $scope.currentConditionsWeather);
             readLocalWeatherReport();
         }, function(error) {
            alert(error.data);
@@ -37,7 +33,6 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
             let results;
             results = res.data;
             $scope.weatherData = results;
-            console.log("BACKEND RESULTS: ", results);
         }, function(error) {
             alert(error.data);
         });
@@ -48,7 +43,6 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
             let results;
             results = res.data;
             $scope.currentConditionsWeather = results.Result[0];
-            console.log("CURRENT CONDITIONS: ", results);
         }, function(error) {
             alert(error.data);
         });

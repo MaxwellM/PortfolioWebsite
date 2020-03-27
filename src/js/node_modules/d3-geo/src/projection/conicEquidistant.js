@@ -1,6 +1,6 @@
-import {abs, atan2, cos, epsilon, sign, sin, sqrt} from "../math";
-import {conicProjection} from "./conic";
-import {equirectangularRaw} from "./equirectangular";
+import {abs, atan2, cos, epsilon, sign, sin, sqrt} from "../math.js";
+import {conicProjection} from "./conic.js";
+import {equirectangularRaw} from "./equirectangular.js";
 
 export function conicEquidistantRaw(y0, y1) {
   var cy0 = cos(y0),

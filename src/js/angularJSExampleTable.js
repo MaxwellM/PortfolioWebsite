@@ -65,7 +65,6 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
 
         $http.post("/addCharacterToDB", obj).then(function (res) {
             let results = res.data;
-            console.log("RESULTS: ", results);
             refreshAngularJSExampleTableResults();
         }, function(error) {
             alert("ERROR ADDING CHARACTER TO DB: ", error);
@@ -79,9 +78,6 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
 
         $http.get("/loadAngularJSExampleTableResults", {params: {Name, Species}}).then(function (res) {
             let results = res.data;
-
-            console.log("CHARACTER RESULTS: ", results);
-
             $scope.allCharacters = results;
             // Pre-selects a character.
             $scope.selectedCharacter = results;
@@ -98,7 +94,6 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     function showSection(section) {
         let view = document.getElementById('starWarsCharacterView');
         let add = document.getElementById('starWarsCharacterAdd');
-        console.log("SECTION: ", section);
         if (section) {
             $scope.showAddCharacter = true;
             $scope.showViewCharacters = false;

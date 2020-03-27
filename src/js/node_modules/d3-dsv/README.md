@@ -63,6 +63,14 @@ Equivalent to [dsvFormat](#dsvFormat)(",").[formatBody](#dsv_formatBody).
 
 Equivalent to [dsvFormat](#dsvFormat)(",").[formatRows](#dsv_formatRows).
 
+<a name="csvFormatRow" href="#csvFormatRow">#</a> d3.<b>csvFormatRow</b>(<i>row</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/csv.js "Source")
+
+Equivalent to [dsvFormat](#dsvFormat)(",").[formatRow](#dsv_formatRow).
+
+<a name="csvFormatValue" href="#csvFormatValue">#</a> d3.<b>csvFormatValue</b>(<i>value</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/csv.js "Source")
+
+Equivalent to [dsvFormat](#dsvFormat)(",").[formatValue](#dsv_formatValue).
+
 <a name="tsvParse" href="#tsvParse">#</a> d3.<b>tsvParse</b>(<i>string</i>[, <i>row</i>]) [<>](https://github.com/d3/d3-dsv/blob/master/src/tsv.js "Source")
 
 Equivalent to [dsvFormat](#dsvFormat)("\t").[parse](#dsv_parse).
@@ -82,6 +90,14 @@ Equivalent to [dsvFormat](#dsvFormat)("\t").[formatBody](#dsv_formatBody).
 <a name="tsvFormatRows" href="#tsvFormatRows">#</a> d3.<b>tsvFormatRows</b>(<i>rows</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/tsv.js "Source")
 
 Equivalent to [dsvFormat](#dsvFormat)("\t").[formatRows](#dsv_formatRows).
+
+<a name="tsvFormatRow" href="#tsvFormatRow">#</a> d3.<b>tsvFormatRow</b>(<i>row</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/tsv.js "Source")
+
+Equivalent to [dsvFormat](#dsvFormat)("\t").[formatRow](#dsv_formatRow).
+
+<a name="tsvFormatValue" href="#tsvFormatValue">#</a> d3.<b>tsvFormatValue</b>(<i>value</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/tsv.js "Source")
+
+Equivalent to [dsvFormat](#dsvFormat)("\t").[formatValue](#dsv_formatValue).
 
 <a name="dsvFormat" href="#dsvFormat">#</a> d3.<b>dsvFormat</b>(<i>delimiter</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/dsv.js)
 
@@ -114,7 +130,7 @@ The returned array also exposes a `columns` property containing the column names
 data.columns; // ["Year", "Make", "Model", "Length"]
 ```
 
-If a *row* conversion function is not specified, field values are strings. For safety, there is no automatic conversion to numbers, dates, or other types. In some cases, JavaScript may coerce strings to numbers for you automatically (for example, using the `+` operator), but better is to specify a *row* conversion function.
+If a *row* conversion function is not specified, field values are strings. For safety, there is no automatic conversion to numbers, dates, or other types. In some cases, JavaScript may coerce strings to numbers for you automatically (for example, using the `+` operator), but better is to specify a *row* conversion function. See [d3.autoType](#autoType) for a convenient *row* conversion function that infers and coerces common types like numbers and strings.
 
 If a *row* conversion function is specified, the specified function is invoked for each row, being passed an object representing the current row (`d`), the index (`i`) starting at zero for the first non-header row, and the array of column names. If the returned value is null or undefined, the row is skipped and will be omitted from the array returned by *dsv*.parse; otherwise, the returned value defines the corresponding row object. For example:
 
@@ -151,7 +167,7 @@ The resulting JavaScript array is:
 ]
 ```
 
-If a *row* conversion function is not specified, field values are strings. For safety, there is no automatic conversion to numbers, dates, or other types. In some cases, JavaScript may coerce strings to numbers for you automatically (for example, using the `+` operator), but better is to specify a *row* conversion function.
+If a *row* conversion function is not specified, field values are strings. For safety, there is no automatic conversion to numbers, dates, or other types. In some cases, JavaScript may coerce strings to numbers for you automatically (for example, using the `+` operator), but better is to specify a *row* conversion function. See [d3.autoType](#autoType) for a convenient *row* conversion function that infers and coerces common types like numbers and strings.
 
 If a *row* conversion function is specified, the specified function is invoked for each row, being passed an array representing the current row (`d`), the index (`i`) starting at zero for the first row, and the array of column names. If the returned value is null or undefined, the row is skipped and will be omitted from the array returned by *dsv*.parse; otherwise, the returned value defines the corresponding row object. For example:
 
@@ -219,6 +235,14 @@ var string = d3.csvFormatRows([[
 })));
 ```
 
+<a name="dsv_formatRow" href="#dsv_formatRow">#</a> <i>dsv</i>.<b>formatRow</b>(<i>row</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/dsv.js "Source")
+
+Formats a single array *row* of strings as delimiter-separated values, returning a string. Each column within the row will be separated by the delimiter (such as a comma, `,`). Values that contain either the delimiter, a double-quote (") or a newline will be escaped using double-quotes.
+
+<a name="dsv_formatValue" href="#dsv_formatValue">#</a> <i>dsv</i>.<b>formatValue</b>(<i>value</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/dsv.js "Source")
+
+Format a single *value* or string as a delimiter-separated value, returning a string. A value that contains either the delimiter, a double-quote (") or a newline will be escaped using double-quotes.
+
 <a name="autoType" href="#autoType">#</a> d3.<b>autoType</b>(<i>object</i>) [<>](https://github.com/d3/d3-dsv/blob/master/src/autoType.js "Source")
 
 Given an *object* (or array) representing a parsed row, infers the types of values on the *object* and coerces them accordingly, returning the mutated *object*. This function is intended to be used as a *row* accessor function in conjunction with [*dsv*.parse](#dsv_parse) and [*dsv*.parseRows](#dsv_parseRow). For example, consider the following CSV file:
@@ -260,7 +284,7 @@ Date strings must be in ECMAScript’s subset of the [ISO 8601 format](https://e
 
 Automatic type inference is primarily intended to provide safe, predictable behavior in conjunction with [*dsv*.format](#dsv_format) and [*dsv*.formatRows](#dsv_formatRows) for common JavaScript types. If you need different behavior, you should implement your own row accessor function.
 
-For more, see [the d3.autoType notebook](https://beta.observablehq.com/@d3/d3-autotype).
+For more, see [the d3.autoType notebook](https://observablehq.com/@d3/d3-autotype).
 
 ### Content Security Policy
 

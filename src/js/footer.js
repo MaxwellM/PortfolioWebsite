@@ -18,8 +18,6 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
             let results;
             results = res.data;
             $scope.visitors = results;
-
-            console.log("IPs: ", $scope.visitors);
         }, function (err) {
             alert("ERROR, /readVisitors: ", err);
         })

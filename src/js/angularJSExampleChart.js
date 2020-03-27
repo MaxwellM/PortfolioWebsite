@@ -86,9 +86,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             let results;
             results = res.data;
             $scope.visitors = results;
-
-            console.log("IPs: ", $scope.visitors);
-
             //getIPLocations($scope.visitors);
             //drawChart(results);
         }, function (err) {
@@ -115,7 +112,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             // sort our results by month
             results.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
             drawChart(results);
-            console.log("Monthly Visitors: ", $scope.monthlyVisitors);
         }, function (err) {
             alert("ERROR /readMonthlyVisitors: ", err);
         })
@@ -135,7 +131,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             let results;
             results = res.data;
             $scope.ipLocationList = results;
-            console.log("IP LOCATION: ", results);
         }, function (err) {
             alert("Error obtaining the location for that IP: ", err);
         });
@@ -145,8 +140,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         $scope.selectedIP = $scope.ipLocationList.filter(function (ipNumber) {
             return ipNumber.ip === ip;
         });
-
-        console.log("SELECTED IP: ", $scope.selectedIP);
     }
 
     getIPLocations();
