@@ -163,7 +163,7 @@ func InitUpdateForecast() {
 		fmt.Printf("Updating Forecast in %s on %s\n", sleepDur.String(), next)
 		time.Sleep(sleepDur)
 		fmt.Println("UPDATING THE FORECAST!")
-		_, err := UpdateForecast("351219")
+		_, err := UpdateForecast("331214")
 		if err != nil {
 			fmt.Println("Error fetching spotter validator stuff")
 		}

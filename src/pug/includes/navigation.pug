@@ -8,9 +8,9 @@ div(ng-init='myCtrl.buttonName = "Maxwell Morin"')
             md-nav-item(md-nav-click='log(button);myCtrl.buttonName = "Resume";')
                 | Resume
             md-menu(md-position-mode="target-right bottom")
-                md-button#navButton(ng-mouseenter='$mdMenu.open()')
+                md-button#navButton(ng-click='$mdMenu.open()')
                     | Projects ▼
-                md-menu-content(ng-mouseleave="$mdMenu.close()")
+                md-menu-content()
                     md-menu-item
                         md-button(ng-click='log(button);myCtrl.buttonName = "Table Example";')
                             | Table Example

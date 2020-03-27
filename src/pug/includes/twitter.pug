@@ -5,9 +5,14 @@ div#goExampleTwitterPageWrapper
     div#goExampleTwitterSubmitTweet
         label Tweet for MAXintosh.org!
         div#goExampleTwitterSubmitInput
-            form(ng-submit='postTweet()')
-                input(type='text', ng-model='tweet')
-                input#goExampleTranslateSubmit(type='button', value='Tweet!', ng-click='postTweet()')
+            .md-inline-form(layout='row', ng-cloak='')
+                md-content(layout-gt-sm='row', layout-padding='')
+                    form#tweetForm(ng-submit='postTweet()')
+                        md-input-container.md-block(flex-gt-sm='')
+                            label Enter someting to tweet!
+                            input(ng-model='tweet', style='width:450px')
+                        md-input-container.md-block(flex-gt-sm='')
+                            md-button(ng-click='postTweet()') Tweet
         div#goExampleTwitterPostedTweetWrapper(ng-if='tweetID')
             label Posted Tweet!
             div#goExampleTwitterPostedTweet

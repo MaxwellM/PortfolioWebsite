@@ -6,10 +6,20 @@ div#goExampleTranslatePageWrapper
     div#goExampleTranslateInputWrapper
         h3 Enter a string and choose a language to translate!
         div#goExampleTranslateInnerWrapper
-            form(ng-submit='translate()')
-                input#goExampleTranslateInput(type='text', ng-model='string')
-                select#goExampleTranslateSelect(ng-model='lngSelected', ng-options='lang for lang in languages')
-                input#goExampleTranslateSubmit(type='button', value='Submit', ng-click='translate()')
+            .md-inline-form(layout='row', ng-cloak='')
+                md-content(layout-gt-sm='row', layout-padding='')
+                    form(ng-submit='translate()')
+                        div(layout-gt-xs='row')
+                            md-input-container.md-block(flex-gt-sm='')
+                                label Input string to translate
+                                input(ng-model='string', style='width:450px')
+                            md-input-container.md-block(flex-gt-sm='')
+                                label Language
+                                md-select(ng-model='lngSelected')
+                                    md-option(ng-repeat='lang in languages', value='{{lang}}')
+                                        | {{lang}}
+                            md-input-container.md-block(flex-gt-sm='')
+                                md-button(ng-click='translate()') Submit
     div#goExampleTranslateReturnWrapper
         label Translation:
         label(ng-bind-html="translation")

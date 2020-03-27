@@ -60,16 +60,6 @@ ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter'
             "Vietnamese",
             ];
         $scope.languages.sort();
-        // $scope.languages = [
-        //     {Name:"French", code: "fr"},
-        //     {Name:"Esperanto", code: "eo"},
-        //     {Name:"Arabic", code: "ar"},
-        //     {Name:"Chinese", code: "zh"},
-        //     {Name:"Russian", code:"ru"},
-        //     {Name:"German", code: "de"},
-        //     {Name:"Latin", code: "la"},
-        //     {Name:"Vietnamese", code: "vi"},
-        // ];
         $scope.lngSelected = $scope.languages[0];
     }
 
