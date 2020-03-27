@@ -7,9 +7,11 @@ div(ng-init='myCtrl.buttonName = "Maxwell Morin"')
                 | Contact Me
             md-nav-item(md-nav-click='log(button);myCtrl.buttonName = "Resume";')
                 | Resume
+            md-nav-item(md-nav-click='log(button);myCtrl.buttonName = "Projects";')
+                | Projects
             md-menu(md-position-mode="target-right bottom")
                 md-button#navButton(ng-click='$mdMenu.open()')
-                    | Projects ▼
+                    | Examples ▼
                 md-menu-content()
                     md-menu-item
                         md-button(ng-click='log(button);myCtrl.buttonName = "Table Example";')
