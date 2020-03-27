@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os, sys, time
+import os, sys, time, platform, shutil
 
 pug_dir = "./pug/"
 less_dir = "./less/"
@@ -7,10 +7,29 @@ public_dir = "../public/"
 css_dir = public_dir + "css/"
 dir_to_be_moved = ["js", "json", "images"]
 
+def determine_os():
+    """determines the OS of the system"""
+    thisOs = platform.system()
+    if thisOs == "Windows":
+        return True
+    else:
+        return False
+
 def move_directories_to_public():
     """copies directories from the src dir to the public dir"""
     for directory in dir_to_be_moved:
-        os.system("cp -r {} ../public/".format(directory))
+        if determine_os():
+            try:
+                if os.path.exists("../public/"+directory):
+                    print("Exists, removing: "+directory)
+                    shutil.rmtree("../public/"+directory)
+                shutil.copytree(directory, "../public/"+directory)
+            except shutil.Error as e:
+                print("Error 1: %s" %e)
+            except OSError as e:
+                print("Error 2: %s" %e)
+        else:
+            os.system("cp -r {} ../public/".format(directory))
 
 def convert_pug_to_html():
     """processes the html files from the pug files"""
@@ -30,6 +49,7 @@ def convert_less_to_css():
                 os.system("lessc {}{} {}{} ".format(less_dir, less_file, css_dir, css_file))
 
 if __name__ == "__main__":
+    determine_os()
     if len(sys.argv) == 1:
         print("moving {} to the public directory".format(dir_to_be_moved))
         move_directories_to_public()

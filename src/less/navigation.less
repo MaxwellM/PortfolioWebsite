@@ -1,134 +1,43 @@
-div#nav_bar {
+md-content.md-padding._md {
+ padding: 0px;
+}
+
+li.md-nav-item:nth-child(2) {
+  margin-left: auto;
+}
+#navButton {
+  display: inline-block;
   position: relative;
-  display: grid;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: rgba(0,0,0,.125);
-  width: 100%;
-  //position: relative;
-  //background: #333A56;
-  //padding-top: 20px;
-  //padding-bottom: 20px;
-  //border-bottom-style: solid;
-  //border-bottom-width: thick;
-  //border-bottom-color: #52658F;
-  //height: 30px;
-}
-
-.navbar {
-  //padding-left: 150px;
-  //display: table-cell;
-  display: flow-root;
-  //width: 1150px;
-  z-index: 1;
-}
-
-.third-level-menu
-{
-  position: absolute;
-  top: 0;
-  right: -275px;
-  width: 275px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: none;
-}
-
-.third-level-menu > li
-{
-  height: 30px;
-  background: #999999;
-}
-.third-level-menu > li:hover { background: #CCCCCC; }
-
-.second-level-menu
-{
-  position: absolute;
-  top: 44px;
-  left: 0;
-  width: max-content;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: none;
-  z-index: 1;
-}
-
-.second-level-menu > li
-{
-  position: relative;
-  //height: 30px;
-  //background: #999999;
-  z-index: 1;
-}
-.second-level-menu > li:hover { background: #CCCCCC; }
-
-.top-level-menu
-{
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  z-index: 1;
-}
-
-.top-level-menu > li
-{
-  position: relative;
-  float: left;
-  //margin-right: 25px;
-  width: auto;
-  z-index: 1;
-}
-.top-level-menu > li:hover { background: #CCCCCC; }
-
-.top-level-menu li:hover > ul
-{
-  /* On hover, display the next level's menu */
-  display: inline;
-}
-
-
-/* Menu Link Styles */
-
-.top-level-menu a /* Apply to all links inside the multi-level menu */
-{
-  font-family: Montserrat,helvetica neue,Helvetica,Arial,sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  //font-family: "Open Sans", Helvetica, Arial, sans-serif;
-  //font-size: 18px;
-  //color: #F7F5E6;
-  //background-color: #333A56;
-  text-decoration: none;
   cursor: pointer;
-  z-index: 1;
-  letter-spacing: 1px;
-
-  /* Make the link cover the entire list item-container */
-  display: block;
-  //line-height: 50px;
-  //padding: 15px 14px 15px 16px;
+  height: fit-content;
+  line-height: 24px;
+  vertical-align: middle;
+  align-items: center;
+  text-align: center;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;
+  border: 0;
+  padding: 12px 16px;
+  margin: 0px 8px;
+  background: transparent;
+  color: rgba(0,0,0,0.54);
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 14px;
+  font-style: inherit;
+  font-variant: inherit;
+  font-family: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  transition: box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-a#NAVButtonMaxwellMorin {
-  padding: 13px 14px 13px 16px;
-}
-
-.top-level-menu a:hover {
-  color:#52658F;
-  //background-color: #F7F5E6;
-}
-
-ul.second-level-menu a {
-  //background-color: #333A56;
-  background-color: white;
-}
-
-ul.top-level-menu:nth-child(2) {
-  float: right;
-  font-size: .75rem;
-  & a {
-    padding: 15px 14px 15px 16px;
-  }
+#navButton:hover {
+  background-color: rgba(158, 158, 158, 0.2);
 }

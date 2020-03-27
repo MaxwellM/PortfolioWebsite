@@ -28,6 +28,7 @@ func SendEmail(name, email, phone, message string) error {
 		fmt.Println("Error obtaining our Google Email Info! ", err.Error())
 		return err
 	}
+	fmt.Println("Password: ", googleInfo.Password)
 
 	messageBody := []string{}
 	messageBody = append(messageBody, "Name: "+name)
@@ -48,6 +49,7 @@ func SendEmail(name, email, phone, message string) error {
 
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
+	    fmt.Println("Error: ", err.Error())
 		return err
 	} else {
 		return nil

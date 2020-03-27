@@ -4,9 +4,12 @@ div#goExampleFindOccurrencePageWrapper
             img(src='./images/golang.png', alt='')
     div#goExampleFindOccurrenceInputWrapper
         h3 Enter a string containing duplicate words.
-        div#goExampleFindOccurrenceInnerWrapper
-            form(ng-submit='findOccurrences(string)')
-                input#goExampleFindOccurrenceInput(type='text', ng-model='string')
-                input#goExampleFindOccurrenceSubmit(type='button', value='Submit', ng-click='findOccurrences(string)')
+        div#goExampleFindOccurrenceInnerWrapper(layout-gt-sm='row')
+            md-content(layout-gt-sm='row' layout-padding='')
+                md-input-container.md-block(flex-gt-sm='')
+                    label Enter some text to search for duplications.
+                    input(ng-model='string', style="width:450px")
+                md-input-container.md-block(flex-gt-sm='')
+                    md-button(ng-click='findOccurrences(string)') Submit
     div#goExampleFindOccurrenceReturnWrapper
         label {{ occurrences }}

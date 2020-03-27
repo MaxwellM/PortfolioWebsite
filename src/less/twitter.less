@@ -9,7 +9,6 @@ div#goExampleTwitterPageWrapper {
   height: 100%;
   width: 100%;
   overflow: auto;
-  background-color: #f5f8fa;
 }
 
 div#goExampleTwitterTitle {
@@ -33,6 +32,10 @@ div#goExampleTwitterTitle {
   }
 }
 
+form#tweetForm {
+  display: flex;
+}
+
 div#goExampleTwitterRecentTweetWrapper,
 div#goExampleTwitterSubmitTweet,
 div#goExampleTwitterSubmitInput,
@@ -46,15 +49,4 @@ div#goExampleTwitterPostedTweetWrapper {
   padding-top: 5px;
   padding-bottom: 5px;
   font-size: 18px;
-  & input {
-    font-family: "Open Sans", Helvetica, Arial, sans-serif;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    font-size: 18px;
-  }
-  & label {
-    width: fit-content;
-    width: -moz-fit-content;
-    margin: auto;
-  }
 }

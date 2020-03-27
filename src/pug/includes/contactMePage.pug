@@ -7,12 +7,27 @@ div#contactMeInsideWrapper
             div#contactMeTitle
                 h3 Contact Me
                 label Have a question or want to work together?
-            div#contactMeTop
-                input(ng-model='name', placeholder='Name')
-                input(ng-model='email', placeholder='Email Address')
-            div#contactMeMiddle
-                input(ng-model='phone', placeholder='Phone Number')
-            div#contactMeBottom
-                textarea(ng-model='message', placeholder='Message')
-            div#contactMeButton
-                button#contactMeSubmitButton(ng-click='sendMessage(name, email, phone, message)') Send Email
+            .md-inline-form(layout='column' ng-cloak='')
+                md-content(layout-gt-sm='row' layout-padding='')
+                    div
+                        form(name='userForm')
+                            div(layout-gt-xs='row')
+                                md-input-container.md-block(flex-gt-sm='')
+                                    label First Name
+                                    input(ng-model='user.firstname')
+                                md-input-container.md-block(flex-gt-sm='')
+                                    label Last Name
+                                    input(ng-model='user.lastname')
+                                md-input-container.md-block(flex-gt-sm='')
+                                    label Email
+                                    input(ng-model='user.email', type='email', ng-pattern="emailRegex")
+                                md-input-container.md-block(flex-gt-sm='')
+                                    label Phone
+                                    input(ng-model='user.phone', ng-pattern="phoneRegex")
+                            div(layout-gt-xs='row')
+                                md-input-container.md-block(flex-gt-xs='')
+                                    label Message
+                                    textarea(ng-model='user.message' md-maxlength='500' rows='5' md-select-on-focus='')
+                            div(layout-gt-xs='row')
+                                md-input-container.md-block(flex-gt-xs='')
+                                    md-button(ng-click='sendMessage()') Send Email

@@ -3,15 +3,23 @@ div#angularJSExampleTableWrapper
     div#angularJSExampleTableSidebarWrapper
         div#angularJSExampleTableSidebarSearchTitle
             h1 Search
-        div#angularJSExampleTableSidebarFilters
-            div#angularJSExampleTableSidebarFilterLabels
+        div#angularJSExampleTableSidebarFilters(layout-gt-sm='row')
+            md-input-container.md-block(flex-gt-sm='')
                 label Name
+                input(ng-model='searchName')
+            md-input-container.md-block(flex-gt-sm='')
                 label Species
-            div#angularJSExampleTableSidebarInputs
-                form(ng-submit='refreshAngularJSExampleTableResults()')
-                    input(type='text', ng-model='searchName')
-                    input(type='text', ng-model='searchSpecies')
-                    input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
+                input(ng-model='searchSpecies')
+            md-input-container.md-block(flex-gt-xs='')
+                md-button(ng-click='refreshAngularJSExampleTableResults()') Search
+            //div#angularJSExampleTableSidebarFilterLabels
+            //    label Name
+            //    label Species
+            //div#angularJSExampleTableSidebarInputs
+            //    form(ng-submit='refreshAngularJSExampleTableResults()')
+            //        input(type='text', ng-model='searchName')
+            //        input(type='text', ng-model='searchSpecies')
+            //        input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
         div#angularJSExampleTableSidebarTableTitleWrapper
             h1 Character Selection
         div#angularJSExampleTableSidebarTableWrapper
