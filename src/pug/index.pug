@@ -30,27 +30,27 @@ html
         div#MainWrapper
             div#nav_bar(ng-cloak)
                 include includes/navigation
-            div#mainPage(ng-controller='mainPageCtrl', ng-show='myCtrl.buttonName == "Maxwell Morin"')
+            div#mainPage(ng-controller='mainPageCtrl', ng-if='myCtrl.buttonName == "Maxwell Morin"')
                 include includes/main
-            div#projectPage(ng-controller='projectCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Projects"')
+            div#projectPage(ng-controller='projectCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Projects"')
                 include includes/projectPage
-            div#resumePage(ng-controller='resumeCtrl', ng-cloak , ng-show='myCtrl.buttonName == "Resume"')
+            div#resumePage(ng-controller='resumeCtrl', ng-cloak , ng-if='myCtrl.buttonName == "Resume"')
                 include includes/resume
-            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Contact Me"')
+            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Contact Me"')
                 include includes/contactMePage
-            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Table Example"')
+            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Table Example"')
                 include includes/angularJSExampleTable
-            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Display Example"')
+            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Display Example"')
                 include includes/angularJSExampleDisplay
-            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-show='myCtrl.buttonName == "Chart Example"')
+            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Chart Example"')
                 include includes/angularJSExampleChart
-            div#untyGameLostInSpacePage(ng-cloak, ng-show='myCtrl.buttonName == "Unity Lost In Space"')
+            div#untyGameLostInSpacePage(ng-cloak, ng-if='myCtrl.buttonName == "Unity Lost In Space"')
                 include includes/unityLostInSpace
-            div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-show='myCtrl.buttonName == "String Duplication"')
+            div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-if='myCtrl.buttonName == "String Duplication"')
                 include includes/phraseOccurrence
-            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-show='myCtrl.buttonName == "Translate"')
+            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-if='myCtrl.buttonName == "Translate"')
                 include includes/translate
-            div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-cloak, ng-show='myCtrl.buttonName == "Twitter"')
+            div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-cloak, ng-if='myCtrl.buttonName == "Twitter"')
                 include includes/twitter
             div#footerWrapper(ng-controller='footerCtrl', ng-cloak)
                 include includes/footer
