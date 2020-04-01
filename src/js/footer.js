@@ -31,9 +31,7 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
         let start = performance.now();
         $http.get("/ping").then(function (res) {
             let finish = performance.now();
-            let results;
-            results = res.data;
-            $scope.pingTime = (finish - start);
+            $scope.pingTime = Math.round(finish - start);
         }, function(error) {
             alert(error.data);
         });
