@@ -8,8 +8,9 @@ import (
 )
 
 func main() {
-	//gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
+	router.ForwardedByClientIP = false
 
 	//sets the root of the directory to access
 	router.Static("/css", "./public/css")
@@ -43,6 +44,9 @@ func main() {
 	router.GET("/getOccurrences", routes.GetOccurrences)
 	router.GET("/translate", routes.Translate)
 	router.POST("/postTweet", routes.PostTweet)
+
+	router.GET("/ping", routes.SendPong)
+    router.GET("/readIP", routes.ReadIP)
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()

@@ -6,11 +6,39 @@ import (
 	"PortfolioWebsite/src/go/starWarsCharacterTableEample"
 	"PortfolioWebsite/src/go/visitorCounter"
 	"PortfolioWebsite/src/go/weatherExample"
+	"PortfolioWebsite/src/go/common"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
+
+// Using ipstack.com we can make 10,000 ip requests a month for free. Cool. Lets get some
+// location data on an IP address if we find one.
+func ReadIP(data *gin.Context) {
+    IP := data.GetHeader("X-Real-IP")
+
+    if IP != "" {
+        url := fmt.Sprintf(`http://api.ipstack.com/`+IP+`?access_key=2724f648413b327eda2fd505ea8cb9ab`)
+
+        resp, err := common.GetInfoFromURL(url)
+
+        if err != nil {
+            data.JSON(http.StatusBadRequest, err.Error())
+        }
+
+        data.JSON(http.StatusOK, resp)
+    } else {
+            url := fmt.Sprintf(`http://api.ipstack.com/205.170.191.41?access_key=2724f648413b327eda2fd505ea8cb9ab`)
+
+            resp, err := common.GetInfoFromURL(url)
+
+            if err != nil {
+                data.JSON(http.StatusBadRequest, err.Error())
+            }
+        data.JSON(http.StatusOK, resp)
+    }
+}
 
 func VisitorCounter(data *gin.Context) {
 	//IP := data.Request.RemoteAddr
@@ -287,4 +315,11 @@ func PostTweet(data *gin.Context) {
 	} else {
 		data.JSON(http.StatusOK, SubmitTweet)
 	}
+}
+
+//Responds to a ping from /ping
+func SendPong(data *gin.Context) {
+		data.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
 }

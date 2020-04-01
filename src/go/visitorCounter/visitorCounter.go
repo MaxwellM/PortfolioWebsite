@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"time"
 
 	"PortfolioWebsite/src/go/db"
+	"PortfolioWebsite/src/go/common"
 )
 
 type IpResult struct {
@@ -457,49 +457,6 @@ func ReadIPLocationDB() ([]*VisitorLocationResult, error) {
 	return ipLocationResultsArray, nil
 }
 
-func GetIPLocationRequest(ip string) (map[string]interface{}, error) {
-	fmt.Println("LOCATION IP: ", ip)
-	//key := "at_pruWCmEUi97TIwBtqGswfJokFFZ6M"
-	url := fmt.Sprintf(`https://geoipify.whoisxmlapi.com/api/v1?apiKey=at_pruWCmEUi97TIwBtqGswfJokFFZ6M&ipAddress=` + ip)
-
-	//fmt.Println("URL: ", url)
-
-	resp, err := http.Get(url)
-
-	fmt.Println("IP LOCATION RESP: ", resp.Body)
-
-	if err != nil {
-		fmt.Println("There was an error getting the IP Location... ", err)
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	// This worked because we need to convert our *Reader to []Bytes
-	// https://stackoverflow.com/questions/38673673/access-http-response-as-string-in-go
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Couldn't convert RESP to []Byte for your Current Conditions Request: ", err)
-	}
-
-	var test map[string]interface{}
-	err = json.Unmarshal(bytes, &test)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("TEST: ", test)
-
-	//finalResult := map[string]interface{}{
-	//	"Result":          test,
-	//	"Location":        location,
-	//}
-	//
-	//fmt.Println("CURRENT CONDITIONS: ", finalResult)
-
-	return test, err
-}
-
 func GetIPLocation() (map[string]interface{}, error) {
 	b, err := ioutil.ReadFile("goResources/visitorCounter/ipLocations.json") // just pass the file name
 	if err != nil {
@@ -521,7 +478,8 @@ func GetIPLocation() (map[string]interface{}, error) {
 func WriteIPLocationToDB(ip string) (string, error) {
 	lastInsertId := 0
 
-	ipLocationReturn, err := GetIPLocationRequest(ip)
+	url := fmt.Sprintf(`https://geoipify.whoisxmlapi.com/api/v1?apiKey=at_pruWCmEUi97TIwBtqGswfJokFFZ6M&ipAddress=` + ip)
+	ipLocationReturn, err := common.GetInfoFromURL(url)
 	if err != nil {
 		fmt.Println("Error obtaining IP Location", err)
 		return "", err

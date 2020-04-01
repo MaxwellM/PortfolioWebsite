@@ -5,6 +5,7 @@ ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($sc
 
     $scope.playLostInSpace = false;
 
+    $scope.currentNavItem = '';
     $scope.currentMenuItem = '';
 
     $scope.examples = [
