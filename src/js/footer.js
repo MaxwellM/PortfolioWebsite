@@ -33,7 +33,7 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
             let finish = performance.now();
             $scope.pingTime = Math.round(finish - start);
         }, function(error) {
-            alert(error.data);
+            console.log(error.data);
         });
     }
 
