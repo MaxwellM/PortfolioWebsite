@@ -4,6 +4,7 @@ import os, sys, time, platform, shutil
 pug_dir = "./pug/"
 less_dir = "./less/"
 public_dir = "../public/"
+public_html_dir = "../public/html/"
 css_dir = public_dir + "css/"
 dir_to_be_moved = ["js", "json", "images"]
 
@@ -33,10 +34,11 @@ def move_directories_to_public():
 
 def convert_pug_to_html():
     """processes the html files from the pug files"""
-    pug_files = os.listdir(pug_dir)
-    for pug_file in pug_files:
-        if ".pug" in pug_file:
-            os.system("pug -P -o {} {}{} ".format(public_dir, pug_dir, pug_file))
+    os.system("pug -P {} --out {}".format(pug_dir, public_html_dir))
+    #pug_files = os.listdir(pug_dir)
+    #for pug_file in pug_files:
+    #    if ".pug" in pug_file:
+    #        os.system("pug -P -o {} {}{} ".format(public_dir, pug_dir, pug_file))
 
 def convert_less_to_css():
     """Converting less files to css"""

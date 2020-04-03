@@ -17,7 +17,11 @@ func main() {
 	router.Static("/js", "./public/js")
 	router.Static("/images", "./public/images")
 	router.Static("/unityGames", "./public/unityGames")
-	router.StaticFile("", "./public/index.html")
+	router.StaticFile("/projects", "./public/html/landingPages/projectsLanding.html")
+	router.StaticFile("/home",  "./public/html/landingPages/mainLanding.html")
+	router.StaticFile("/resume", "./public/html/landingPages/resumeLanding.html")
+	router.StaticFile("/contactMe", "./public/html/includes/contactMePage.html")
+	router.StaticFile("", "./public/html/landingPages/mainLanding.html")
 
 	// Linked to the Star Wars Character Example
 	router.POST("/addCharacterToDB", routes.AddCharacterToDB)
