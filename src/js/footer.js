@@ -5,10 +5,10 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
     $scope.readVisitors = readVisitors;
 
     $scope.visitors = [];
-    $scope.pingTime = 0.0;
-    $scope.distance = 0.0;
-    $scope.browserCity = "";
-    $scope.browserState = "";
+    // $scope.pingTime = 0.0;
+    // $scope.distance = 0.0;
+    // $scope.browserCity = "";
+    // $scope.browserState = "";
 
     function visitorCounter() {
         $http.get("/visitorCounter").then(function (res) {
@@ -27,27 +27,27 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
         })
     }
 
-    function ping() {
-        let start = performance.now();
-        $http.get("/ping").then(function (res) {
-            let finish = performance.now();
-            $scope.pingTime = Math.round(finish - start);
-        }, function(error) {
-            console.log(error.data);
-        });
-    }
-
-    function readIP() {
-        $http.get("/readIP").then(function (res) {
-            let results = res.data;
-            console.log("RESULTS: ", results);
-            //$scope.distance = calculateDistance(results.latitude, 32.779167 , results.longitude, -96.808891);
-            //$scope.browserCity = results.city;
-            //$scope.browserState = results.region_code;
-        }, function (error) {
-            console.log(error);
-        })
-    }
+    // function ping() {
+    //     let start = performance.now();
+    //     $http.get("/ping").then(function (res) {
+    //         let finish = performance.now();
+    //         $scope.pingTime = Math.round(finish - start);
+    //     }, function(error) {
+    //         console.log(error.data);
+    //     });
+    // }
+    //
+    // function readIP() {
+    //     $http.get("/readIP").then(function (res) {
+    //         let results = res.data;
+    //         console.log("RESULTS: ", results);
+    //         //$scope.distance = calculateDistance(results.latitude, 32.779167 , results.longitude, -96.808891);
+    //         //$scope.browserCity = results.city;
+    //         //$scope.browserState = results.region_code;
+    //     }, function (error) {
+    //         console.log(error);
+    //     })
+    // }
 
     // Found this here:
     // https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
@@ -61,9 +61,9 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
     //     return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
     // }
 
-    readIP();
+    // readIP();
     visitorCounter();
     readVisitors();
-    ping();
-    setInterval(ping, 2500);
+    // ping();
+    // setInterval(ping, 2500);
 }]);

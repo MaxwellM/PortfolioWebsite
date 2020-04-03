@@ -5,33 +5,78 @@ div#angularJSExampleChartInnerPageWrapper
             h1 Website Traffic
         div#angularJSExampleChartWrapper
             div#chart
-    div#angularJSExampleChartBottomWrapper
-        div#angularJSExampleChartPageCount
-            h3 {{ currentMonthName }} Page Views
-            h3 {{ ::currentPageMonthTotal }}
-        div#angularJSExampleChartVisitorCount
-            h3 {{ currentMonthName }} Unique Visitors
-            h3 {{ ::currentMonthTotal }}
-        div#angularJSExampleChartVisitorList
-            h3 Unique Visitor List
-            div#angularJSExampleCharVisitors
-                label(ng-repeat='ip in ipLocationList', ng-click='selectIPLocation(ip.ip)') {{ ::$index + 1 }}) {{ ::ip.ip }}
-        div#angularJSExampleChartVisitorLocation(ng-show='selectedIP.length > 0')
-            h3 Unique Visitor Info
-            div#angularJSExampleChartVisitors(ng-repeat='visitor in selectedIP')
-                div#angularJSExampleChartLocationLabelWrapper
-                    label(ng-show='visitor.ip') IP
-                    label(ng-show='visitor.isp') ISP
-                    label(ng-show='visitor.as.name') Name
-                    label(ng-show='visitor.location.city') City
-                    label(ng-show='visitor.location.region') Region
-                    label(ng-show='visitor.location.county') Country
-                div#angularJSExampleChartLocationInfoWrapper
-                    label(ng-show='visitor.ip') {{ ::visitor.ip }}
-                    label(ng-show='visitor.isp') {{ ::visitor.isp }}
-                    label(ng-show='visitor.as.name') {{ ::visitor.as.name }}
-                    label(ng-show='visitor.location.city') {{ ::visitor.location.city }}
-                    label(ng-show='visitor.location.region') {{ ::visitor.location.region }}
-                    label(ng-show='visitor.location.county') {{ ::visitor.location.county }}
+    div#angularJSExampleChartCardWrapper
+        div#angularJSExampleChartLeft
+            md-content.md-padding(layout-xs='column', layout='column')
+                div(flex-xs='', flex-gt-xs='50', layout='column', style='margin:auto;')
+                    md-card
+                        md-card-title
+                            md-card-title-text
+                                span.md-headline Page Views
+                        md-card-content
+                            p
+                                span
+                                    | {{ currentMonthName }} Page Views
+                                span
+                                    | {{ ::currentPageMonthTotal }}
+                    md-card
+                        md-card-title
+                            md-card-title-text
+                                span.md-headline Unique Visitors
+                        md-card-content
+                            p
+                                span
+                                    | {{ currentMonthName }} Unique Visitors
+                                span
+                                    | {{ ::currentMonthTotal }}
+        div#angularJSExampleChartMiddle
+            md-content.md-padding(layout-xs='column', layout='column')
+                div(flex-xs='', flex-gt-xs='50', layout='row', style='margin:auto;')
+                    md-card
+                        md-card-title
+                            md-card-title-text
+                                span.md-headline Unique Visitor List
+                        md-card-content
+                            div#angularJSExampleChartVisitorList
+                                    label(ng-repeat='ip in ipLocationList', ng-click='selectIPLocation(ip.ip)') {{ ::$index + 1 }}) {{ ::ip.ip }}
+
+                            div#angularJSExampleChartVisitorLocation(ng-show='selectedIP.length > 0')
+                                h3 Unique Visitor Info
+                                div#angularJSExampleChartVisitors(ng-repeat='visitor in selectedIP')
+                                    div#angularJSExampleChartLocationLabelWrapper
+                                        label(ng-show='visitor.ip') IP
+                                        label(ng-show='visitor.isp') ISP
+                                        label(ng-show='visitor.as.name') Name
+                                        label(ng-show='visitor.location.city') City
+                                        label(ng-show='visitor.location.region') Region
+                                        label(ng-show='visitor.location.county') Country
+                                    div#angularJSExampleChartLocationInfoWrapper
+                                        label(ng-show='visitor.ip') {{ ::visitor.ip }}
+                                        label(ng-show='visitor.isp') {{ ::visitor.isp }}
+                                        label(ng-show='visitor.as.name') {{ ::visitor.as.name }}
+                                        label(ng-show='visitor.location.city') {{ ::visitor.location.city }}
+                                        label(ng-show='visitor.location.region') {{ ::visitor.location.region }}
+                                        label(ng-show='visitor.location.county') {{ ::visitor.location.county }}
+        div#angularJSExampleChartRight
+            md-content.md-padding(layout-xs='column', layout='column')
+                div(flex-xs='', flex-gt-xs='50', layout='column', style='margin:auto;')
+                    md-card
+                        md-card-title
+                            md-card-title-text
+                                span.md-headline Connection Information
+                        md-card-content
+                            p
+                                span
+                                    | Response Time: {{ pingTime }} ms
+                                span
+                                    | Client: {{ browserCity }}, {{ browserState }}
+                                span
+                                    | Server: Dallas, TX
+                                span
+                                    | Distance: {{ distance | limitTo:8}} Km
+
+//h4 Response Time: {{ pingTime }} ms
+//if $scope.browserCity && $scope.browserState !== "test"
+//    h4 Distance: {{ browserCity }}, {{ browserState }} to Dallas, TX {{ distance | limitTo:8}} Km
 
 
