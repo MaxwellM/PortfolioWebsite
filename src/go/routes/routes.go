@@ -18,6 +18,8 @@ import (
 func ReadIP(data *gin.Context) {
     IP := data.GetHeader("X-Real-IP")
 
+    fmt.Println("IP FOR DISTANCE: ", IP)
+
     if IP != "" {
         url := fmt.Sprintf(`http://api.ipstack.com/`+IP+`?access_key=2724f648413b327eda2fd505ea8cb9ab`)
 
@@ -29,7 +31,7 @@ func ReadIP(data *gin.Context) {
 
         data.JSON(http.StatusOK, resp)
     } else {
-            url := fmt.Sprintf(`http://api.ipstack.com/205.170.191.41?access_key=2724f648413b327eda2fd505ea8cb9ab`)
+            url := fmt.Sprintf(`http://api.ipstack.com/161.185.160.93?access_key=2724f648413b327eda2fd505ea8cb9ab`)
 
             resp, err := common.GetInfoFromURL(url)
 
