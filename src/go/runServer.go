@@ -5,12 +5,15 @@ import (
 	"PortfolioWebsite/src/go/visitorCounter"
 	"PortfolioWebsite/src/go/weatherExample"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
+	router.Use(cors.Default())
 	router.ForwardedByClientIP = false
+
+	gin.SetMode(gin.ReleaseMode)
 
 	//sets the root of the directory to access
 	router.Static("/css", "./public/css")
@@ -18,6 +21,8 @@ func main() {
 	router.Static("/images", "./public/images")
 	router.Static("/unityGames", "./public/unityGames")
 	router.StaticFile("", "./public/index.html")
+
+	router.GET("/getGithubInfo/:url", routes.GetGithubInfo)
 
 	// Linked to the Star Wars Character Example
 	router.POST("/addCharacterToDB", routes.AddCharacterToDB)

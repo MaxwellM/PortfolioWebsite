@@ -9,9 +9,27 @@ import (
 	"PortfolioWebsite/src/go/common"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/render"
 	"net/http"
 	"strconv"
 )
+
+func GetGithubInfo(data *gin.Context) {
+	url := data.Query("url")
+    fmt.Println("URL: ", url)
+    resp, err := common.GetInfoFromURLBytes(url)
+    if err != nil {
+        data.JSON(http.StatusBadRequest, err.Error())
+    } else {
+        // We need to pass back an HTML page. That is how the library parses the Github Info
+        // http://benwendt.ca/articles/gin-header/
+        data.Render(
+            http.StatusOK, render.Data{
+                ContentType: "text/html",
+                Data:        []byte(resp),
+            })
+    }
+}
 
 // Using ipstack.com we can make 10,000 ip requests a month for free. Cool. Lets get some
 // location data on an IP address if we find one.
