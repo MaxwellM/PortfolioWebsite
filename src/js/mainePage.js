@@ -5,7 +5,7 @@ ngModule.controller('mainPageCtrl', ['$scope', '$http', '$q', '$filter', functio
     GitHubCalendar(".calendar", "MaxwellM", {
         responsive: true,
         proxy: function (url) {
-            return "http://localhost:8080/getGithubInfo/url?url="+ url;
+            return "https://maxintosh:8080/getGithubInfo/url?url="+ url;
         }
         });
 
