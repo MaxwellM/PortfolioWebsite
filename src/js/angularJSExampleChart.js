@@ -1,9 +1,11 @@
 var ngModule = angular.module('app');
 
-ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
+ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$filter', '$interval', function ($scope, $http, $q, $filter, $interval) {
 
     $scope.readVisitors = readVisitors;
     $scope.selectIPLocation = selectIPLocation;
+
+    $scope.promise = null;
 
     $scope.visitors = [];
     $scope.monthlyVisitors = [];
@@ -181,6 +183,26 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         });
     }
 
+    // starts the interval
+    $scope.start = function() {
+        // stops any running interval to avoid two intervals running at the same time
+        $scope.stop();
+
+        // store the interval promise
+        $scope.promise = $interval(ping, 2500);
+    };
+
+    // stops the interval
+    $scope.stop = function() {
+        $interval.cancel($scope.promise);
+    };
+
+    // If this gets destroyed (when leaving the tab) we'll stop the pinging!
+    $scope.$on('$destroy', function() {
+        console.log("cancelling interval");
+        $interval.cancel($scope.promise);
+    });
+
     getIPLocations();
     setCurrentMonth();
     readVisitors();
@@ -188,5 +210,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     readIP();
     ping();
-    setInterval(ping, 2500);
+
+    $scope.start();
 }]);
