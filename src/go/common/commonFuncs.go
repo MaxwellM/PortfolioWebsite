@@ -62,3 +62,20 @@ func GetInfoFromURLBytes(url string) (string, error) {
 
 	return buf.String(), err
 }
+
+func ReadJsonFile(file string) (map[string]interface{}, error) {
+	fileReturn, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println("Error reading JSON file: ", err)
+		return nil, err
+	}
+
+    var fileInfo map[string]interface{}
+    err = json.Unmarshal([]byte(fileReturn), &fileInfo)
+    if err != nil {
+        fmt.Println("Error parsing JSON into map[string]interface{}: ", err)
+        return nil, err
+    }
+
+	return fileInfo, nil
+}

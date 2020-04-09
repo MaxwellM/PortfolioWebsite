@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"reflect"
 	"time"
+
+	"PortfolioWebsite/src/go/common"
 )
 
 const (
@@ -165,7 +167,7 @@ func InitUpdateForecast() {
 		fmt.Println("UPDATING THE FORECAST!")
 		_, err := UpdateForecast("331214")
 		if err != nil {
-			fmt.Println("Error fetching spotter validator stuff")
+			fmt.Println("Error weather forecast!")
 		}
 	}
 }
@@ -186,8 +188,13 @@ func InitUpdateCurrentConditions() {
 
 func GetCurrentConditions(location string) (map[string]interface{}, error) {
 	if CountRequest() {
-		key := "6kXpxa4RNqkTAgbRNc4ZFaZvcCOLcrM3"
-		url := fmt.Sprintf(`http://dataservice.accuweather.com/currentconditions/v1/` + location + `?apikey=` + key)
+        accuweatherInfo, err := common.ReadJsonFile("accuweatherKey.json")
+        if err != nil {
+            fmt.Println("Error reading JSON file!")
+            return nil, err
+        }
+        accuweatherKey := accuweatherInfo["key"].(string)
+		url := fmt.Sprintf(`http://dataservice.accuweather.com/currentconditions/v1/` + location + `?apikey=` + accuweatherKey)
 
 		//fmt.Println("URL: ", url)
 
@@ -230,8 +237,13 @@ func GetCurrentConditions(location string) (map[string]interface{}, error) {
 
 func GetWeather(location string) (map[string]interface{}, error) {
 	if CountRequest() {
-		key := "6kXpxa4RNqkTAgbRNc4ZFaZvcCOLcrM3"
-		url := fmt.Sprintf(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/` + location + `?apikey=` + key)
+	    accuweatherInfo, err := common.ReadJsonFile("accuweatherKey.json")
+	    if err != nil {
+	        fmt.Println("Error reading JSON file!")
+	        return nil, err
+	    }
+	    accuweatherKey := accuweatherInfo["key"].(string)
+		url := fmt.Sprintf(`http://dataservice.accuweather.com/forecasts/v1/daily/5day/` + location + `?apikey=` + accuweatherKey)
 
 		//fmt.Println("URL: ", url)
 
