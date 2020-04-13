@@ -19,13 +19,14 @@ html
         link(rel="stylesheet", href="./css/translate.css", type="text/css")
         link(rel="stylesheet", href="./unityGames/LostInSpaceWebGL/TemplateData/style.css")
         link(rel="stylesheet", href="./css/twitter.css", type="text/css")
+        link(rel="stylesheet", href="./css/stockTracker.css", type="text/css")
         link(rel="stylesheet", href="./js/node_modules/angular-tooltips/dist/angular-tooltips.css", type="text/css")
         link(rel="stylesheet", href="./js/node_modules/github-calendar-1.3.4/dist/github-calendar.css", type="text/css")
         link(rel="stylesheet", href="./js/node_modules/angular-material/angular-material.css", type="text/css")
-        link(rel="stylesheet", href="./js/node_modules/angular-material-data-table/dist/md-data-table.css", type="text/css")
         link(rel="stylesheet", href="./css/c3.css")
         link(rel="shortcut icon", href="./images/favicon.png", type="image/png")
         script(src="./js/node_modules/angular/angular.min.js")
+        script(src="./js/node_modules/angular-material/angular-material.min.js")
     body(ng-app='app', ng-controller='myCtrl')
         div#MainWrapper
             div#nav_bar(ng-cloak)
@@ -52,13 +53,13 @@ html
                 include includes/translate
             div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-cloak, ng-if='myCtrl.buttonName == "Twitter"')
                 include includes/twitter
+            div#stockTrackerPage(ng-controller='stockTrackerCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Stock Tracker"')
+                include includes/stockTracker
             div#footerWrapper(ng-controller='footerCtrl', ng-cloak)
                 include includes/footer
     script(src="./js/node_modules/angular-sanitize/angular-sanitize.min.js")
     script(src="./js/node_modules/angular-tooltips/dist/angular-tooltips.min.js")
     script(src="./js/node_modules/github-calendar-1.3.4/dist/github-calendar.min.js")
-    script(src="./js/node_modules/angular-material/angular-material.min.js")
-    script(src="./js/node_modules/angular-material-data-table/dist/md-data-table.min.js")
     script(src="./js/node_modules/angular-animate/angular-animate.min.js")
     script(src="./js/node_modules/angular-aria/angular-aria.min.js")
     script(src="./js/node_modules/angular-messages/angular-messages.min.js")
@@ -76,6 +77,7 @@ html
     script(src="./js/phraseOccurrence.js")
     script(src="./js/translate.js")
     script(src="./js/twitter.js")
+    script(src="./js/stockTracker.js")
     script(src="./js/footer.js")
     script(src="./js/node_modules/d3/dist/d3.min.js" charset="utf-8")
     script(src="./js/node_modules/c3/c3.min.js")

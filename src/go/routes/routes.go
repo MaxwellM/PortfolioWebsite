@@ -14,6 +14,23 @@ import (
 	"strconv"
 )
 
+func GetNewInventory(data *gin.Context) {
+	url := data.Query("url")
+    fmt.Println("URL: ", url)
+	resp, err := common.GetInfoFromURLBytes(url)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err.Error())
+	} else {
+		// We need to pass back an HTML page. That is how the library parses the Github Info
+		// http://benwendt.ca/articles/gin-header/
+		data.Render(
+			http.StatusOK, render.Data{
+				ContentType: "text/html",
+				Data:        []byte(resp),
+			})
+	}
+}
+
 func GetGithubInfo(data *gin.Context) {
 	url := data.Query("url")
     fmt.Println("URL: ", url)
@@ -199,7 +216,7 @@ func SetClickedRow(data *gin.Context) {
 }
 
 func GetWeather(data *gin.Context) {
-	location := data.DefaultQuery("location", "351219")
+	location := data.DefaultQuery("location", "331214")
 
 	fmt.Println("Location: ", location)
 
@@ -213,7 +230,7 @@ func GetWeather(data *gin.Context) {
 }
 
 func GetWeatherConditions(data *gin.Context) {
-	location := data.DefaultQuery("location", "351219")
+	location := data.DefaultQuery("location", "331214")
 
 	fmt.Println("Location: ", location)
 

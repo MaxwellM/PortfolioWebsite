@@ -40,7 +40,7 @@ func GetInfoFromURLBytes(url string) (string, error) {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		fmt.Println("There was an error getting the IP Location... ", err)
+		fmt.Println("There was an error getting HTML: ", err)
 		return "", err
 	}
 
