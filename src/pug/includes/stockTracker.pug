@@ -1,7 +1,36 @@
+
 div#stockTrackerPageWrapper
     div#stockTrackerUpdateInfoWrapper
         label Last Update: {{ lastUpdate }}
-        md-progress-circular(md-mode='indeterminate', md-diameter="20px")
         md-progress-circular(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
-div#stockTrackerPageTableWrapper
-
+    div#stockTrackerPageTableWrapper
+        div#stockTrackerItemPickerWrapper
+            md-card
+                md-card-title
+                    md-card-title-text
+                        span.md-headline Stock Tracker Item
+                        span.md-subhead Pick item you want to find.
+                md-card-content
+                    div(layout='row')
+                        md-select.md-no-underline(ng-model='itemSelected', placeholder='Item')
+                            md-option(ng-repeat='item in items', value='{{item}}')
+                                | {{item}}
+        div#stockTrackerTableWrapper(ng-show='results.length')
+            md-table-container
+                table(md-table='')
+                    thead(md-head='')
+                        tr(md-row='')
+                            th(md-column='' md-order-by='Id')
+                                span Id
+                            th(md-column='')
+                                span CompanyName
+                            th(md-column='')
+                                span Price
+                            th(md-column='')
+                                span In Stock
+                    tbody(md-body='')
+                        tr(md-row='' ng-repeat='result in results')
+                            td(md-cell='') {{result.Id}}
+                            td(md-cell='') {{result.CompanyName}}
+                            td(md-cell='') {{result.Price}}
+                            td(md-cell='') {{result.InStock}}

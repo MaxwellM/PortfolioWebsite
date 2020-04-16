@@ -51,7 +51,7 @@ func main() {
 	router.POST("/postTweet", routes.PostTweet)
 
 	// Linked to the Stock Tracker Page
-	router.GET("/getNewInventory/:url", routes.GetNewInventory)
+	router.GET("/getNewInventory", routes.GetNewInventory)
 
 	router.GET("/ping", routes.SendPong)
     router.GET("/readIP", routes.ReadIP)

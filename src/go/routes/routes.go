@@ -7,6 +7,7 @@ import (
 	"PortfolioWebsite/src/go/visitorCounter"
 	"PortfolioWebsite/src/go/weatherExample"
 	"PortfolioWebsite/src/go/common"
+	"PortfolioWebsite/src/go/stockTracker"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
@@ -16,8 +17,29 @@ import (
 
 func GetNewInventory(data *gin.Context) {
 	url := data.Query("url")
-    fmt.Println("URL: ", url)
-	resp, err := common.GetInfoFromURLBytes(url)
+	vendor := data.Query("vendor")
+	//fmt.Println("ALL: ", data)
+    //fmt.Println("URL: ", url)
+    //fmt.Println("Vendor: ", vendor)
+	resp, err := common.GetHTMLFromURL(url)
+
+	// Now lets strip the HTML into just the data we need!
+	//filteredResp, err := stockTracker.StripBestBuyHtml(resp)
+
+	if vendor == "BestBuy" {
+	    filteredResp, err := stockTracker.StripBestBuyHtml(resp)
+	    if err != nil {
+	        fmt.Println("Error filtering Best Buy resp: ", err.Error())
+	        data.JSON(http.StatusBadRequest, err.Error())
+	    } else {
+            data.Render(
+                http.StatusOK, render.Data{
+                    ContentType: "text/html",
+                    Data:        []byte(filteredResp),
+                })
+	    }
+	}
+
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
 	} else {

@@ -5,48 +5,78 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
     $scope.progressValue = 0;
     $scope.lastUpdate;
     $scope.promise = null;
+    //$scope.promise2 = null;
+    $scope.results = [];
 
-    let bestBuy = "https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&id=pcat17071&iht=y&keys=keys&ks=960&list=n&qp=category_facet%3Dpcmcat1484077694025&sc=Global&st=nintendo%20switch&type=page&usc=All%20Categories";
-    let target = "https://www.target.com/s?sortBy=relevance&Nao=0&category=piakr&searchTerm=nintendo+switch";
+    $scope.items = ['Nintendo Switch'];
+    $scope.itemSelected = "";
+
+    let bestBuy = "https://www.bestbuy.com/site/nintendo-switch/nintendo-switch-consoles/pcmcat1484077694025.c?id=pcmcat1484077694025";
+    let target = "https://www.target.com/c/nintendo-switch-consoles-video-games/-/N-piakr";
     let walmart = "https://www.walmart.com/search/?cat_id=2636_4646529_2002476&facet=retailer%3AWalmart.com";
     let gameStop = "https://www.gamestop.com/video-games/switch/consoles";
+
+    // function getNewInventorySync() {
+    //     $scope.googleData =[];
+    //
+    //     console.log("START");
+    //     $q.all([
+    //         $http.get('/getNewInventory/url?url='+ 'https://www.bestbuy.com/site/nintendo-switch/nintendo-switch-consoles/pcmcat1484077694025.c?id=pcmcat1484077694025'),
+    //         $http.get('/getNewInventory/url?url='+ 'https://www.target.com/c/nintendo-switch-consoles-video-games/-/N-piakr'),
+    //         $http.get('/getNewInventory/url?url='+ 'https://www.walmart.com/search/?cat_id=2636_4646529_2002476&facet=retailer%3AWalmart.com'),
+    //         $http.get('/getNewInventory/url?url='+ 'https://www.gamestop.com/video-games/switch/consoles')
+    //     ]).then(function(results) {
+    //         console.log("END");
+    //         /* enter your logic here */
+    //         console.log(results);
+    //     });
+    // }
     
     function getNewInventory() {
         $scope.progressValue = 0;
+        $scope.results = [];
         let url = bestBuy;
+        let vendor = "BestBuy";
         // We're going to make multiple get requests, to each vendor. We don't care when they're done, so
         // chaining isn't necessary. We actually want them to complete as fast as possible. Each completed
         // request is going to add progress to our progress bar value. How cool is that?
-        $http.get('/getNewInventory/url?url='+ url).then(function (res) {
+        $http.get('/getNewInventory', {params: {url: url, vendor: vendor}}).then(function (res) {
             let results;
             results = res.data;
+            $scope.results.push(results);
             $scope.progressValue += 25;
         }, function(error) {
             alert(error.data);
         });
 
         url = target;
-        $http.get('/getNewInventory/url?url='+ url).then(function (res) {
+        vendor = "Target";
+        $http.get('/getNewInventory', {params: {url: url, vendor: vendor}}).then(function (res) {
             let results;
             results = res.data;
+            $scope.results.push(results);
             $scope.progressValue += 25;
         }, function(error) {
             alert(error.data);
         });
 
         url = walmart;
-        $http.get('/getNewInventory/url?url='+ url).then(function (res) {
+        vendor = "Walmart";
+        $http.get('/getNewInventory', {params: {url: url, vendor: vendor}}).then(function (res) {
             let results;
             results = res.data;
+            $scope.results.push(results);
             $scope.progressValue += 25;
         }, function(error) {
             alert(error.data);
         });
 
         url = gameStop;
-        $http.get('/getNewInventory/url?url='+ url).then(function (res) {
+        vendor = "GameStop";
+        $http.get('/getNewInventory', {params: {url: url, vendor: vendor}}).then(function (res) {
             let results;
             results = res.data;
+            $scope.results.push(results);
             $scope.progressValue += 25;
         }, function(error) {
             alert(error.data);
@@ -56,7 +86,8 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
 
         // Lets update lastUpdate with our new time!
         let today = new Date();
-        $scope.lastUpdate = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        // This will get AM/PM to show!
+        $scope.lastUpdate= today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
     }
 
     // starts the interval
@@ -65,18 +96,22 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
         $scope.stop();
 
         // store the interval promise
-        $scope.promise = $interval(getNewInventory, 15000);
+        // Also run it once every 5 minutes. Don't want to go too crazy.
+        $scope.promise = $interval(getNewInventory, 300000);
+        //$scope.promise2 = $interval(getNewInventorySync, 15000);
     };
 
     // stops the interval
     $scope.stop = function() {
         $interval.cancel($scope.promise);
+        //$interval.cancel($scope.promise2);
     };
 
     // If this gets destroyed (when leaving the tab) we'll stop the pinging!
     $scope.$on('$destroy', function() {
         console.log("cancelling interval");
         $interval.cancel($scope.promise);
+        //$interval.cancel($scope.promise2);
     });
 
     function parseTarget(html) {

@@ -1,4 +1,11 @@
-var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet', 'ngMaterial', 'ngMessages']);
+var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet', 'ngMaterial', 'ngMessages', 'md.data.table'])
+
+.config(['$mdThemingProvider', function ($mdThemingProvider) {
+    'use strict';
+
+    $mdThemingProvider.theme('primary')
+        .primaryPalette('blue');
+}]);
 
 ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
     $scope.launchLostInSpace = launchLostInSpace;
