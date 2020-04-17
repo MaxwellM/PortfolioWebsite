@@ -191,12 +191,10 @@ func StripGameStopHtml(url string) ([]*ItemResult, error) {
     doc.Find(".product-grid-tile-wrapper").Each(func(i int, s *goquery.Selection) {
         // GameStop, thankfully, has a nice Json for each item! Lets grab that!
         allInfoJson := s.Find("div.product-tile-header > div.pdp-link > a").AttrOr("data-gtmdata", "{}")
-        fmt.Println("Json: ", allInfoJson)
         allInfoMap, err := common.GetMapFromData(allInfoJson)
         if err != nil {
             fmt.Println("Error converting data into Json: ", err)
         }
-        fmt.Println("After Json: ", allInfoMap)
         priceMap := allInfoMap["price"].(map[string]interface{})
         productInfoMap := allInfoMap["productInfo"].(map[string]interface{})
 
