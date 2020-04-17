@@ -149,7 +149,7 @@ func InitRequestCount() {
 		next := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
 
 		sleepDur := next.Sub(now)
-		fmt.Printf("Reseting Weather Request Counter in %s on %s\n", sleepDur.String(), next)
+		fmt.Printf("Resetting Weather Request Counter in %s on %s\n", sleepDur.String(), next)
 		time.Sleep(sleepDur)
 
 		resetRequestCount()
@@ -177,7 +177,7 @@ func InitUpdateCurrentConditions() {
 		t := time.Now()
 		if t.Minute() == 00 {
 			fmt.Println("UPDATING THE WEATHER!")
-			_, err := UpdateCurrentConditions("351219")
+			_, err := UpdateCurrentConditions("331214")
 			if err != nil {
 				fmt.Println("Error updating the weather report: ", err)
 			}

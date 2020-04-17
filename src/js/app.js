@@ -1,4 +1,11 @@
-var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet', 'ngMaterial', 'ngMessages', 'md.data.table']);
+var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet', 'ngMaterial', 'ngMessages', 'md.data.table'])
+
+.config(['$mdThemingProvider', function ($mdThemingProvider) {
+    'use strict';
+
+    $mdThemingProvider.theme('primary')
+        .primaryPalette('blue');
+}]);
 
 ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
     $scope.launchLostInSpace = launchLostInSpace;
@@ -9,13 +16,14 @@ ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($sc
     $scope.currentMenuItem = '';
 
     $scope.examples = [
-      "Table Example",
-      "Display Example",
-      "Chart Example",
-      "String Duplication",
-      "Translate",
-      "Twitter",
-      "Unity Lost In Space"
+        "Table Example",
+        "Display Example",
+        "Chart Example",
+        "String Duplication",
+        "Translate",
+        "Twitter",
+        "Unity Lost In Space",
+        "Stock Tracker"
     ];
 
     // Took a while, but found how to load a Unity game on button click, not on page load...

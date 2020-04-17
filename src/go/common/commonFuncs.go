@@ -5,10 +5,21 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
     "bytes"
 	"bufio"
 )
+
+var client http.Client
+
+func GetMapFromData(data string) (map[string]interface{}, error) {
+	var test map[string]interface{}
+	err := json.Unmarshal([]byte(data), &test)
+	if err != nil {
+		return nil, err
+	}
+	return test, err
+}
+
 
 func GetInfoFromURL(url string) (map[string]interface{}, error) {
 	resp, err := http.Get(url)
@@ -36,11 +47,29 @@ func GetInfoFromURL(url string) (map[string]interface{}, error) {
 	return test, err
 }
 
+func GetHTMLFromURL(url string) (string, error) {
+    req, err := http.NewRequest("GET", url, nil)
+    req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
+    req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+    resp, err := client.Do(req)
+
+    defer resp.Body.Close()
+
+    scanner := bufio.NewScanner(resp.Body)
+    scanner.Split(bufio.ScanRunes)
+    var buf bytes.Buffer
+    for scanner.Scan() {
+        buf.WriteString(scanner.Text())
+    }
+
+    return buf.String(), err
+}
+
 func GetInfoFromURLBytes(url string) (string, error) {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		fmt.Println("There was an error getting the IP Location... ", err)
+		fmt.Println("There was an error getting HTML: ", err)
 		return "", err
 	}
 

@@ -7,12 +7,57 @@ import (
 	"PortfolioWebsite/src/go/visitorCounter"
 	"PortfolioWebsite/src/go/weatherExample"
 	"PortfolioWebsite/src/go/common"
+	"PortfolioWebsite/src/go/stockTracker"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"net/http"
 	"strconv"
 )
+
+func GetNewInventory(data *gin.Context) {
+	url := data.Query("url")
+	vendor := data.Query("vendor")
+	fmt.Println("VENDOR: ", vendor)
+
+	// Now lets strip the HTML into just the data we need!
+	if vendor == "BestBuy" {
+	    filteredResp, err := stockTracker.StripBestBuyHtml(url)
+	    if err != nil {
+	        fmt.Println("Error filtering Best Buy resp: ", err.Error())
+	        data.JSON(http.StatusBadRequest, err.Error())
+	    } else {
+	        data.JSON(http.StatusOK, filteredResp)
+	    }
+	} else if vendor == "Walmart" {
+	    filteredResp, err := stockTracker.StripWalmartHtml(url)
+        if err != nil {
+            fmt.Println("Error filtering Walmart resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
+	} else if vendor == "Target" {
+	    filteredResp, err := stockTracker.StripTargetHtml(url)
+        if err != nil {
+            fmt.Println("Error filtering Target resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
+	} else if vendor == "GameStop"{
+	    filteredResp, err := stockTracker.StripGameStopHtml(url)
+        if err != nil {
+            fmt.Println("Error filtering Target resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
+	} else {
+	    // Didn't recognize the vendor...
+	    data.JSON(http.StatusBadRequest, fmt.Errorf("Did not recognize vendor!"))
+	}
+}
 
 func GetGithubInfo(data *gin.Context) {
 	url := data.Query("url")
@@ -199,7 +244,7 @@ func SetClickedRow(data *gin.Context) {
 }
 
 func GetWeather(data *gin.Context) {
-	location := data.DefaultQuery("location", "351219")
+	location := data.DefaultQuery("location", "331214")
 
 	fmt.Println("Location: ", location)
 
@@ -213,7 +258,7 @@ func GetWeather(data *gin.Context) {
 }
 
 func GetWeatherConditions(data *gin.Context) {
-	location := data.DefaultQuery("location", "351219")
+	location := data.DefaultQuery("location", "331214")
 
 	fmt.Println("Location: ", location)
 
