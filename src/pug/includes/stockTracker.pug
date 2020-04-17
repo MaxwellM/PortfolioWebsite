@@ -1,18 +1,18 @@
 
 div#stockTrackerPageWrapper
-    div#stockTrackerUpdateInfoWrapper
-        label Last Update: {{ lastUpdate }}
-        md-progress-circular(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
     div#stockTrackerPageTableWrapper
         div#stockTrackerItemPickerWrapper
             md-card
                 md-card-title
                     md-card-title-text
-                        span.md-headline Stock Tracker Item
-                        span.md-subhead Pick item you want to find.
+                        span.md-headline Item Inventory Tracker
+                        span.md-subhead Currently supports: BestBuy, Walmart, Target, and GameStop.
                 md-card-content
+                    div#stockTrackerUpdateInfoWrapper
+                        label Last Update: {{ lastUpdate }} (Updates every 5 minutes)
+                        md-progress-circular(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
                     div(layout='row')
-                        md-select.md-no-underline(ng-model='itemSelected', placeholder='Item')
+                        md-select.md-no-underline(ng-model='itemSelected', aria-label='Stock Item Select')
                             md-option(ng-repeat='item in items', value='{{item}}')
                                 | {{item}}
         div#stockTrackerTableWrapper(ng-show='results.length')
@@ -23,14 +23,17 @@ div#stockTrackerPageWrapper
                             th(md-column='' md-order-by='Id')
                                 span Id
                             th(md-column='')
-                                span CompanyName
+                                span Store
+                            th(md-column='')
+                                span Name
                             th(md-column='')
                                 span Price
                             th(md-column='')
-                                span In Stock
+                                span Availability
                     tbody(md-body='')
                         tr(md-row='' ng-repeat='result in results')
                             td(md-cell='') {{result.Id}}
-                            td(md-cell='') {{result.CompanyName}}
+                            td(md-cell='') {{result.Store}}
+                            td(md-cell='') {{result.Name}}
                             td(md-cell='') {{result.Price}}
-                            td(md-cell='') {{result.InStock}}
+                            td(md-cell='') {{result.Availability}}

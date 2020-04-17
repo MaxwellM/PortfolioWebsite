@@ -18,38 +18,44 @@ import (
 func GetNewInventory(data *gin.Context) {
 	url := data.Query("url")
 	vendor := data.Query("vendor")
-	//fmt.Println("ALL: ", data)
-    //fmt.Println("URL: ", url)
-    //fmt.Println("Vendor: ", vendor)
-	resp, err := common.GetHTMLFromURL(url)
+	fmt.Println("VENDOR: ", vendor)
 
 	// Now lets strip the HTML into just the data we need!
-	//filteredResp, err := stockTracker.StripBestBuyHtml(resp)
-
 	if vendor == "BestBuy" {
-	    filteredResp, err := stockTracker.StripBestBuyHtml(resp)
+	    filteredResp, err := stockTracker.StripBestBuyHtml(url)
 	    if err != nil {
 	        fmt.Println("Error filtering Best Buy resp: ", err.Error())
 	        data.JSON(http.StatusBadRequest, err.Error())
 	    } else {
-            data.Render(
-                http.StatusOK, render.Data{
-                    ContentType: "text/html",
-                    Data:        []byte(filteredResp),
-                })
+	        data.JSON(http.StatusOK, filteredResp)
 	    }
-	}
-
-	if err != nil {
-		data.JSON(http.StatusBadRequest, err.Error())
+	} else if vendor == "Walmart" {
+	    filteredResp, err := stockTracker.StripWalmartHtml(url)
+        if err != nil {
+            fmt.Println("Error filtering Walmart resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
+	} else if vendor == "Target" {
+	    filteredResp, err := stockTracker.StripTargetHtml(url)
+        if err != nil {
+            fmt.Println("Error filtering Target resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
+	} else if vendor == "GameStop"{
+	    filteredResp, err := stockTracker.StripGameStopHtml(url)
+        if err != nil {
+            fmt.Println("Error filtering Target resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
 	} else {
-		// We need to pass back an HTML page. That is how the library parses the Github Info
-		// http://benwendt.ca/articles/gin-header/
-		data.Render(
-			http.StatusOK, render.Data{
-				ContentType: "text/html",
-				Data:        []byte(resp),
-			})
+	    // Didn't recognize the vendor...
+	    data.JSON(http.StatusBadRequest, fmt.Errorf("Did not recognize vendor!"))
 	}
 }
 

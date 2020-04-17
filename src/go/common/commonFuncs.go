@@ -5,12 +5,20 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
     "bytes"
 	"bufio"
 )
 
 var client http.Client
+
+func GetMapFromData(data string) (map[string]interface{}, error) {
+	var test map[string]interface{}
+	err := json.Unmarshal([]byte(data), &test)
+	if err != nil {
+		return nil, err
+	}
+	return test, err
+}
 
 
 func GetInfoFromURL(url string) (map[string]interface{}, error) {
