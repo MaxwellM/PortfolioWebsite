@@ -47,7 +47,9 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
             $http.get('/getNewInventory', {params: {url: vendor.url, vendor: vendor.vendor}}).then(function (res) {
                 let results;
                 results = res.data;
-                $scope.results.push(...results);
+                if (results) {
+                    $scope.results.push(...results);
+                }
                 $scope.progressValue += 25;
             }, function(error) {
                 alert(error.data);
