@@ -26,53 +26,60 @@ var client http.Client
 // We take the Best Buy HTML, as a string, strip everything we don't
 // need away.
 func StripBestBuyHtml(url string) ([]*ItemResult, error) {
-    // Request the HTML page.
-    req, err := http.NewRequest("GET", url, nil)
-    req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
-    req.Header.Add("Accept-Charset", `ISO-8859-1,utf-8;q=0.7,*;q=0.3`)
-    req.Header.Add("Accept-Encoding", `none`)
-    req.Header.Add("Accept-Language", `en-US,en;q=0.8`)
-    req.Header.Add("Connection", `keep-alive`)
-    req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
-    res, err := client.Do(req)
-    //res, err := http.Get(url)
+    // Get our BestBuy API key
+    bestBuyApiInfo, err := common.ReadJsonFile("bestBuyApiKey.json")
     if err != nil {
-        fmt.Println("Error getting data from URL")
+        fmt.Println("Error reading JSON file!")
         return nil, err
     }
-    defer res.Body.Close()
-    if res.StatusCode != 200 {
-        fmt.Println("status code error: %d %s", res.StatusCode, res.Status)
-        return nil, err
-    }
-
-    // Load the HTML document
-    doc, err := goquery.NewDocumentFromReader(res.Body)
-    if err != nil {
-        fmt.Println("Error loading the HTML document: ", err)
-        return nil, err
-    }
+    bestBuyApiKey := bestBuyApiInfo["key"].(string)
 
     // We'll use this to store the data!
     bestBuyResultsArray := []*ItemResult{}
 
-    //*[@id="pricing-price-28323958"]/div/div/div[1]/div/div[2]/div/div/div
+    bestBuyProductsArray := BestBuyNintendoSwitchSKUNumbers
 
-    // Find the item list!
-    doc.Find(".sku-item-list .sku-item").Each(func(i int, s *goquery.Selection) {
+    for index, element := range bestBuyProductsArray {
+        // Request the HTML page.
+        req, err := http.NewRequest("GET", "https://api.bestbuy.com/v1/products/"+element+".json?show=sku,name,salePrice,onlineAvailability&apiKey="+bestBuyApiKey, nil)
+        req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
+        req.Header.Add("Accept-Charset", `ISO-8859-1,utf-8;q=0.7,*;q=0.3`)
+        req.Header.Add("Accept-Encoding", `none`)
+        req.Header.Add("Accept-Language", `en-US,en;q=0.8`)
+        req.Header.Add("Connection", `keep-alive`)
+        req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+        res, err := client.Do(req)
+        if err != nil {
+            fmt.Println("Error getting data from URL")
+            return nil, err
+        }
+        defer res.Body.Close()
+        if res.StatusCode != 200 {
+            fmt.Println("status code error: %d %s", res.StatusCode, res.Status)
+            return nil, err
+        }
+
+        bytes, err := ioutil.ReadAll(res.Body)
+        if err != nil {
+            fmt.Println("Couldn't convert RESP to []Byte for your Current Conditions Request: ", err)
+        }
+
+        var allInfoMap map[string]interface{}
+        err = json.Unmarshal(bytes, &allInfoMap)
+        if err != nil {
+            return nil, err
+        }
         // For each item found, get the name, price, and inventory
-        name := s.Find(".sku-title").Text()
-        price := s.Find("div.pricing-lib-price-8-2013-6.price-view-pb.priceView-layout-medium > div > div > div > div > div > span:nth-child(1)").Text()
-        availability := s.Find(".fulfillment-add-to-cart-button").Text()
-        //fmt.Printf("Review %d: %s - %s - %s\n", i, name, price, availability)
+        name := allInfoMap["name"].(string)
+        price := strconv.FormatFloat(allInfoMap["salePrice"].(float64), 'f', -1, 64)
+        availability := strconv.FormatBool(allInfoMap["onlineAvailability"].(bool))
         // Now lets fill out struct!
-        bestBuyResult := ItemResult{Id: i, Store: "Best Buy", Name: name, Price: price, Availability: availability}
+        bestBuyResult := ItemResult{Id: index, Store: "Best Buy", Name: name, Price: "$"+price, Availability: availability}
 
         if len(name) > 0 && len(price) > 0 && len(availability) > 0 {
             bestBuyResultsArray = append(bestBuyResultsArray, &bestBuyResult)
         }
-    })
-
+    }
     return bestBuyResultsArray, nil
 }
 
@@ -172,7 +179,7 @@ func StripTargetHtml(url string) ([]*ItemResult, error) {
         name := nameMap["title"].(string)
         price := strconv.FormatFloat(listPriceMap["price"].(float64), 'f', -1, 64)
         availability := availabilityMap["availability"].(string)
-        targetResult := ItemResult{Id: index, Store:"Target", Name: name, Price: price, Availability: availability}
+        targetResult := ItemResult{Id: index, Store:"Target", Name: name, Price: "$"+price, Availability: availability}
 
         if len(name) > 0 && len(price) > 0 && len(availability) > 0 {
             targetResultsArray = append(targetResultsArray, &targetResult)
