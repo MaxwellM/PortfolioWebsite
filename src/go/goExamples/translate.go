@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 
 	"cloud.google.com/go/translate"
@@ -22,16 +21,6 @@ type GoogleInfo struct {
 	TokenURI                string
 	AuthProviderX509CertURL string
 	ClientX509CertURL       string
-}
-
-func getGoogleInfo() []byte {
-	file, err := ioutil.ReadFile("googleKey.json")
-	if err != nil {
-		fmt.Println("Error reading JSON file: ", err)
-	}
-	//data := GoogleInfo{}
-	//err = json.Unmarshal(file, &data)
-	return file
 }
 
 func TranslateString(stringToTranslate, lang string) (string, error) {

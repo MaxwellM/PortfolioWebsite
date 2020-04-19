@@ -62,7 +62,7 @@ func GetNewInventory(data *gin.Context) {
 func GetGithubInfo(data *gin.Context) {
 	url := data.Query("url")
     fmt.Println("URL: ", url)
-    resp, err := common.GetInfoFromURLBytes(url)
+    resp, err := common.GetStringFromURL(url)
     if err != nil {
         data.JSON(http.StatusBadRequest, err.Error())
     } else {
@@ -86,7 +86,7 @@ func ReadIP(data *gin.Context) {
     if IP != "" {
         url := fmt.Sprintf(`http://api.ipstack.com/`+IP+`?access_key=2724f648413b327eda2fd505ea8cb9ab`)
 
-        resp, err := common.GetInfoFromURL(url)
+        resp, err := common.GetMapFromURL(url)
 
         if err != nil {
             data.JSON(http.StatusBadRequest, err.Error())
@@ -96,7 +96,7 @@ func ReadIP(data *gin.Context) {
     } else {
             url := fmt.Sprintf(`http://api.ipstack.com/161.185.160.93?access_key=2724f648413b327eda2fd505ea8cb9ab`)
 
-            resp, err := common.GetInfoFromURL(url)
+            resp, err := common.GetMapFromURL(url)
 
             if err != nil {
                 data.JSON(http.StatusBadRequest, err.Error())

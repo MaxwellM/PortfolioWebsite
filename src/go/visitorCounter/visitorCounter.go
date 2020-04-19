@@ -479,7 +479,7 @@ func WriteIPLocationToDB(ip string) (string, error) {
 	lastInsertId := 0
 
 	url := fmt.Sprintf(`https://geoipify.whoisxmlapi.com/api/v1?apiKey=at_pruWCmEUi97TIwBtqGswfJokFFZ6M&ipAddress=` + ip)
-	ipLocationReturn, err := common.GetInfoFromURL(url)
+	ipLocationReturn, err := common.GetMapFromURL(url)
 	if err != nil {
 		fmt.Println("Error obtaining IP Location", err)
 		return "", err

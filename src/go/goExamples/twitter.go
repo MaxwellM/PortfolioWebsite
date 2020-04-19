@@ -1,11 +1,11 @@
 package goExamples
 
 import (
+	"PortfolioWebsite/src/go/common"
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	"io/ioutil"
 )
 
 type TwitterInfo struct {
@@ -15,26 +15,24 @@ type TwitterInfo struct {
 	AccessSecretToken string
 }
 
-func getTwitterInfo() (TwitterInfo, error) {
-	file, err := ioutil.ReadFile("twitterKey.json")
-	if err != nil {
-		fmt.Println("Error reading JSON file: ", err)
-	}
-	data := TwitterInfo{}
-	err = json.Unmarshal([]byte(file), &data)
-	return data, nil
-}
-
 func SubmitTweet(tweetToSend string) (*twitter.Tweet, error) {
 	fmt.Println("Submitting Tweet! ", tweetToSend)
+	twitterMap, err := common.ReadJsonFile("./twitterKey.json")
+	twitterInfo := TwitterInfo{}
 
-	twitterInfo, err := getTwitterInfo()
+	// convert map to json
+	jsonString, err := json.Marshal(twitterMap)
 	if err != nil {
-		fmt.Println("Error obtaining our Twitter Info! ", err.Error())
+		fmt.Println("Error converting TwitterInfo from Map to Json! ", err.Error())
 		return nil, err
 	}
 
-	//fmt.Println("Twitter Info: ", twitterInfo)
+	// convert json to struct
+	err = json.Unmarshal(jsonString, &twitterInfo)
+	if err != nil {
+		fmt.Println("Error converting TwitterInfo from Json to Struct! ", err.Error())
+		return nil, err
+	}
 
 	//config := oauth1.NewConfig("consumerKey", "consumerSecret")
 	//token := oauth1.NewToken("accessToken", "accessSecret")

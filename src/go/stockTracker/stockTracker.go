@@ -2,8 +2,6 @@ package stockTracker
 
 import (
     "fmt"
-    //"log"
-    //"time"
     "net/http"
     "io/ioutil"
     "strconv"
@@ -23,8 +21,7 @@ type ItemResult struct {
 
 var client http.Client
 
-// We take the Best Buy HTML, as a string, strip everything we don't
-// need away.
+// We take the Best Buy HTML, as a string, strip everything we don't need away.
 func StripBestBuyHtml(url string) ([]*ItemResult, error) {
     // Get our BestBuy API key
     bestBuyApiInfo, err := common.ReadJsonFile("bestBuyApiKey.json")
@@ -42,12 +39,7 @@ func StripBestBuyHtml(url string) ([]*ItemResult, error) {
     for index, element := range bestBuyProductsArray {
         // Request the HTML page.
         req, err := http.NewRequest("GET", "https://api.bestbuy.com/v1/products/"+element+".json?show=sku,name,salePrice,onlineAvailability&apiKey="+bestBuyApiKey, nil)
-        req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
-        req.Header.Add("Accept-Charset", `ISO-8859-1,utf-8;q=0.7,*;q=0.3`)
-        req.Header.Add("Accept-Encoding", `none`)
-        req.Header.Add("Accept-Language", `en-US,en;q=0.8`)
-        req.Header.Add("Connection", `keep-alive`)
-        req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+        req = common.SetHeaders(req)
         res, err := client.Do(req)
         if err != nil {
             fmt.Println("Error getting data from URL")
@@ -86,8 +78,7 @@ func StripBestBuyHtml(url string) ([]*ItemResult, error) {
 func StripWalmartHtml(url string) ([]*ItemResult, error) {
     // Request the HTML page.
     req, err := http.NewRequest("GET", url, nil)
-    req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
-    req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+    req = common.SetHeaders(req)
     res, err := client.Do(req)
     //res, err := http.Get(url)
     if err != nil {
@@ -144,8 +135,7 @@ func StripTargetHtml(url string) ([]*ItemResult, error) {
         // Request the HTML page.
         // Target doesn't load everything at once. We need to wait until .product-grid is there...
         req, err := http.NewRequest("GET", "https://redsky.target.com/v2/pdp/tcin/"+element+"?excludes=taxonomy,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics", nil)
-        req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
-        req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+        req = common.SetHeaders(req)
         res, err := client.Do(req)
         if err != nil {
             fmt.Println("Error getting data from URL")
@@ -194,8 +184,7 @@ func StripGameStopHtml(url string) ([]*ItemResult, error) {
     // Request the HTML page.
     // Target doesn't load everything at once. We need to wait until .product-grid is there...
     req, err := http.NewRequest("GET", url, nil)
-    req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
-    req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+    req = common.SetHeaders(req)
     res, err := client.Do(req)
     if err != nil {
         fmt.Println("Error getting data from URL")
