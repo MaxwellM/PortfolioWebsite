@@ -12,15 +12,15 @@ div#stockTrackerPageWrapper
                         label Last Update: {{ lastUpdate }} (Updates every 5 minutes)
                         md-progress-circular(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
                     div(layout='row')
-                        md-select.md-no-underline(ng-model='itemSelected', aria-label='Stock Item Select')
+                        md-select.md-no-underline(ng-model='itemSelected', ng-change='getDataPromise()', aria-label='Stock Item Select')
                             md-option(ng-repeat='item in items', value='{{item}}')
                                 | {{item}}
         div#stockTrackerTableWrapper(ng-show='results.length')
             md-table-container
-                table(md-table='')
-                    thead(md-head='')
+                table(md-table='', ng-model='results', md-progress='getDataPromise')
+                    thead(md-head='', md-order='results.Store')
                         tr(md-row='')
-                            th(md-column='' md-order-by='Id')
+                            th(md-column='')
                                 span Id
                             th(md-column='')
                                 span Store
@@ -36,4 +36,5 @@ div#stockTrackerPageWrapper
                             td(md-cell='') {{result.Store}}
                             td(md-cell='') {{result.Name}}
                             td(md-cell='') {{result.Price}}
-                            td(md-cell='') {{result.Availability}}
+                            td(md-cell='')
+                                a(ng-href='{{result.URL}}') {{result.Availability}}

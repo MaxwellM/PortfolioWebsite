@@ -1,13 +1,15 @@
 var ngModule = angular.module('app');
 
 ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$sanitize', '$interval', function ($scope, $http, $q, $filter, $sanitize, $interval) {
+    //$scope.getNewInventory = getNewInventory;
 
     $scope.progressValue = 0;
     $scope.lastUpdate = null;
     $scope.promise = null;
+    $scope.getDataPromise = null;
     $scope.results = [];
     $scope.itemSelected = "Nintendo Switch";
-    $scope.items = ['Nintendo Switch'];
+    $scope.items = ['Nintendo Switch', 'Dyson V11 Vacuum', 'Apple AirPods'];
     $scope.vendors = [
         {   url: "https://www.bestbuy.com/site/nintendo-switch/nintendo-switch-consoles/pcmcat1484077694025.c?id=pcmcat1484077694025",
             vendor: "BestBuy"
@@ -39,12 +41,12 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
     //     });
     // }
 
-    function getNewInventory() {
+    $scope.getDataPromise = function() {
         $scope.progressValue = 0;
         $scope.results = [];
         // Lets loop through all of our vendors and gets some results!
         for(let vendor of $scope.vendors){
-            $http.get('/getNewInventory', {params: {url: vendor.url, vendor: vendor.vendor}}).then(function (res) {
+            $http.get('/getNewInventory', {params: {url: vendor.url, vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
                 let results;
                 results = res.data;
                 if (results) {
@@ -68,13 +70,12 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
 
         // store the interval promise
         // Also run it once every 5 minutes. Don't want to go too crazy.
-        $scope.promise = $interval(getNewInventory, 300000);
+        $scope.promise = $interval($scope.getDataPromise, 300000);
     };
 
     // stops the interval
     $scope.stop = function() {
         $interval.cancel($scope.promise);
-        //$interval.cancel($scope.promise2);
     };
 
     // If this gets destroyed (when leaving the tab) we'll stop the pinging!
@@ -83,11 +84,6 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
         $interval.cancel($scope.promise);
     });
 
-    function parseTarget(html) {
-
-
-    }
-
-    getNewInventory();
+    $scope.getDataPromise();
     $scope.start();
 }]);
