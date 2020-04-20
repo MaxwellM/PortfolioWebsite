@@ -47,13 +47,13 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
         $scope.results = [];
         // Lets loop through all of our vendors and gets some results!
         for(let vendor of $scope.vendors){
-            $http.get('/getNewInventory', {params: {url: vendor.url, vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
+            let promise = $http.get('/getNewInventory', {params: {url: vendor.url, vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
                 let results;
                 results = res.data;
                 if (results) {
                     $scope.results.push(...results);
                 }
-                $scope.progressValue += 25;
+                $scope.progressValue += (100 / $scope.vendors.length);
             }, function(error) {
                 alert(error.data);
             });

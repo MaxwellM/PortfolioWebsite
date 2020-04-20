@@ -30,31 +30,31 @@ html
         script(src="./js/node_modules/angular-material/angular-material.min.js")
     body(ng-app='app', ng-controller='myCtrl')
         div#MainWrapper
-            div#nav_bar(ng-cloak)
+            div#nav_bar(ng-controller='navigationCtrl', ng-cloak)
                 include includes/navigation
-            div#mainPage(ng-controller='mainPageCtrl', ng-if='myCtrl.buttonName == "Maxwell Morin"')
+            div#mainPage(ng-controller='mainPageCtrl', ng-if='buttonName == "Maxwell Morin"')
                 include includes/main
-            div#projectPage(ng-controller='projectCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Projects"')
+            div#projectPage(ng-controller='projectCtrl', ng-cloak, ng-if='buttonName == "Projects"')
                 include includes/projectPage
-            div#resumePage(ng-controller='resumeCtrl', ng-cloak , ng-if='myCtrl.buttonName == "Resume"')
+            div#resumePage(ng-controller='resumeCtrl', ng-cloak , ng-if='buttonName == "Resume"')
                 include includes/resume
-            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Contact Me"')
+            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-if='buttonName == "Contact Me"')
                 include includes/contactMePage
-            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Table Example"')
+            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-if='buttonName == "Table Example"')
                 include includes/angularJSExampleTable
-            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Display Example"')
+            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-cloak, ng-if='buttonName == "Display Example"')
                 include includes/angularJSExampleDisplay
-            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Chart Example"')
+            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-if='buttonName == "Chart Example"')
                 include includes/angularJSExampleChart
-            div#untyGameLostInSpacePage(ng-cloak, ng-if='myCtrl.buttonName == "Unity Lost In Space"')
+            div#untyGameLostInSpacePage(ng-cloak, ng-if='buttonName == "Unity Lost In Space"')
                 include includes/unityLostInSpace
-            div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-if='myCtrl.buttonName == "String Duplication"')
+            div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-if='buttonName == "String Duplication"')
                 include includes/phraseOccurrence
-            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-if='myCtrl.buttonName == "Translate"')
+            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-if='buttonName == "Translate"')
                 include includes/translate
-            div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-cloak, ng-if='myCtrl.buttonName == "Twitter"')
+            div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-cloak, ng-if='buttonName == "Twitter"')
                 include includes/twitter
-            div#stockTrackerPage(ng-controller='stockTrackerCtrl', ng-cloak, ng-if='myCtrl.buttonName == "Stock Tracker"')
+            div#stockTrackerPage(ng-controller='stockTrackerCtrl', ng-cloak, ng-if='buttonName == "Stock Tracker"')
                 include includes/stockTracker
             div#footerWrapper(ng-controller='footerCtrl', ng-cloak)
                 include includes/footer
@@ -66,6 +66,7 @@ html
     script(src="./js/node_modules/angular-aria/angular-aria.min.js")
     script(src="./js/node_modules/angular-messages/angular-messages.min.js")
     script(src="./js/node_modules/ngtweet/dist/ngtweet.min.js")
+    script(src="./js/node_modules/angular-cookies/angular-cookies.min.js")
     script(src="./js/app.js")
     script(src="./js/navigation.js")
     script(src="./js/mainePage.js")

@@ -15,6 +15,50 @@ import (
 	"strconv"
 )
 
+func SetCookie(data *gin.Context) {
+    data.SetCookie(
+    	"MAXintosh_Cookie",
+    	"Maxwell_Ross_Morin",
+		60*60*24,
+    	"/",
+    	"localhost",
+    	http.SameSiteDefaultMode,
+    	false,
+    	false,
+    	)
+}
+
+func GetCookie(data *gin.Context) {
+	cookie, err := data.Cookie("MAXintosh_Cookie")
+	if err != nil {
+		data.SetCookie(
+			"MAXintosh_Cookie",
+			"Maxwell_Ross_Morin",
+			60*60*24,
+			"/",
+			"localhost",
+			http.SameSiteDefaultMode,
+			false,
+			false,
+		)
+		data.String(200, "Cookie:%s", cookie)
+	}
+    data.String(200, "Cookie:%s", cookie)
+}
+
+func ClearCookie(data *gin.Context) {
+    data.SetCookie(
+    	"MAXintosh_Cookie",
+    	"Maxwell Ross Morin",
+    	-1,
+    	"/",
+    	"localhost",
+		http.SameSiteDefaultMode,
+    	false,
+    	false,
+    	)
+}
+
 func GetNewInventory(data *gin.Context) {
 	url := data.Query("url")
 	vendor := data.Query("vendor")
@@ -118,10 +162,10 @@ func VisitorCounter(data *gin.Context) {
 	//IP := data.ClientIP()
 	IP := data.GetHeader("X-Real-IP")
 
-	fmt.Println("FOUND IP: ", IP)
+	//fmt.Println("FOUND IP: ", IP)
 
-	header := data.Request.Header
-	fmt.Println("HEADER: ", header)
+	//header := data.Request.Header
+	//fmt.Println("HEADER: ", header)
 
 	//IP, err := visitorCounter.GetClientIPHelper(data.Request)
 	//if err != nil {
@@ -129,14 +173,14 @@ func VisitorCounter(data *gin.Context) {
 	//	data.JSON(http.StatusBadRequest, err)
 	//}
 
-	fmt.Println("IP: ", IP)
+	//fmt.Println("IP: ", IP)
 
 	ips, err := visitorCounter.CheckIfIPExists(IP)
 	if err != nil {
 		fmt.Println("Error returning IPs who visited the site! ", err)
 		data.JSON(http.StatusBadRequest, err.Error())
 	} else {
-		fmt.Println("IPs: ", ips)
+		//fmt.Println("IPs: ", ips)
 		data.JSON(http.StatusOK, ips)
 	}
 

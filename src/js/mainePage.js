@@ -1,6 +1,6 @@
 var ngModule = angular.module('app');
 
-ngModule.controller('mainPageCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
+ngModule.controller('mainPageCtrl', ['$scope', '$rootScope', '$http', '$q', '$filter', function ($scope, $rootScope, $http, $q, $filter) {
 
     GitHubCalendar(".calendar", "MaxwellM", {
         responsive: true,

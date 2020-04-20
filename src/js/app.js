@@ -1,4 +1,4 @@
-var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet', 'ngMaterial', 'ngMessages', 'md.data.table'])
+var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet', 'ngMaterial', 'ngMessages', 'ngCookies', 'md.data.table'])
 
 .config(['$mdThemingProvider', function ($mdThemingProvider) {
     'use strict';
@@ -7,24 +7,18 @@ var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet',
         .primaryPalette('blue');
 }]);
 
-ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
+ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', '$cookies', function ($scope, $http, $q, $filter, $cookies) {
     $scope.launchLostInSpace = launchLostInSpace;
-
     $scope.playLostInSpace = false;
 
-    $scope.currentNavItem = 'Maxwell Morin';
-    $scope.currentMenuItem = '';
+    // Lets get our cookie on page load!
+    function getCookie() {
+        $http.get("/getCookie").then(function (res) {
+            $cookies.put("Maxwell_Ross_Morin");
+        }, function (error) {
 
-    $scope.examples = [
-        "Table Example",
-        "Display Example",
-        "Chart Example",
-        "String Duplication",
-        "Translate",
-        "Twitter",
-        "Unity Lost In Space",
-        "Stock Tracker"
-    ];
+        })
+    }
 
     // Took a while, but found how to load a Unity game on button click, not on page load...
     // https://forum.unity.com/threads/start-unity-player-on-button-click.425180/
@@ -42,7 +36,7 @@ ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', function ($sc
             //$scope.playLostInSpace = false;
         }
     }
-
+    getCookie();
 }]);
 
 Module = {

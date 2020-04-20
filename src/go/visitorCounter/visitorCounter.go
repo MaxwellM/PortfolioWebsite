@@ -241,17 +241,17 @@ func CheckIfIPExists(ip string) (string, error) {
 			fmt.Println("Error scanning row: ", err)
 			return "", err
 		}
-		fmt.Println("DBIP: ", dbIP)
-		fmt.Println("IP: ", ip)
+		//fmt.Println("DBIP: ", dbIP)
+		//fmt.Println("IP: ", ip)
 		if dbIP == ip {
 			unique = false
 		}
 	}
 
-	fmt.Println("COUNTER: ", counter)
+	//fmt.Println("COUNTER: ", counter)
 
 	if unique {
-		fmt.Println("IP UNIQUE!")
+		//fmt.Println("IP UNIQUE!")
 		message, err := WriteIPToDatabase(ip)
 		if err != nil {
 			fmt.Println("Error inserting IP to DB", message)
@@ -263,7 +263,7 @@ func CheckIfIPExists(ip string) (string, error) {
 		}
 	} else if !unique {
 		// Not unique, but we want to increment page_count!
-		fmt.Println("IP NOT UNIQUE!")
+		//fmt.Println("IP NOT UNIQUE!")
 		pageCountReturn, err := IncrementMonthlyPageCount()
 		if err != nil {
 			fmt.Println("Error inserting IP into DB", pageCountReturn)

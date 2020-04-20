@@ -22,6 +22,11 @@ func main() {
 	router.Static("/unityGames", "./public/unityGames")
 	router.StaticFile("", "./public/index.html")
 
+    // Cookie stuff
+	router.GET("/setCookie", routes.SetCookie)
+	router.GET("/getCookie", routes.GetCookie)
+	router.GET("/clearCookie", routes.ClearCookie)
+
 	router.GET("/getGithubInfo/:url", routes.GetGithubInfo)
 
 	// Linked to the Star Wars Character Example
