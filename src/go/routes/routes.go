@@ -51,8 +51,7 @@ func ClearCookie(data *gin.Context) {
     	-1,
     	"/",
     	"localhost",
-		http.SameSiteDefaultMode,
-    	false,
+    	true,
     	false,
     	)
 }
