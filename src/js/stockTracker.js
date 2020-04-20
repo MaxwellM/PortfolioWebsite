@@ -2,7 +2,6 @@ var ngModule = angular.module('app');
 
 ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$sanitize', '$interval', function ($scope, $http, $q, $filter, $sanitize, $interval) {
     //$scope.getNewInventory = getNewInventory;
-
     $scope.progressValue = 0;
     $scope.lastUpdate = null;
     $scope.promise = null;
@@ -42,6 +41,8 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
     // }
 
     $scope.getDataPromise = function() {
+        $scope.myLimit = 10;
+        $scope.myPage = 1;
         $scope.progressValue = 0;
         $scope.results = [];
         // Lets loop through all of our vendors and gets some results!

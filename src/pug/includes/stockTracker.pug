@@ -31,10 +31,11 @@ div#stockTrackerPageWrapper
                             th(md-column='')
                                 span Availability
                     tbody(md-body='')
-                        tr(md-row='' ng-repeat="result in results | orderBy: results.Store")
+                        tr(md-row='' ng-repeat="result in results | orderBy: results.Store | limitTo: myLimit: (myPage - 1) * myLimit")
                             td(md-cell='') {{result.Id}}
                             td(md-cell='') {{result.Store}}
                             td(md-cell='') {{result.Name}}
                             td(md-cell='') {{result.Price}}
                             td(md-cell='')
                                 a(ng-href='{{result.URL}}') {{result.Availability}}
+            md-table-pagination(md-limit="myLimit", md-page="myPage", md-total="{{results.length}}")
