@@ -21,9 +21,8 @@ func SetCookie(data *gin.Context) {
     	"Maxwell_Ross_Morin",
 		60*60*24,
     	"/",
-    	"localhost",
-    	http.SameSiteDefaultMode,
-    	false,
+    	"maxintosh.org",
+    	true,
     	false,
     	)
 }
@@ -36,9 +35,8 @@ func GetCookie(data *gin.Context) {
 			"Maxwell_Ross_Morin",
 			60*60*24,
 			"/",
-			"localhost",
-			http.SameSiteDefaultMode,
-			false,
+			"maxintosh.org",
+			true,
 			false,
 		)
 		data.String(200, "Cookie:%s", cookie)
