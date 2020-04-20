@@ -17,21 +17,21 @@ div#stockTrackerPageWrapper
                                 | {{item}}
         div#stockTrackerTableWrapper(ng-show='results.length')
             md-table-container
-                table(md-table='', ng-model='results', md-progress='getDataPromise')
+                table(md-table='', md-progress='getDataPromise')
                     thead(md-head='', md-order='results.Store')
                         tr(md-row='')
                             th(md-column='')
                                 span Id
-                            th(md-column='')
+                            th(md-column='', md-order-by='Store')
                                 span Store
-                            th(md-column='')
+                            th(md-column='', md-order-by='Name')
                                 span Name
-                            th(md-column='')
+                            th(md-column='', md-order-by='Price')
                                 span Price
                             th(md-column='')
                                 span Availability
                     tbody(md-body='')
-                        tr(md-row='' ng-repeat='result in results')
+                        tr(md-row='' ng-repeat="result in results | orderBy: results.Store")
                             td(md-cell='') {{result.Id}}
                             td(md-cell='') {{result.Store}}
                             td(md-cell='') {{result.Name}}
