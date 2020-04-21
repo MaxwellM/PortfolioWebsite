@@ -10,7 +10,7 @@ div()
             md-nav-item(md-nav-click='$root.buttonName = "Projects";')
                 | Projects
             md-menu(md-position-mode="target-right bottom")
-                md-button#navButton(ng-click='$mdMenu.open()')
+                md-nav-item(md-nav-click='$mdMenu.open()')
                     | {{ !examples.includes($root.buttonName) ? "Examples ▼" : currentMenuItem + " ▼"}}
                 md-menu-content
                     md-menu-item

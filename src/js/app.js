@@ -3,8 +3,11 @@ var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet',
 .config(['$mdThemingProvider', function ($mdThemingProvider) {
     'use strict';
 
-    $mdThemingProvider.theme('primary')
-        .primaryPalette('blue');
+    $mdThemingProvider.theme('docs-dark', 'default')
+        .primaryPalette('grey')
+        .warnPalette('red')
+        .accentPalette('blue')
+        .dark();
 }]);
 
 ngModule.controller('myCtrl', ['$scope', '$http', '$q', '$filter', '$cookies', function ($scope, $http, $q, $filter, $cookies) {
