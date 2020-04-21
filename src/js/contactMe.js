@@ -4,10 +4,6 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
 
     $scope.sendMessage = sendMessage;
 
-    // $scope.name = "Name";
-    // $scope.email = "Email";
-    // $scope.phone = "Phone Number";
-    // $scope.message = "Message";
     $scope.user = {
         email: '',
         phone: '',

@@ -43,7 +43,7 @@ html
                 include includes/angularJSExampleDisplay
             div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-if='buttonName == "Chart Example"')
                 include includes/angularJSExampleChart
-            div#untyGameLostInSpacePage(ng-cloak, ng-if='buttonName == "Unity Lost In Space"')
+            div#untyGameLostInSpacePage(ng-controller='unityLostInSpaceCtrl', ng-cloak, ng-if='buttonName == "Unity Lost In Space"')
                 include includes/unityLostInSpace
             div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-if='buttonName == "String Duplication"')
                 include includes/phraseOccurrence
