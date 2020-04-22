@@ -1,8 +1,8 @@
 title Unity3D WebGL Game!
 div#unityEggciteBikeLabelWrapper
-    label(ng-show='playEggciteBike') Refresh Web Page to Quit Game
-div#unityEggciteBikeWrapper
-    button#playEggciteBike(ng-show='!playEggciteBike', ng-click='launchEggciteBike()') Play Eggcite Bike
+    div#unityEggciteBikeTop
+        md-button#closeLostInSpace(ng-show='playEggciteBike', ng-click='goBack()') Close Eggcite Bike
+        md-button#playLostInSpace(ng-show='!playEggciteBike', ng-click='launchEggciteBike()') Play Eggcite Bike
 div#showEggciteBike(ng-if='playEggciteBike')
     .template-wrap.clear
         canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')

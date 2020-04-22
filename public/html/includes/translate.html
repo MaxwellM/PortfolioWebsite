@@ -1,0 +1,37 @@
+
+<meta charset="UTF-8"/>
+<div id="goExampleTranslatePageWrapper">
+  <div id="goExampleTranslateTitle">
+    <h1>Translate<img src="./images/golang.png" alt=""/></h1>
+  </div>
+  <div id="goExampleTranslateInputWrapper">
+    <h3>Enter a string and choose a language to translate!</h3>
+    <div id="goExampleTranslateInnerWrapper">
+      <div class="md-inline-form" layout="row" ng-cloak="">
+        <md-content layout-gt-sm="row" layout-padding="">
+          <form ng-submit="translate()">
+            <div layout-gt-xs="row">
+              <md-input-container class="md-block" flex-gt-sm="">
+                <label>Input string to translate</label>
+                <input ng-model="string" style="width:450px"/>
+              </md-input-container>
+              <md-input-container class="md-block" flex-gt-sm="">
+                <label>Language</label>
+                <md-select ng-model="lngSelected">
+                  <md-option ng-repeat="lang in languages" value="{{lang}}">{{lang}}</md-option>
+                </md-select>
+              </md-input-container>
+              <md-input-container class="md-block" flex-gt-sm="">
+                <md-button ng-click="translate()">Submit</md-button>
+              </md-input-container>
+            </div>
+          </form>
+        </md-content>
+      </div>
+    </div>
+  </div>
+  <div id="goExampleTranslateReturnWrapper">
+    <label>Translation:</label>
+    <label ng-bind-html="translation"></label>
+  </div>
+</div>

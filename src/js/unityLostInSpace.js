@@ -1,13 +1,13 @@
 var ngModule = angular.module('app');
 
-ngModule.controller('unityLostInSpaceCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
+ngModule.controller('unityLostInSpaceCtrl', ['$scope', '$rootScope', '$http', '$q', '$filter', function ($scope, $rootScope, $http, $q, $filter) {
 
     $scope.launchLostInSpace = launchLostInSpace;
+    $scope.goBack = goBack;
     $scope.playLostInSpace = false;
-
+    let script = document.createElement("script");
     function launchLostInSpace() {
         let gameWindow = document.getElementById("canvas");
-        let script = document.createElement("script");
         script.src = "../../unityGames/LostInSpaceWebGL/Release/UnityLoader.js";
         if (!$scope.playLostInSpace) {
             document.body.appendChild(script);
@@ -18,11 +18,15 @@ ngModule.controller('unityLostInSpaceCtrl', ['$scope', '$http', '$q', '$filter',
             script.remove();
             $scope.playLostInSpace = false;
             // destroy game
-            // Module.Quit(function() {
-            //     console.log("done!");
-            // });
-            // Module = null;
+            myModule.Quit(function() {
+                console.log("done!");
+            });
+            myModule = null;
         }
+    }
+
+    function goBack() {
+        window.location.href = '';
     }
 
     Module = {

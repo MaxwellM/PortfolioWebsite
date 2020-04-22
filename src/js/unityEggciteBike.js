@@ -3,6 +3,7 @@ var ngModule = angular.module('app');
 ngModule.controller('unityEggciteBikeCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
 
     $scope.launchEggciteBike = launchEggciteBike;
+    $scope.goBack = goBack;
     $scope.playEggciteBike = false;
 
     function launchEggciteBike() {
@@ -23,6 +24,10 @@ ngModule.controller('unityEggciteBikeCtrl', ['$scope', '$http', '$q', '$filter',
             // });
             // Module = null;
         }
+    }
+
+    function goBack() {
+        window.location.href = '';
     }
 
     Module = {

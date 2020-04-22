@@ -1,0 +1,132 @@
+
+<title>AngularJS and PostgreSQL Example!</title>
+<div id="angularJSExampleTableWrapper">
+  <div id="angularJSExampleTableSidebarWrapper">
+    <div id="angularJSExampleTableSidebarSearchTitle">
+      <h1>Search</h1>
+    </div>
+    <div id="angularJSExampleTableSidebarFilters" layout-gt-sm="row">
+      <md-input-container class="md-block" flex-gt-sm="">
+        <label>Name</label>
+        <input ng-model="searchName"/>
+      </md-input-container>
+      <md-input-container class="md-block" flex-gt-sm="">
+        <label>Species</label>
+        <input ng-model="searchSpecies"/>
+      </md-input-container>
+      <md-input-container class="md-block" flex-gt-xs="">
+        <md-button ng-click="refreshAngularJSExampleTableResults()">Search</md-button>
+      </md-input-container>
+      <!--div#angularJSExampleTableSidebarFilterLabels-->
+      <!--    label Name-->
+      <!--    label Species-->
+      <!--div#angularJSExampleTableSidebarInputs-->
+      <!--    form(ng-submit='refreshAngularJSExampleTableResults()')-->
+      <!--        input(type='text', ng-model='searchName')-->
+      <!--        input(type='text', ng-model='searchSpecies')-->
+      <!--        input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')-->
+    </div>
+    <div id="angularJSExampleTableSidebarTableTitleWrapper">
+      <h1>Character Selection</h1>
+    </div>
+    <div id="angularJSExampleTableSidebarTableWrapper">
+      <div id="angularJSExampleTableSidebarTable">
+        <table id="angularJSExampleTableResultsTableTH">
+          <thead>
+            <tbody>
+              <th width="100">Name</th>
+              <th width="100">Species</th>
+              <th width="0">Born</th>
+            </tbody>
+          </thead>
+        </table>
+        <table id="angularJSExampleTableResultsTableTD">
+          <thead>
+            <tbody>
+              <tr ng-repeat="character in allCharacters | orderBy: 'born':true | limitTo: 250" ng-click="setClickedRow(character.id)">
+                <td width="100">{{ ::character.name }}</td>
+                <td width="100">{{ ::character.species }}</td>
+                <td width="0">{{ ::character.born | date:'short'}}</td>
+              </tr>
+            </tbody>
+          </thead>
+        </table>
+        <h2 id="angularJSExampleTableResultsEmptyTable" ng-show="allCharacters.length == 0">NO CHARACTERS FOUND</h2>
+      </div>
+    </div>
+  </div>
+  <div id="angularJSExampleTablePageWrapper">
+    <div id="angularJSExampleTableInnerTitle">
+      <h1>Star Wars Characters<img id="angularJSExampleTableImage" ng-src="./images/person.png" alt=""/></h1>
+    </div>
+    <div id="angularJSExampeTableSplitWrapper">
+      <h2 id="starWarsCharacterAdd" ng-model="add" ng-click="showSection(true)">Add</h2>
+      <h2 id="starWarsCharacterView" ng-model="view" ng-click="showSection(false)">Edit/View</h2>
+    </div>
+    <div id="angulaJSExampleTableEnterWrapper" ng-show="showAddCharacter">
+      <div id="angulaJSExampleTableTitle">
+        <h1>Add Character</h1>
+      </div>
+      <div id="angularJSExampleLabels">
+        <label>Name</label>
+        <label>Homeworld</label>
+        <label>Born</label>
+        <label>Died</label>
+        <label>Species</label>
+        <label>Gender</label>
+        <label>Affiliation</label>
+        <label>Associated</label>
+        <label>Masters</label>
+        <label>Apprentices</label>
+      </div>
+      <div id="angularJSExampleInputs">
+        <input type="text" ng-model="name"/>
+        <input type="text" ng-model="homeworld"/>
+        <input type="text" ng-model="born"/>
+        <input type="text" ng-model="died"/>
+        <input type="text" ng-model="species"/>
+        <input type="text" ng-model="gender"/>
+        <input type="text" ng-model="affiliation"/>
+        <input type="text" ng-model="associated"/>
+        <input type="text" ng-model="masters"/>
+        <input type="text" ng-model="apprentices"/>
+        <input id="angularJSExampeTableAddButton" type="button" value="Add Character" ng-click="addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices)"/>
+      </div>
+    </div>
+    <div id="anjularJSExampleTableShowCharacters" ng-show="showViewCharacters">
+      <div id="anjularJSExampleTableShowCharactersTest">
+        <h1>Character</h1>
+      </div>
+      <div id="anjularJSExampleTableResult">
+        <div id="angularJSExampleTableLabels">
+          <label>Name</label>
+          <label>Homeworld</label>
+          <label>Born</label>
+          <label>Died</label>
+          <label>Species</label>
+          <label>Gender</label>
+          <label>Affiliation</label>
+          <label>Associated</label>
+          <label>Masters</label>
+          <label>Apprentices</label>
+        </div>
+        <div id="angularJSExampleTableInputs">
+          <input ng-model="selectedCharacter[0].name"/>
+          <input ng-model="selectedCharacter[0].homeworld"/>
+          <input ng-model="selectedCharacter[0].born"/>
+          <input ng-model="selectedCharacter[0].died"/>
+          <input ng-model="selectedCharacter[0].species"/>
+          <input ng-model="selectedCharacter[0].gender"/>
+          <input ng-model="selectedCharacter[0].affiliation"/>
+          <input ng-model="selectedCharacter[0].associated"/>
+          <input ng-model="selectedCharacter[0].masters"/>
+          <input ng-model="selectedCharacter[0].apprentices"/>
+          <input id="angularJSExampleTableReSubmitButton" type="button" value="Update Character " ng-click="reSubmitCharacter()"/>
+        </div>
+      </div>
+      <!--div#quoteEditorShippingFields(ng-repeat='shipField in editedCartItems.shipAddr.Array track by $index')-->
+      <!--    //label Line {{ $index + 1 }}-->
+      <!--    input(ng-model='editedCartItems.shipAddr["Array"][$index]')-->
+    </div>
+  </div>
+</div>

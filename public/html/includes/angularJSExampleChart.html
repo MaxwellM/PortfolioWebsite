@@ -1,0 +1,90 @@
+
+<title>AngularJS and C3JS Chart Example!</title>
+<div id="angularJSExampleChartInnerPageWrapper">
+  <div id="angularJSExampleChartTopWrapper">
+    <div id="angularJSExampleChartTitle">
+      <h1>Website Traffic</h1>
+    </div>
+    <div id="angularJSExampleChartWrapper">
+      <div id="chart"></div>
+    </div>
+  </div>
+  <div id="angularJSExampleChartCardWrapper">
+    <div id="angularJSExampleChartLeft">
+      <md-content class="md-padding" layout-xs="column" layout="column">
+        <div flex-xs="" flex-gt-xs="50" layout="column" style="margin:auto;">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text><span class="md-headline">Page Views</span></md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <p><span>{{ currentMonthName }} Page Views</span><span>{{ ::currentPageMonthTotal }}</span></p>
+            </md-card-content>
+          </md-card>
+          <md-card>
+            <md-card-title>
+              <md-card-title-text><span class="md-headline">Unique Visitors</span></md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <p><span>{{ currentMonthName }} Unique Visitors</span><span>{{ ::currentMonthTotal }}</span></p>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+    <div id="angularJSExampleChartMiddle">
+      <md-content class="md-padding" layout-xs="column" layout="column">
+        <div flex-xs="" flex-gt-xs="50" layout="row" style="margin:auto;">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text><span class="md-headline">Unique Visitor List</span></md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <div id="angularJSExampleChartVisitorList">
+                <label ng-repeat="ip in ipLocationList" ng-click="selectIPLocation(ip.ip)">{{ ::$index + 1 }}) {{ ::ip.ip }}</label>
+              </div>
+              <div id="angularJSExampleChartVisitorLocation" ng-show="selectedIP.length &gt; 0">
+                <h3>Unique Visitor Info</h3>
+                <div id="angularJSExampleChartVisitors" ng-repeat="visitor in selectedIP">
+                  <div id="angularJSExampleChartLocationLabelWrapper">
+                    <label ng-show="visitor.ip">IP</label>
+                    <label ng-show="visitor.isp">ISP</label>
+                    <label ng-show="visitor.as.name">Name</label>
+                    <label ng-show="visitor.location.city">City</label>
+                    <label ng-show="visitor.location.region">Region</label>
+                    <label ng-show="visitor.location.county">Country</label>
+                  </div>
+                  <div id="angularJSExampleChartLocationInfoWrapper">
+                    <label ng-show="visitor.ip">{{ ::visitor.ip }}</label>
+                    <label ng-show="visitor.isp">{{ ::visitor.isp }}</label>
+                    <label ng-show="visitor.as.name">{{ ::visitor.as.name }}</label>
+                    <label ng-show="visitor.location.city">{{ ::visitor.location.city }}</label>
+                    <label ng-show="visitor.location.region">{{ ::visitor.location.region }}</label>
+                    <label ng-show="visitor.location.county">{{ ::visitor.location.county }}</label>
+                  </div>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+    <div id="angularJSExampleChartRight">
+      <md-content class="md-padding" layout-xs="column" layout="column">
+        <div flex-xs="" flex-gt-xs="50" layout="column" style="margin:auto;">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text><span class="md-headline">Connection Information</span></md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <p><span>Response Time: {{ pingTime }} ms</span><span>Client: {{ browserCity }}, {{ browserState }}</span><span>Server: Dallas, TX</span><span>Distance: {{ distance | limitTo:8}} Km</span></p>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+  </div>
+</div>
+<!--h4 Response Time: {{ pingTime }} ms-->
+<!--if $scope.browserCity && $scope.browserState !== "test"-->
+<!--    h4 Distance: {{ browserCity }}, {{ browserState }} to Dallas, TX {{ distance | limitTo:8}} Km-->

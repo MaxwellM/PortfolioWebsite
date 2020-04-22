@@ -1,0 +1,57 @@
+
+<title>AngularJS and AcuweatherAPI Example!</title>
+<div id="angularJSExampleDisplayInnerPageWrapper">
+  <div id="angularJSExampleDisplayTitle">
+    <h1>Weather Report<img src="./images/weather-icon.png" alt=""/></h1>
+  </div>
+  <div id="angularJSExampleDisplayWrapper" ng-if="weatherData">
+    <div id="angularJSExampleDisplayLocation">
+      <h2>5 Day Forecast for West Haven, UT 84401</h2>
+    </div>
+    <div id="angularJSExampleDisplay" ng-repeat="day in weatherData.Result.DailyForecasts">
+      <md-content class="md-padding" layout-xs="column" layout="column">
+        <div flex-xs="" flex-gt-xs="50" layout="column" style="margin:auto;">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text><span class="md-headline">{{::getDayName(day.Date)}}</span></md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <div id="angularJSExampleDisplayWeatherLabelWrapper">
+                <label>Date</label>
+                <label>High</label>
+                <label>Low</label>
+                <label>Day</label>
+                <label>Night</label>
+              </div>
+              <div id="angularJSExampleDisplayWeatherDataWrapper">
+                <label>{{ ::trimDate(day.Date) }}</label>
+                <label>{{ ::day.Temperature.Maximum.Value }} {{ ::day.Temperature.Maximum.Unit}}</label>
+                <label>{{ ::day.Temperature.Minimum.Value }} {{ ::day.Temperature.Minimum.Unit}}</label><img ng-src="./images/NewWeatherIcons/{{::day.Day.Icon}}-s.png" alt=""/>
+                <label>{{ ::day.Day.IconPhrase }}</label><img ng-src="./images/NewWeatherIcons/{{::day.Night.Icon}}-s.png" alt=""/>
+                <label>{{ ::day.Night.IconPhrase }}</label>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+    <div id="angularJSExampleDisplayCurrentConditionsWrapper" ng-if="currentConditionsWeather">
+      <md-content class="md-padding" layout-xs="column" layout="column">
+        <div flex-xs="" flex-gt-xs="50" layout="column" style="margin:auto;">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text><span class="md-headline">Current Conditions</span></md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <div id="angularJSExampleDisplayCurrentConditions"><img ng-src="./images/NewWeatherIcons/{{::currentConditionsWeather.WeatherIcon}}-s.png" alt=""/>
+                <label>{{ ::currentConditionsWeather.WeatherText}}</label>
+                <label>Current Temp: {{ ::currentConditionsWeather.Temperature.Imperial.Value }} {{ ::currentConditionsWeather.Temperature.Imperial.Unit }}</label>
+                <label>From: {{ ::currentConditionsWeather.LocalObservationDateTime | date:'short'}}</label>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+  </div>
+</div>

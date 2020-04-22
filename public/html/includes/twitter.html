@@ -1,0 +1,36 @@
+
+<div id="goExampleTwitterPageWrapper">
+  <div id="goExampleTwitterTitle">
+    <h1>Twitter<img src="./images/golang.png" alt=""/></h1>
+  </div>
+  <div id="goExampleTwitterSubmitTweet">
+    <label>Tweet for MAXintosh.org!</label>
+    <div id="goExampleTwitterSubmitInput">
+      <div class="md-inline-form" layout="row" ng-cloak="">
+        <md-content layout-gt-sm="row" layout-padding="">
+          <form id="tweetForm" ng-submit="postTweet()">
+            <md-input-container class="md-block" flex-gt-sm="">
+              <label>Enter someting to tweet!</label>
+              <input ng-model="tweet" style="width:450px"/>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-sm="">
+              <md-button ng-click="postTweet()">Tweet</md-button>
+            </md-input-container>
+          </form>
+        </md-content>
+      </div>
+    </div>
+    <div id="goExampleTwitterPostedTweetWrapper" ng-if="tweetID">
+      <label>Posted Tweet!</label>
+      <div id="goExampleTwitterPostedTweet">
+        <twitter-widget twitter-widget-id="tweetID"></twitter-widget>
+      </div>
+    </div>
+  </div>
+  <div id="goExampleTwitterRecentTweetWrapper">
+    <label>Tweet by MAXintosh2010 (..me)</label>
+    <div id="goExampleTwitterRecentTweet">
+      <twitter-widget twitter-widget-id="'1166837255685599233'"></twitter-widget>
+    </div>
+  </div>
+</div>

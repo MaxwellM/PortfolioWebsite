@@ -20,7 +20,9 @@ func main() {
 	router.Static("/js", "./public/js")
 	router.Static("/images", "./public/images")
 	router.Static("/unityGames", "./public/unityGames")
-	router.StaticFile("", "./public/index.html")
+	// For our single page website... Minus the Unity stuff as it cannot be
+	// closed without reloading the page...
+	router.StaticFile("", "./public/html/index.html")
 
     // Cookie stuff
 	router.GET("/setCookie", routes.SetCookie)

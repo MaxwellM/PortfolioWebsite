@@ -1,0 +1,64 @@
+
+<div>
+  <md-content class="md-padding">
+    <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+      <md-nav-item md-nav-click="$root.buttonName = &quot;Maxwell Morin&quot;;">Maxwell Morin</md-nav-item>
+      <md-nav-item md-nav-click="$root.buttonName = &quot;Contact Me&quot;;">Contact Me</md-nav-item>
+      <md-nav-item md-nav-click="$root.buttonName = &quot;Resume&quot;;">Resume</md-nav-item>
+      <md-nav-item md-nav-click="$root.buttonName = &quot;Projects&quot;;">Projects</md-nav-item>
+      <md-menu md-position-mode="target-right bottom">
+        <md-nav-item md-nav-click="$mdMenu.open()">{{ !examples.includes($root.buttonName) ? "Examples ▼" : $root.currentMenuItem + " ▼"}}</md-nav-item>
+        <md-menu-content id="navExampleDropDown">
+          <md-menu-item>
+            <md-menu>
+              <md-button ng-click="$mdMenu.open()">◀ AngularJS</md-button>
+              <md-menu-content>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Table Example&quot;;$root.currentMenuItem=&quot;Table Example&quot;;">Table Example</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Display Example&quot;;$root.currentMenuItem=&quot;Display Example&quot;;">Display Example</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Chart Example&quot;;$root.currentMenuItem=&quot;Chart Example&quot;;">Chart Example</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Translate&quot;;$root.currentMenuItem=&quot;Translate&quot;;">Translate</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Twitter&quot;;$root.currentMenuItem=&quot;Twitter&quot;;">Twitter</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Stock Tracker&quot;;$root.currentMenuItem=&quot;Stock Tracker&quot;;">Stock Tracker</md-button>
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </md-menu-item>
+          <md-menu-item>
+            <md-menu>
+              <md-button ng-click="$mdMenu.open()">◀ Golang</md-button>
+              <md-menu-content>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;String Duplication&quot;;$root.currentMenuItem=&quot;String Duplication&quot;;">String Duplication</md-button>
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </md-menu-item>
+          <md-menu-item>
+            <md-menu>
+              <md-button ng-click="$mdMenu.open()">◀ Unity</md-button>
+              <md-menu-content>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Unity Lost In Space&quot;;$root.currentMenuItem=&quot;Unity Lost In Space&quot;;">Unity Lost In Space</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                  <md-button ng-click="$root.buttonName = &quot;Unity Eggcite Bike&quot;;$root.currentMenuItem=&quot;Unity Eggcite Bike&quot;;">Unity Eggcite Bike</md-button>
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </md-nav-bar>
+  </md-content>
+</div>

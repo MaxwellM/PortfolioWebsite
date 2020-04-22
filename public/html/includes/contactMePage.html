@@ -1,0 +1,51 @@
+
+<title>Maxwell Ross Morin's Contract Me Page.</title>
+<div id="contactMeInsideWrapper">
+  <!--h1 Contact Me-->
+  <div id="contactMeInfoWrapper">
+    <div id="map"></div>
+    <div id="contactMeWrapper">
+      <div id="contactMeTitle">
+        <h3>Contact Me</h3>
+        <label>Have a question or want to work together?</label>
+      </div>
+      <div class="md-inline-form" layout="column" ng-cloak="">
+        <md-content layout-gt-sm="row" layout-padding="">
+          <div>
+            <form name="userForm">
+              <div layout-gt-xs="row">
+                <md-input-container class="md-block" flex-gt-sm="">
+                  <label>First Name</label>
+                  <input ng-model="user.firstname"/>
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm="">
+                  <label>Last Name</label>
+                  <input ng-model="user.lastname"/>
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm="">
+                  <label>Email</label>
+                  <input ng-model="user.email" type="email" ng-pattern="emailRegex"/>
+                </md-input-container>
+                <md-input-container class="md-block" flex-gt-sm="">
+                  <label>Phone</label>
+                  <input ng-model="user.phone" ng-pattern="phoneRegex"/>
+                </md-input-container>
+              </div>
+              <div layout-gt-xs="row">
+                <md-input-container class="md-block" flex-gt-xs="">
+                  <label>Message</label>
+                  <textarea ng-model="user.message" md-maxlength="500" rows="5" md-select-on-focus=""></textarea>
+                </md-input-container>
+              </div>
+              <div layout-gt-xs="row">
+                <md-input-container class="md-block" flex-gt-xs="">
+                  <md-button ng-click="sendMessage()">Send Email</md-button>
+                </md-input-container>
+              </div>
+            </form>
+          </div>
+        </md-content>
+      </div>
+    </div>
+  </div>
+</div>

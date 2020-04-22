@@ -1,0 +1,48 @@
+
+<div id="stockTrackerPageWrapper">
+  <div id="stockTrackerPageTableWrapper">
+    <div id="stockTrackerItemPickerWrapper">
+      <md-card>
+        <md-card-title>
+          <md-card-title-text><span class="md-headline">Item Inventory Tracker</span><span class="md-subhead">Currently supports: BestBuy, Walmart, Target, and GameStop.</span></md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+          <div id="stockTrackerUpdateInfoWrapper">
+            <label>Last Update: {{ lastUpdate }} (Updates every 5 minutes)</label>
+            <md-progress-circular md-mode="determinate" md-diameter="20px" value="{{progressValue}}"></md-progress-circular>
+          </div>
+          <div layout="row">
+            <md-select class="md-no-underline" ng-model="itemSelected" ng-change="getDataPromise()" aria-label="Stock Item Select">
+              <md-option ng-repeat="item in items" value="{{item}}">{{item}}</md-option>
+            </md-select>
+          </div>
+        </md-card-content>
+      </md-card>
+    </div>
+    <div id="stockTrackerTableWrapper" ng-show="results.length">
+      <md-table-container>
+        <table md-table="" md-progress="getDataPromise">
+          <thead md-head="" md-order="results.Store">
+            <tr md-row="">
+              <th md-column=""><span>Id</span></th>
+              <th md-column="" md-order-by="Store"><span>Store</span></th>
+              <th md-column="" md-order-by="Name"><span>Name</span></th>
+              <th md-column="" md-order-by="Price"><span>Price</span></th>
+              <th md-column=""><span>Availability</span></th>
+            </tr>
+          </thead>
+          <tbody md-body="">
+            <tr md-row="" ng-repeat="result in results | orderBy: results.Store | limitTo: myLimit: (myPage - 1) * myLimit">
+              <td md-cell="">{{result.Id}}</td>
+              <td md-cell="">{{result.Store}}</td>
+              <td md-cell="">{{result.Name}}</td>
+              <td md-cell="">{{result.Price}}</td>
+              <td md-cell=""><a ng-href="{{result.URL}}">{{result.Availability}}</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </md-table-container>
+      <md-table-pagination md-limit="myLimit" md-page="myPage" md-total="{{results.length}}"></md-table-pagination>
+    </div>
+  </div>
+</div>

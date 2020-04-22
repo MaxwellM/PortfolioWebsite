@@ -1,9 +1,8 @@
 title Unity3D WebGL Game!
 div#unityLostInSpaceLabelWrapper
-    label(ng-show='playLostInSpace') Refresh Web Page to Quit Game
-    //button#closeLostInSpace(ng-show='playLostInSpace', ng-click='playLostInSpace = false') Close Lost in Space
-div#unityLostInSpaceWrapper
-    button#playLostInSpace(ng-show='!playLostInSpace', ng-click='launchLostInSpace()') Play Lost in Space
+    div#unityLostInSpaceTop
+        md-button#closeLostInSpace(ng-show='playLostInSpace', ng-click='goBack()') Close Lost in Space
+        md-button#playLostInSpace(ng-show='!playLostInSpace', ng-click='launchLostInSpace()') Play Lost in Space
 div#showLostInSpace(ng-if='playLostInSpace')
     .template-wrap.clear
         canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')

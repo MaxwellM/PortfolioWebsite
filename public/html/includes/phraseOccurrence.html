@@ -1,0 +1,23 @@
+
+<div id="goExampleFindOccurrencePageWrapper">
+  <div id="goExampleFindOccurrenceTitle">
+    <h1>String Duplication Occurrences<img src="./images/golang.png" alt=""/></h1>
+  </div>
+  <div id="goExampleFindOccurrenceInputWrapper">
+    <h3>Enter a string containing duplicate words.</h3>
+    <div id="goExampleFindOccurrenceInnerWrapper" layout-gt-sm="row">
+      <md-content layout-gt-sm="row" layout-padding="">
+        <md-input-container class="md-block" flex-gt-sm="">
+          <label>Enter some text to search for duplications.</label>
+          <input ng-model="string" style="width:450px"/>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm="">
+          <md-button ng-click="findOccurrences(string)">Submit</md-button>
+        </md-input-container>
+      </md-content>
+    </div>
+  </div>
+  <div id="goExampleFindOccurrenceReturnWrapper">
+    <label>{{ occurrences }}</label>
+  </div>
+</div>
