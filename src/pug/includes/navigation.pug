@@ -11,29 +11,47 @@ div()
                 | Projects
             md-menu(md-position-mode="target-right bottom")
                 md-nav-item(md-nav-click='$mdMenu.open()')
-                    | {{ !examples.includes($root.buttonName) ? "Examples ▼" : currentMenuItem + " ▼"}}
-                md-menu-content
+                    | {{ !examples.includes($root.buttonName) ? "Examples ▼" : $root.currentMenuItem + " ▼"}}
+                md-menu-content#navExampleDropDown
                     md-menu-item
-                        md-button(ng-click='$root.buttonName = "Table Example";currentMenuItem="Table Example";')
-                            | Table Example
+                        md-menu
+                            md-button(ng-click='$mdMenu.open()')
+                                | ◀ AngularJS
+                            md-menu-content
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Table Example";$root.currentMenuItem="Table Example";')
+                                        | Table Example
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Display Example";$root.currentMenuItem="Display Example";')
+                                        | Display Example
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Chart Example";$root.currentMenuItem="Chart Example";')
+                                        | Chart Example
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Translate";$root.currentMenuItem="Translate";')
+                                        | Translate
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Twitter";$root.currentMenuItem="Twitter";')
+                                        | Twitter
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Stock Tracker";$root.currentMenuItem="Stock Tracker";')
+                                        | Stock Tracker
                     md-menu-item
-                        md-button(ng-click='$root.buttonName = "Display Example";currentMenuItem="Display Example";')
-                            | Display Example
+                        md-menu
+                            md-button(ng-click='$mdMenu.open()')
+                                | ◀ Golang
+                            md-menu-content
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "String Duplication";$root.currentMenuItem="String Duplication";')
+                                        | String Duplication
                     md-menu-item
-                        md-button(ng-click='$root.buttonName = "Chart Example";currentMenuItem="Chart Example";')
-                            | Chart Example
-                    md-menu-item
-                        md-button(ng-click='$root.buttonName = "String Duplication";currentMenuItem="String Duplication";')
-                            | String Duplication
-                    md-menu-item
-                        md-button(ng-click='$root.buttonName = "Translate";currentMenuItem="Translate";')
-                            | Translate
-                    md-menu-item
-                        md-button(ng-click='$root.buttonName = "Twitter";currentMenuItem="Twitter";')
-                            | Twitter
-                    md-menu-item
-                        md-button(ng-click='$root.buttonName = "Unity Lost In Space";currentMenuItem="Unity Lost In Space";')
-                            | Unity Lost In Space
-                    md-menu-item
-                        md-button(ng-click='$root.buttonName = "Stock Tracker";currentMenuItem="Stock Tracker";')
-                            | Stock Tracker
+                        md-menu
+                            md-button(ng-click='$mdMenu.open()')
+                                | ◀ Unity
+                            md-menu-content
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Unity Lost In Space";$root.currentMenuItem="Unity Lost In Space";')
+                                        | Unity Lost In Space
+                                md-menu-item
+                                    md-button(ng-click='$root.buttonName = "Unity Eggcite Bike";$root.currentMenuItem="Unity Eggcite Bike";')
+                                        | Unity Eggcite Bike

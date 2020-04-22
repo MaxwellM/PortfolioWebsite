@@ -14,9 +14,11 @@ html
         link(rel="stylesheet", href="./css/angularJSExampleDisplay.css", type="text/css")
         link(rel="stylesheet", href="./css/angularJSExampleChart.css", type="text/css")
         link(rel="stylesheet", href="./css/unityLostInSpace.css", type="text/css")
+        link(rel="stylesheet", href="./css/unityeggciteBike.css", type="text/css")
         link(rel="stylesheet", href="./css/phraseOccurrence.css", type="text/css")
         link(rel="stylesheet", href="./css/translate.css", type="text/css")
         link(rel="stylesheet", href="./unityGames/LostInSpaceWebGL/TemplateData/style.css")
+        link(rel="stylesheet", href="./unityGames/EggciteBikeWebGL/TemplateData/style.css")
         link(rel="stylesheet", href="./css/twitter.css", type="text/css")
         link(rel="stylesheet", href="./css/stockTracker.css", type="text/css")
         link(rel="stylesheet", href="./js/node_modules/angular-tooltips/dist/angular-tooltips.css", type="text/css")
@@ -43,6 +45,8 @@ html
                 include includes/angularJSExampleDisplay
             div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-if='buttonName == "Chart Example"')
                 include includes/angularJSExampleChart
+            div#untyGameEggciteBikePage(ng-controller='unityEggciteBikeCtrl', ng-cloak, ng-if='buttonName == "Unity Eggcite Bike"')
+                include includes/unityEggciteBike
             div#untyGameLostInSpacePage(ng-controller='unityLostInSpaceCtrl', ng-cloak, ng-if='buttonName == "Unity Lost In Space"')
                 include includes/unityLostInSpace
             div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-if='buttonName == "String Duplication"')
@@ -76,6 +80,7 @@ html
     script(defer='', src="./js/angularJSExampleTable.js")
     script(defer='', src="./js/angularJSExampleDisplay.js")
     script(defer='', src="./js/unityLostInSpace.js")
+    script(defer='', src="./js/unityEggciteBike.js")
     script(defer='', src="./js/phraseOccurrence.js")
     script(defer='', src="./js/translate.js")
     script(defer='', src="./js/twitter.js")
@@ -85,6 +90,7 @@ html
     script(defer='', src="./js/node_modules/c3/c3.min.js")
     script(defer='', src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
     script(defer='', src='./unityGames/LostInSpaceWebGL/TemplateData/UnityProgress.js')
+    script(defer='', src='./unityGames/EggciteBikeWebGL/TemplateData/UnityProgress.js')
     // Global site tag (gtag.js) - Google Analytics
     script(async='', src='https://www.googletagmanager.com/gtag/js?id=UA-19197796-1')
     script.

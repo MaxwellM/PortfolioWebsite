@@ -4,7 +4,7 @@ ngModule.controller('navigationCtrl', ['$scope', '$rootScope', '$http', '$q', '$
     // This is our default page, the main page!
     $rootScope.buttonName = "Maxwell Morin";
     $scope.currentNavItem = "Maxwell Morin";
-    $scope.currentMenuItem = "";
+    $rootScope.currentMenuItem = "";
 
     $scope.examples = [
         "Table Example",
@@ -14,6 +14,7 @@ ngModule.controller('navigationCtrl', ['$scope', '$rootScope', '$http', '$q', '$
         "Translate",
         "Twitter",
         "Unity Lost In Space",
+        "Unity Eggcite Bike",
         "Stock Tracker"
     ];
 }]);

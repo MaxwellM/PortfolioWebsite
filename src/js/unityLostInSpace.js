@@ -25,16 +25,16 @@ ngModule.controller('unityLostInSpaceCtrl', ['$scope', '$http', '$q', '$filter',
         }
     }
 
-}]);
+    Module = {
+        TOTAL_MEMORY: 536870912,
+        errorhandler: null,			// arguments: err, url, line. This function must return 'true' if the error is handled, otherwise 'false'
+        compatibilitycheck: null,
+        backgroundColor: "#222C36",
+        splashStyle: "Light",
+        dataUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.data",
+        codeUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.js",
+        asmUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.asm.js",
+        memUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.mem",
+    };
 
-Module = {
-    TOTAL_MEMORY: 536870912,
-    errorhandler: null,			// arguments: err, url, line. This function must return 'true' if the error is handled, otherwise 'false'
-    compatibilitycheck: null,
-    backgroundColor: "#222C36",
-    splashStyle: "Light",
-    dataUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.data",
-    codeUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.js",
-    asmUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.asm.js",
-    memUrl: "../../unityGames/LostInSpaceWebGL/Release/LostInSpaceWebGL.mem",
-};
+}]);
