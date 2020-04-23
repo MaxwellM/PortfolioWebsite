@@ -1,0 +1,13 @@
+title Unity3D WebGL Game!
+div#unityEggmanLabelWrapper
+    div#unityEggmanTop
+        md-button#closeEggman(ng-show='playEggman', ng-click='goBack()') Close Eggman
+        md-button#playEggman(ng-show='!playEggman', ng-click='launchEggman()') Play Eggman
+div#showEggman(ng-if='playEggman')
+    .template-wrap.clear
+        canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')
+        br
+        .logo
+        .fullscreen
+            img(src='./unityGames/EggManWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
+        .title Eggman

@@ -15,6 +15,7 @@ ngModule.controller('navigationCtrl', ['$scope', '$rootScope', '$http', '$q', '$
         "Twitter",
         "Unity Lost In Space",
         "Unity Eggcite Bike",
+        "Unity Eggman",
         "Stock Tracker"
     ];
 }]);
