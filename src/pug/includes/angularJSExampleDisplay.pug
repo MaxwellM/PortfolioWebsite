@@ -1,11 +1,11 @@
 title AngularJS and AcuweatherAPI Example!
 div#angularJSExampleDisplayInnerPageWrapper
     div#angularJSExampleDisplayTitle
-        h1 Weather Report
+        h1.md-display-1 Weather Report
             img(src='./images/weather-icon.png', alt='')
     div#angularJSExampleDisplayWrapper(ng-if='weatherData')
         div#angularJSExampleDisplayLocation
-            h2 5 Day Forecast for West Haven, UT 84401
+            h3.md-headline 5 Day Forecast for West Haven, UT 84401
         div#angularJSExampleDisplay(ng-repeat='day in weatherData.Result.DailyForecasts')
             md-content.md-padding(layout-xs='column', layout='column')
                 div(flex-xs='', flex-gt-xs='50', layout='column', style='margin:auto;')
@@ -15,19 +15,19 @@ div#angularJSExampleDisplayInnerPageWrapper
                                 span.md-headline {{::getDayName(day.Date)}}
                         md-card-content
                             div#angularJSExampleDisplayWeatherLabelWrapper
-                                label Date
-                                label High
-                                label Low
-                                label Day
-                                label Night
+                                label.md-body-1 Date
+                                label.md-body-1 High
+                                label.md-body-1 Low
+                                label.md-body-1 Day
+                                label.md-body-1 Night
                             div#angularJSExampleDisplayWeatherDataWrapper
-                                label {{ ::trimDate(day.Date) }}
-                                label {{ ::day.Temperature.Maximum.Value }} {{ ::day.Temperature.Maximum.Unit}}
-                                label {{ ::day.Temperature.Minimum.Value }} {{ ::day.Temperature.Minimum.Unit}}
+                                label.md-body-1 {{ ::trimDate(day.Date) }}
+                                label.md-body-1 {{ ::day.Temperature.Maximum.Value }} {{ ::day.Temperature.Maximum.Unit}}
+                                label.md-body-1 {{ ::day.Temperature.Minimum.Value }} {{ ::day.Temperature.Minimum.Unit}}
                                 img(ng-src=`./images/NewWeatherIcons/{{::day.Day.Icon}}-s.png`, alt='')
-                                label {{ ::day.Day.IconPhrase }}
+                                label.md-body-1 {{ ::day.Day.IconPhrase }}
                                 img(ng-src=`./images/NewWeatherIcons/{{::day.Night.Icon}}-s.png`, alt='')
-                                label {{ ::day.Night.IconPhrase }}
+                                label.md-body-1 {{ ::day.Night.IconPhrase }}
         div#angularJSExampleDisplayCurrentConditionsWrapper(ng-if='currentConditionsWeather')
             md-content.md-padding(layout-xs='column', layout='column')
                 div(flex-xs='', flex-gt-xs='50', layout='column', style='margin:auto;')
@@ -38,8 +38,8 @@ div#angularJSExampleDisplayInnerPageWrapper
                         md-card-content
                             div#angularJSExampleDisplayCurrentConditions
                                 img(ng-src=`./images/NewWeatherIcons/{{::currentConditionsWeather.WeatherIcon}}-s.png`, alt='')
-                                label {{ ::currentConditionsWeather.WeatherText}}
-                                label Current Temp: {{ ::currentConditionsWeather.Temperature.Imperial.Value }} {{ ::currentConditionsWeather.Temperature.Imperial.Unit }}
-                                label From: {{ ::currentConditionsWeather.LocalObservationDateTime | date:'short'}}
+                                label.md-body-1 {{ ::currentConditionsWeather.WeatherText}}
+                                label.md-body-1 Current Temp: {{ ::currentConditionsWeather.Temperature.Imperial.Value }} {{ ::currentConditionsWeather.Temperature.Imperial.Unit }}
+                                label.md-body-1 From: {{ ::currentConditionsWeather.LocalObservationDateTime | date:'short'}}
 
 

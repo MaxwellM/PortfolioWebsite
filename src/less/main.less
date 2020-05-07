@@ -1,4 +1,43 @@
+///* Extra small devices (phones, less than 768px) */
+//@media (max-width:767px) {
+//  body {font-size: 2px;}
+//}
+//
+///* Small devices (tablets, 768px and up) */
+//@media (min-width:768px) {
+//  body {font-size: 10px;}
+//}
+//
+///* Medium devices (desktops, 992px and up) */
+//@media (min-width:992px) {
+//  body {font-size: 20px;}
+//}
+//
+///* Large devices (large desktops, 1200px and up) */
+//@media (min-width:1200px) {
+//  body {font-size: 30px;}
+//}
+//
+
+@font-face {
+  font-family: 'Roboto';
+  src: url("./font/roboto/Roboto-Black.ttf") format("ttf"),
+  url("./font/roboto/Roboto-BlackItalic.ttf") format("ttf"),
+  url("./font/roboto/Roboto-Bold.ttf") format("ttf"),
+  url("./font/roboto/Roboto-BoldItalic.ttf") format("ttf"),
+  url("./font/roboto/Roboto-Italic.ttf") format("ttf"),
+  url("./font/roboto/Roboto-Light.ttf") format("ttf"),
+  url("./font/roboto/Roboto-LightItalic.ttf") format("ttf"),
+  url("./font/roboto/Roboto-Medium.ttf") format("ttf"),
+  url("./font/roboto/Roboto-MediumItalic.ttf") format("ttf"),
+  url("./font/roboto/Roboto-Regular.ttf") format("ttf"),
+  url("./font/roboto/Roboto-Thin.ttf") format("ttf"),
+  url("./font/roboto/Roboto-ThinItalic.ttf") format("ttf");
+}
+
 body {
+  font-family: 'Roboto', sans-serif;
+
   background-color: #ffffff;
   height: 100%;
   width: 100%;
@@ -46,8 +85,8 @@ div#MEWrapper {
 
 div#GithubContributions {
   & h3 {
-    font-size: 1.5rem;
-    font-family: open sans, sans-serif;
+    //font-size: 1.5rem;
+    //font-family: open sans, sans-serif;
     color: #333;
     margin-top: 0;
     margin-bottom: 5px;
@@ -57,19 +96,19 @@ div#GithubContributions {
 
 div#AboutMeWrapper {
   & h1 {
-    font-weight: 700;
+    //font-weight: 700;
     line-height: 1.25;
     color: #3a4145;
-    font-family: open sans,sans-serif;
+    //font-family: open sans,sans-serif;
     margin-top: 0;
     margin-bottom: .5rem;
-    font-size: 3rem;
+    //font-size: 3rem;
   }
   & h3 {
-    font-family: open sans,sans-serif;
-    font-weight: 400;
+    //font-family: open sans,sans-serif;
+    //font-weight: 400;
     color: #aaa;
-    font-size: 1.5rem;
+    //-size: 1.5rem;
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -90,11 +129,11 @@ div#AboutMeDetails {
   box-sizing: border-box;
   padding-left: 1rem;
   padding-right: 1rem;
-  font-family: open sans, sans-serif;
+  //font-family: open sans, sans-serif;
   text-align: justify;
   & h3 {
     font-size: 1.5rem;
-    font-family: open sans,sans-serif;
+    //font-family: open sans,sans-serif;
     margin-bottom: 5px;
     margin-top: 10px;
   }
@@ -106,8 +145,8 @@ div#AboutMeContacts {
   box-sizing: border-box;
   display: grid;
   & h3 {
-    font-size: 1.5rem;
-    font-family: open sans,sans-serif;
+    //font-size: 1.5rem;
+    //font-family: open sans,sans-serif;
     margin-bottom: 5px;
     margin-top: 10px;
   }
@@ -116,16 +155,16 @@ div#AboutMeContacts {
     vertical-align: bottom;
   }
   & a {
-    font-size: 1rem;
+    //font-size: 1rem;
     margin-bottom: 1rem;
     color: #111;
     display: inline;
     vertical-align: super;
     text-decoration: none;
-    font-family: open sans,sans-serif;
-    -webkit-font-feature-settings: 'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;
-    -moz-font-feature-settings: 'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;
-    -o-font-feature-settings: 'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;
+    //font-family: open sans,sans-serif;
+    //-webkit-font-feature-settings: 'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;
+    //-moz-font-feature-settings: 'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;
+    //-o-font-feature-settings: 'dlig' 1,'liga' 1,'lnum' 1,'kern' 1;
     &:hover {
       color: #0096cc;
     }
@@ -137,6 +176,11 @@ div#AboutMeContacts {
       cursor: pointer;
     }
   }
+}
+
+div#GithubContributions {
+  max-width: 750px;
+  margin: auto;
 }
 
 div#AboutMeBottomWrapper {

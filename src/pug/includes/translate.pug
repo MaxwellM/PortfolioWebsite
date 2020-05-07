@@ -1,25 +1,25 @@
 meta(charset="UTF-8")
 div#goExampleTranslatePageWrapper
     div#goExampleTranslateTitle
-        h1 Translate
+        h1.md-display-1 Translate
             img(src='./images/golang.png', alt='')
     div#goExampleTranslateInputWrapper
-        h3 Enter a string and choose a language to translate!
+        h3.md-headline Enter a string and choose a language to translate!
         div#goExampleTranslateInnerWrapper
             .md-inline-form(layout='row', ng-cloak='')
                 md-content(layout-gt-sm='row', layout-padding='')
                     form(ng-submit='translate()')
                         div(layout-gt-xs='row')
                             md-input-container.md-block(flex-gt-sm='')
-                                label Input string to translate
+                                label.md-body-1 Input string to translate
                                 input(ng-model='string', style='width:450px')
                             md-input-container.md-block(flex-gt-sm='')
-                                label Language
+                                label.md-body-1 Language
                                 md-select(ng-model='lngSelected')
                                     md-option(ng-repeat='lang in languages', value='{{lang}}')
                                         | {{lang}}
                             md-input-container.md-block(flex-gt-sm='')
                                 md-button(ng-click='translate()') Submit
     div#goExampleTranslateReturnWrapper
-        label Translation:
+        label.md-body-1 Translation:
         label(ng-bind-html="translation")

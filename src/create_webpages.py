@@ -6,7 +6,7 @@ less_dir = "./less/"
 public_dir = "../public/"
 public_html_dir = "../public/html/"
 css_dir = public_dir + "css/"
-dir_to_be_moved = ["js", "json", "images"]
+dir_to_be_moved = ["js", "json", "images", "font"]
 
 def determine_os():
     """determines the OS of the system"""
