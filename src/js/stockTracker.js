@@ -85,6 +85,10 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
         $interval.cancel($scope.promise);
     });
 
+    function quickWindowResize() {
+
+    }
+
     $scope.getDataPromise();
     $scope.start();
 }]);

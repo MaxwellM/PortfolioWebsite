@@ -5,6 +5,7 @@ ngModule.controller('navigationCtrl', ['$scope', '$rootScope', '$http', '$q', '$
     $rootScope.buttonName = "Maxwell Morin";
     $scope.currentNavItem = "Maxwell Morin";
     $rootScope.currentMenuItem = "";
+    $scope.currentNav = currentNav;
 
     $scope.examples = [
         "Table Example",
@@ -18,4 +19,8 @@ ngModule.controller('navigationCtrl', ['$scope', '$rootScope', '$http', '$q', '$
         "Unity Eggman",
         "Stock Tracker"
     ];
+
+    function currentNav(item) {
+        console.log("Nav Item: ", item);
+    }
 }]);

@@ -15,6 +15,9 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
     $scope.emailRegex = /^.+@.+\..+$/;
     $scope.phoneRegex = /^[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}$/;
 
+
+    // IF YOU CANNOT SEND THE MAIL, JUST VERIFY IN THE GOOGLE ACCOUNT THAT LESS SECURE APPS ARE ENABLED
+    // https://stackoverflow.com/questions/10013736/how-can-i-avoid-google-mail-server-asking-me-to-log-in-via-browser
     function sendMessage() {
         let obj = {
             name: $scope.user.firstName + " " + $scope.user.lastName,
