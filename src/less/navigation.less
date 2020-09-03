@@ -1,3 +1,20 @@
+div#menu_container_2 button:nth-child(1),
+div#menu_container_1 button:nth-child(1),
+div#menu_container_0 button:nth-child(1){
+  margin: 0;
+}
+div#menu_container_2 button,
+div#menu_container_1 button,
+div#menu_container_0 button {
+  width: 100%;
+}
+
+div#menu_container_2 li,
+div#menu_container_1 li,
+div#menu_container_0 li{
+  margin: 0;
+}
+
 md-content.md-padding._md {
  padding: 0px;
 }
@@ -11,10 +28,8 @@ li.md-nav-item {
   text-align: right;
 }
 
-#navExampleDropDown {
-  margin: 0px;
-  padding: 0px;
-  button{
+.md-menu {
+  .md-button._md-nav-button{
     margin: 0px;
     padding-left: 10px;
     padding-right: 10px;
@@ -22,9 +37,30 @@ li.md-nav-item {
     height: 100%;
     width: 100%;
   }
-  md-menu{
+}
+
+#navExampleDropDown {
+  margin: 0px;
+  padding: 0px;
+  button {
+    margin: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: left;
+    height: 100%;
+    width: 100%;
+  }
+  .md-menu{
     padding: 0px;
     margin: 0px;
+    .md-menu-content.li.md-button._md-nav-button{
+      margin: 0px;
+      padding-left: 10px;
+      padding-right: 10px;
+      text-align: left;
+      height: 100%;
+      width: 100%;
+    }
   }
 }
 
