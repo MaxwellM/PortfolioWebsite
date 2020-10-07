@@ -10,25 +10,15 @@ div#angularJSExampleChartInnerPageWrapper
             md-content.md-padding(layout-xs='column', layout='column')
                 div(flex-xs='', flex-gt-xs='50', layout='column', style='margin:auto;')
                     md-card
-                        md-card-title
-                            md-card-title-text
+                        md-card-content
+                            p
                                 span.md-headline Page Views
-                        md-card-content
+                                span.md-body-1
+                                    | {{ currentMonthName }} : {{ ::currentPageMonthTotal }}
                             p
-                                span.md-body-1
-                                    | {{ currentMonthName }} Page Views
-                                span.md-body-1
-                                    | {{ ::currentPageMonthTotal }}
-                    md-card
-                        md-card-title
-                            md-card-title-text
                                 span.md-headline Unique Visitors
-                        md-card-content
-                            p
                                 span.md-body-1
-                                    | {{ currentMonthName }} Unique Visitors
-                                span.md-body-1
-                                    | {{ ::currentMonthTotal }}
+                                    | {{ currentMonthName }} : {{ ::currentMonthTotal }}
         div#angularJSExampleChartMiddle
             md-content.md-padding(layout-xs='column', layout='column')
                 div(flex-xs='', flex-gt-xs='50', layout='row', style='margin:auto;')
