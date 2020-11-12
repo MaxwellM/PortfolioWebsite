@@ -95,6 +95,14 @@ func GetStockInfoFromApiSource(vendor string, item string) ([]*ItemResult, error
             // This is our url
             targetUrlBase := TargetDevices["URL"][0]
 
+            // Get our Target API key
+            targetApiInfo, err := common.ReadJsonFile("targetApiKey.json")
+            if err != nil {
+                fmt.Println("Error reading JSON file!")
+                return nil, err
+            }
+            targetApiKey := targetApiInfo["key"].(string)
+
             for key, value := range TargetDevices {
                 fmt.Println(key)
                 if item == key {
@@ -102,8 +110,9 @@ func GetStockInfoFromApiSource(vendor string, item string) ([]*ItemResult, error
                         // Now we need to add our device to our URL
                         var re = regexp.MustCompile(`%`)
                         targetUrl := re.ReplaceAllString(targetUrlBase, v)
+                        fmt.Println("URL: ", targetUrl+targetApiKey)
                         // Request the HTML page.
-                        req, err := http.NewRequest("GET", targetUrl, nil)
+                        req, err := http.NewRequest("GET", targetUrl+targetApiKey, nil)
                         req = common.SetHeaders(req)
                         res, err := client.Do(req)
                         if err != nil {
@@ -128,15 +137,19 @@ func GetStockInfoFromApiSource(vendor string, item string) ([]*ItemResult, error
                         }
                         // For each item found, get the name, price, and inventory
                         productMap := allInfoMap["product"].(map[string]interface{})
-                        priceMap := productMap["price"].(map[string]interface{})
-                        listPriceMap := priceMap["listPrice"].(map[string]interface{})
+                        //priceMap := productMap["price"].(map[string]interface{})
+                        //listPriceMap := priceMap["listPrice"].(map[string]interface{})
                         itemMap := productMap["item"].(map[string]interface{})
                         nameMap := itemMap["product_description"].(map[string]interface{})
                         availabilityMap := productMap["available_to_promise_network"].(map[string]interface{})
 
                         //test := d.(map[string]interface{})["data"].(map[string]interface{})["type"]
                         name := nameMap["title"].(string)
-                        price := strconv.FormatFloat(listPriceMap["price"].(float64), 'f', -1, 64)
+                        //price := strconv.FormatFloat(listPriceMap["price"].(float64), 'f', -1, 64)
+                        price, err := getTargetPrice(v)
+                        if err != nil {
+                            fmt.Println("Error obtaining Target price! ", err)
+                        }
                         availability := availabilityMap["availability"].(string)
                         url := itemMap["buy_url"].(string)
                         targetResult := ItemResult{
@@ -205,6 +218,73 @@ func GetStockInfoFromApiSource(vendor string, item string) ([]*ItemResult, error
                     })
                 }
             }
+            case "GameStop":
+             for key, value := range GameStopDevices {
+                 fmt.Println(key)
+                 if item == key {
+                   // Request the HTML page.
+                    // GameStop doesn't load everything at once. We need to wait until .product-grid is there...
+                    fmt.Println("URL: ", value)
+                    req, err := http.NewRequest("GET", value, nil)
+                    req = common.SetHeaders(req)
+                    res, err := client.Do(req)
+                    if err != nil {
+                        fmt.Println("Error getting data from URL")
+                        return nil, err
+                    }
+                    defer res.Body.Close()
+                    if res.StatusCode != 200 {
+                        fmt.Println("status code error: %d %s", res.StatusCode, res.Status)
+                        return nil, err
+                    }
+                    // Load the HTML document
+                    doc, err := goquery.NewDocumentFromReader(res.Body)
+                    if err != nil {
+                        fmt.Println("Error loading the HTML document: ", err)
+                        return nil, err
+                    }
+
+                    fmt.Println("Doc :", doc)
+
+                    // We'll use this to store the data!
+                    gameStopResultsArray := []*ItemResult{}
+
+                    // Find the item list!
+                    doc.Find(".product-grid-tile-wrapper").Each(func(i int, s *goquery.Selection) {
+                        // GameStop, thankfully, has a nice Json for each item! Lets grab that!
+                        if allInfoJson, ok := s.Find(".pdp-link").Attr("data-gtmdata"); ok {
+                                allInfoMap, err := common.GetMapFromData(allInfoJson)
+                                if err != nil {
+                                    fmt.Println("Error converting data into Json: ", err)
+                                }
+                                priceMap := allInfoMap["price"].(map[string]interface{})
+                                productInfoMap := allInfoMap["productInfo"].(map[string]interface{})
+
+                                // For each item found, get the name, price, and inventory
+                                name := productInfoMap["name"].(string)
+                                price := priceMap["sellingPrice"].(string)
+                                availability := productInfoMap["availability"].(string)
+                                url := s.Find(".pdp-link > a").AttrOr("href", "")
+                                //fmt.Printf("Review %d: %s - %s - %s\n", i, name, price, availability)
+                                // Now lets fill out struct!
+                                gameStopResult := ItemResult{
+                                    Id: i,
+                                    Store:"GameStop",
+                                    Name: name,
+                                    Price: "$"+price,
+                                    Availability: availability,
+                                    URL: "https://www.gamestop.com/"+url,
+                                }
+
+                                if len(name) > 0 && len(price) > 0 && len(availability) > 0 {
+                                    gameStopResultsArray = append(gameStopResultsArray, &gameStopResult)
+                                }
+                        }
+                    })
+
+    return gameStopResultsArray, nil
+                 }
+             }
         default:
             fmt.Println("Well, didn't recognize the vendor. Better add it!")
             return nil, fmt.Errorf("Well, didn't recognize the vendor. Better add it!")
@@ -212,63 +292,49 @@ func GetStockInfoFromApiSource(vendor string, item string) ([]*ItemResult, error
     return itemResultsArray, nil
 }
 
-func StripGameStopHtml(url string) ([]*ItemResult, error) {
-    // Request the HTML page.
-    // Target doesn't load everything at once. We need to wait until .product-grid is there...
-    req, err := http.NewRequest("GET", url, nil)
-    req = common.SetHeaders(req)
-    res, err := client.Do(req)
-    if err != nil {
-        fmt.Println("Error getting data from URL")
-        return nil, err
-    }
-    defer res.Body.Close()
-    if res.StatusCode != 200 {
-        fmt.Println("status code error: %d %s", res.StatusCode, res.Status)
-        return nil, err
-    }
-    // Load the HTML document
-    doc, err := goquery.NewDocumentFromReader(res.Body)
-    if err != nil {
-        fmt.Println("Error loading the HTML document: ", err)
-        return nil, err
-    }
+func getTargetPrice(item string)(string, error) {
+         // This is our url
+        targetUrlBase := TargetDevices["PriceURL"][0]
 
-    // We'll use this to store the data!
-    gameStopResultsArray := []*ItemResult{}
-
-    // Find the item list!
-    doc.Find(".product-grid-tile-wrapper").Each(func(i int, s *goquery.Selection) {
-        // GameStop, thankfully, has a nice Json for each item! Lets grab that!
-        allInfoJson := s.Find("div.product-tile-header > div.pdp-link > a").AttrOr("data-gtmdata", "{}")
-        allInfoMap, err := common.GetMapFromData(allInfoJson)
+        // Get our Target API key
+        targetApiInfo, err := common.ReadJsonFile("targetApiKey.json")
         if err != nil {
-            fmt.Println("Error converting data into Json: ", err)
+            fmt.Println("Error reading JSON file!")
+            return "", err
         }
-        priceMap := allInfoMap["price"].(map[string]interface{})
-        productInfoMap := allInfoMap["productInfo"].(map[string]interface{})
+        targetApiKey := targetApiInfo["key"].(string)
 
+        // Now we need to add our device to our URL
+        var re = regexp.MustCompile(`%`)
+        targetUrl := re.ReplaceAllString(targetUrlBase, item)
+        fmt.Println("URL: ", targetUrl+targetApiKey)
+        // Request the HTML page.
+        req, err := http.NewRequest("GET", targetUrl+targetApiKey, nil)
+        req = common.SetHeaders(req)
+        res, err := client.Do(req)
+        if err != nil {
+            fmt.Println("Error getting data from URL")
+            return "", err
+        }
+        defer res.Body.Close()
+        if res.StatusCode != 200 {
+            fmt.Println("status code error: %d %s", res.StatusCode, res.Status)
+            return "", err
+        }
+
+        bytes, err := ioutil.ReadAll(res.Body)
+        if err != nil {
+            fmt.Println("Couldn't convert RESP to []Byte for your Current Conditions Request: ", err)
+        }
+
+        var allInfoMap map[string]interface{}
+        err = json.Unmarshal(bytes, &allInfoMap)
+        if err != nil {
+            return "", err
+        }
         // For each item found, get the name, price, and inventory
-        name := productInfoMap["name"].(string)
-        price := priceMap["sellingPrice"].(string)
-        availability := productInfoMap["availability"].(string)
-        url := s.Find(".pdp-link > a").AttrOr("href", "")
-        //fmt.Printf("Review %d: %s - %s - %s\n", i, name, price, availability)
-        // Now lets fill out struct!
-        gameStopResult := ItemResult{
-            Id: i,
-            Store:"GameStop",
-            Name: name,
-            Price: "$"+price,
-            Availability: availability,
-            URL: "https://www.gamestop.com/"+url,
-        }
-
-        if len(name) > 0 && len(price) > 0 && len(availability) > 0 {
-            gameStopResultsArray = append(gameStopResultsArray, &gameStopResult)
-        }
-    })
-
-    return gameStopResultsArray, nil
+        priceMap := allInfoMap["price"].(map[string]interface{})
+        price := strconv.FormatFloat(priceMap["current_retail"].(float64), 'f', -1, 64)
+        return price, nil
 }
 

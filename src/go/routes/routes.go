@@ -57,7 +57,7 @@ func ClearCookie(data *gin.Context) {
 }
 
 func GetNewInventory(data *gin.Context) {
-	url := data.Query("url")
+	//url := data.Query("url")
 	vendor := data.Query("vendor")
 	item := data.Query("item")
 	fmt.Println("VENDOR: ", vendor)
@@ -88,20 +88,13 @@ func GetNewInventory(data *gin.Context) {
             data.JSON(http.StatusOK, filteredResp)
         }
 	} else if vendor == "GameStop"{
-		// GameStop will only carry the Nintendo Switch. So if it is another item, skip
-		if item == "Nintendo Switch" {
-			filteredResp, err := stockTracker.StripGameStopHtml(url)
-			if err != nil {
-				fmt.Println("Error filtering Target resp: ", err.Error())
-				data.JSON(http.StatusBadRequest, err.Error())
-			} else {
-				data.JSON(http.StatusOK, filteredResp)
-			}
-		} else {
-			// Send empty response
-			data.JSON(http.StatusOK, []*stockTracker.ItemResult{})
-		}
-
+        filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
+        if err != nil {
+            fmt.Println("Error filtering Target resp: ", err.Error())
+            data.JSON(http.StatusBadRequest, err.Error())
+        } else {
+            data.JSON(http.StatusOK, filteredResp)
+        }
 	} else {
 	    // Didn't recognize the vendor...
 	    data.JSON(http.StatusBadRequest, fmt.Errorf("Did not recognize vendor!"))

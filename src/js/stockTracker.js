@@ -8,18 +8,18 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
     $scope.getDataPromise = null;
     $scope.results = [];
     $scope.itemSelected = "Nintendo Switch";
-    $scope.items = ['Nintendo Switch', 'Dyson V11 Vacuum', 'Apple AirPods'];
+    $scope.items = ['Nintendo Switch', 'Dyson V11 Vacuum', 'Apple AirPods', 'XBox Series X', 'XBox Series S'];
     $scope.vendors = [
-        {   url: "https://www.bestbuy.com/site/nintendo-switch/nintendo-switch-consoles/pcmcat1484077694025.c?id=pcmcat1484077694025",
+        {   url: "",
             vendor: "BestBuy"
         },
-        {   url: "https://www.target.com/c/nintendo-switch-consoles-video-games/-/N-piakr",
+        {   url: "",
             vendor: "Target"
         },
-        {   url: "https://www.walmart.com/search/?cat_id=2636_4646529_2002476&facet=retailer%3AWalmart.com",
+        {   url: "",
             vendor: "Walmart"
         },
-        {   url: "https://www.gamestop.com/video-games/switch/consoles",
+        {   url: "",
             vendor: "GameStop"
         }
     ];
@@ -47,7 +47,7 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
         $scope.results = [];
         // Lets loop through all of our vendors and gets some results!
         for(let vendor of $scope.vendors){
-            let promise = $http.get('/getNewInventory', {params: {url: vendor.url, vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
+            let promise = $http.get('/getNewInventory', {params: {vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
                 let results;
                 results = res.data;
                 if (results) {
