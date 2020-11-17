@@ -10,8 +10,9 @@ div#stockTrackerPageWrapper
                 md-card-content
                     div#stockTrackerUpdateInfoWrapper
                         label.md-body-1 Last Update: {{ lastUpdate }} (Updates every 5 minutes)
-                        md-progress-circular(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
-                    div(layout='row')
+                        md-progress-linear(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
+                    div#stockTrackerItemWrapper(layout='row')
+                        md-subhead Item to Track:
                         md-select.md-no-underline(ng-model='itemSelected', ng-change='getDataPromise()', aria-label='Stock Item Select')
                             md-option(ng-repeat='item in items', value='{{item}}')
                                 | {{item}}
