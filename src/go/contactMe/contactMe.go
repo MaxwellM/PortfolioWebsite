@@ -24,6 +24,14 @@ func init() {
     //setupCredentials()
 }
 
+func exists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 func getMyStuff() (*http.Client, *gmail.Service) {
 	// Reads in our credentials
 	secret, err := ioutil.ReadFile("credentials.json")
@@ -38,22 +46,36 @@ func getMyStuff() (*http.Client, *gmail.Service) {
 		log.Printf("Error Creating CONF: %v", err)
 	}
 
-	// Exchange the auth code for an access token
-	tok, err := tokenFromFile("token.json")
-	if err != nil {
-		log.Printf("Error Reading Token: %v", err)
+	if !exists("token.json") {
+		tok := getTokenFromWeb(conf)
+
+		// Create the *http.Client using the access token
+		runningClient = conf.Client(oauth2.NoContext, tok)
+
+		// Create a new gmail service using the client
+		gmailService, err := gmail.New(runningClient)
+		if err != nil {
+			log.Printf("Error Creating GMail Service: %v", err)
+
+		}
+		return runningClient, gmailService
+	} else {
+		tok, err := tokenFromFile("token.json")
+		if err != nil {
+			log.Printf("Error Reading Token: %v", err)
+		}
+
+		// Create the *http.Client using the access token
+		runningClient = conf.Client(oauth2.NoContext, tok)
+
+		// Create a new gmail service using the client
+		gmailService, err := gmail.New(runningClient)
+		if err != nil {
+			log.Printf("Error Creating GMail Service: %v", err)
+
+		}
+		return runningClient, gmailService
 	}
-
-	// Create the *http.Client using the access token
-	runningClient = conf.Client(oauth2.NoContext, tok)
-
-	// Create a new gmail service using the client
-	gmailService, err := gmail.New(runningClient)
-	if err != nil {
-		log.Printf("Error Creating GMail Service: %v", err)
-
-	}
-	return runningClient, gmailService
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
