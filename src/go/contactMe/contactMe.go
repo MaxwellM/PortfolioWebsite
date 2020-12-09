@@ -48,7 +48,7 @@ func getMyStuff() (*http.Client, *gmail.Service) {
 
 	if exists("token.json") {
 	    fmt.Println("Token does exist!")
-		tok, err := tokenFromFile(tokFile)
+		tok, err := tokenFromFile("token.json")
 		if err != nil {
 			log.Printf("Error Reading Token: %v", err)
 		}
