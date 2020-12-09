@@ -47,7 +47,10 @@ func getMyStuff() (*http.Client, *gmail.Service) {
 	}
 
 	if !exists("token.json") {
-		tok := getTokenFromWeb(conf)
+        tokFile := "token.json"
+        tok := getTokenFromWeb(conf)
+
+        saveToken(tokFile, tok)
 
 		// Create the *http.Client using the access token
 		runningClient = conf.Client(oauth2.NoContext, tok)
@@ -60,11 +63,9 @@ func getMyStuff() (*http.Client, *gmail.Service) {
 		}
 		return runningClient, gmailService
 	} else {
-	    tokFile := "token.json"
 		tok, err := tokenFromFile(tokFile)
 		if err != nil {
 			log.Printf("Error Reading Token: %v", err)
-			saveToken(tokFile, tok)
 		}
 
 		// Create the *http.Client using the access token
