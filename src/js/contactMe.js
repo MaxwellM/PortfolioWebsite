@@ -13,7 +13,7 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
     };
 
     $scope.emailRegex = /^.+@.+\..+$/;
-    $scope.phoneRegex = /^[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}$/;
+    $scope.phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
 
     // IF YOU CANNOT SEND THE MAIL, JUST VERIFY IN THE GOOGLE ACCOUNT THAT LESS SECURE APPS ARE ENABLED
