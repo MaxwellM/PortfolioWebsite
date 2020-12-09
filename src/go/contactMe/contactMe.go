@@ -46,23 +46,8 @@ func getMyStuff() (*http.Client, *gmail.Service) {
 		log.Printf("Error Creating CONF: %v", err)
 	}
 
-	if !exists("token.json") {
-        tokFile := "token.json"
-        tok := getTokenFromWeb(conf)
-
-        saveToken(tokFile, tok)
-
-		// Create the *http.Client using the access token
-		runningClient = conf.Client(oauth2.NoContext, tok)
-
-		// Create a new gmail service using the client
-		gmailService, err := gmail.New(runningClient)
-		if err != nil {
-			log.Printf("Error Creating GMail Service: %v", err)
-
-		}
-		return runningClient, gmailService
-	} else {
+	if exists("token.json") {
+	    fmt.Println("Token does exist!")
 		tok, err := tokenFromFile(tokFile)
 		if err != nil {
 			log.Printf("Error Reading Token: %v", err)
@@ -78,6 +63,23 @@ func getMyStuff() (*http.Client, *gmail.Service) {
 
 		}
 		return runningClient, gmailService
+	} else {
+	    fmt.Println("Token doesn't exist! ")
+        tokFile := "token.json"
+        tok := getTokenFromWeb(conf)
+
+        saveToken(tokFile, tok)
+
+        // Create the *http.Client using the access token
+        runningClient = conf.Client(oauth2.NoContext, tok)
+
+        // Create a new gmail service using the client
+        gmailService, err := gmail.New(runningClient)
+        if err != nil {
+            log.Printf("Error Creating GMail Service: %v", err)
+
+        }
+        return runningClient, gmailService
 	}
 }
 
