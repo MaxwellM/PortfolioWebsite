@@ -1,50 +1,54 @@
-div()
-    md-content.md-padding
-        md-nav-bar(md-selected-nav-item='currentNavItem', nav-bar-aria-label='navigation links')
-            md-nav-item(md-nav-click='$root.buttonName = "Maxwell Morin";')
-                | Maxwell Morin
-            md-nav-item(md-nav-click='$root.buttonName = "Contact Me";')
-                | Contact Me
-            md-nav-item(md-nav-click='$root.buttonName = "Resume";')
-                | Resume
-            md-nav-item(md-nav-click='$root.buttonName = "Projects";')
-                | Projects
-            md-menu(md-position-mode="target-right bottom")
-                md-nav-item(md-nav-click='$mdMenu.open()')
-                    | {{ !examples.includes($root.buttonName) ? "Examples ▼" : $root.currentMenuItem + " ▼"}}
-                md-menu-content#navExampleDropDown
-                    md-menu-item
-                        md-menu
-                            md-nav-item(md-nav-click='$mdMenu.open()')
-                                | ◀ AngularJS
-                            md-menu-content
-                                md-nav-item(md-nav-click='$root.buttonName = "Table Example";$root.currentMenuItem="Table Example";currentNavItem="Table Example";currentNav(currentNavItem);')
-                                        | Table Example
-                                md-nav-item(md-nav-click='$root.buttonName = "Display Example";$root.currentMenuItem="Display Example";currentNavItem="Display Example";currentNav(currentNavItem);')
-                                        | Display Example
-                                md-nav-item(md-nav-click='$root.buttonName = "Chart Example";$root.currentMenuItem="Chart Example";currentNavItem="Chart Example";currentNav(currentNavItem);')
-                                        | Chart Example
-                    md-menu-item
-                        md-menu
-                            md-nav-item(md-nav-click='$mdMenu.open()')
-                                | ◀ Golang
-                            md-menu-content
-                                md-nav-item(md-nav-click='$root.buttonName = "String Duplication";$root.currentMenuItem="String Duplication";currentNavItem="String Duplication";currentNav(currentNavItem);')
-                                        | String Duplication
-                                md-nav-item(md-nav-click='$root.buttonName = "Stock Tracker";$root.currentMenuItem="Stock Tracker";currentNavItem="Stock Tracker";currentNav(currentNavItem);')
-                                        | Stock Tracker
-                                md-nav-item(md-nav-click='$root.buttonName = "Translate";$root.currentMenuItem="Translate";currentNavItem="Translate";currentNav(currentNavItem);')
-                                        | Translate
-                                md-nav-item(md-nav-click='$root.buttonName = "Twitter";$root.currentMenuItem="Twitter";currentNavItem="Twitter";currentNav(currentNavItem);')
-                                        | Twitter
-                    md-menu-item
-                        md-menu
-                            md-nav-item(md-nav-click='$mdMenu.open()')
-                                | ◀ Unity
-                            md-menu-content
-                                md-nav-item(md-nav-click='$root.buttonName = "Unity Eggman";$root.currentMenuItem="Unity Eggman";currentNavItem="Unity Eggman";currentNav(currentNavItem);')
-                                        | Unity Eggman
-                                md-nav-item(md-nav-click='$root.buttonName = "Unity Lost In Space";$root.currentMenuItem="Unity Lost In Space";currentNavItem="Unity Lost In Space";currentNav(currentNavItem);')
-                                        | Unity Lost In Space
-                                md-nav-item(md-nav-click='$root.buttonName = "Unity Eggcite Bike";$root.currentMenuItem="Unity Eggcite Bike";currentNavItem="Unity Eggcite Bike";currentNav(currentNavItem);')
-                                        | Unity Eggcite Bike
+head
+    link(rel="stylesheet", href="./css/navigation.css", type="text/css")
+body
+    div()
+        md-content.md-padding
+            md-nav-bar(md-selected-nav-item='currentNavItem', nav-bar-aria-label='navigation links')
+                md-nav-item(md-nav-click='$root.buttonName = "Maxwell Morin";')
+                    | Maxwell Morin
+                md-nav-item(md-nav-click='$root.buttonName = "Contact Me";')
+                    | Contact Me
+                md-nav-item(md-nav-click='$root.buttonName = "Resume";')
+                    | Resume
+                md-nav-item(md-nav-click='$root.buttonName = "Projects";')
+                    | Projects
+                md-menu(md-position-mode="target-right bottom")
+                    md-nav-item(md-nav-click='$mdMenu.open()')
+                        | {{ !examples.includes($root.buttonName) ? "Examples ▼" : $root.currentMenuItem + " ▼"}}
+                    md-menu-content#navExampleDropDown
+                        md-menu-item
+                            md-menu
+                                md-nav-item(md-nav-click='$mdMenu.open()')
+                                    | ◀ AngularJS
+                                md-menu-content
+                                    md-nav-item(md-nav-click='$root.buttonName = "Table Example";$root.currentMenuItem="Table Example";currentNavItem="Table Example";currentNav(currentNavItem);')
+                                            | Table Example
+                                    md-nav-item(md-nav-click='$root.buttonName = "Display Example";$root.currentMenuItem="Display Example";currentNavItem="Display Example";currentNav(currentNavItem);')
+                                            | Display Example
+                                    md-nav-item(md-nav-click='$root.buttonName = "Chart Example";$root.currentMenuItem="Chart Example";currentNavItem="Chart Example";currentNav(currentNavItem);')
+                                            | Chart Example
+                        md-menu-item
+                            md-menu
+                                md-nav-item(md-nav-click='$mdMenu.open()')
+                                    | ◀ Golang
+                                md-menu-content
+                                    md-nav-item(md-nav-click='$root.buttonName = "String Duplication";$root.currentMenuItem="String Duplication";currentNavItem="String Duplication";currentNav(currentNavItem);')
+                                            | String Duplication
+                                    md-nav-item(md-nav-click='$root.buttonName = "Stock Tracker";$root.currentMenuItem="Stock Tracker";currentNavItem="Stock Tracker";currentNav(currentNavItem);')
+                                            | Stock Tracker
+                                    md-nav-item(md-nav-click='$root.buttonName = "Translate";$root.currentMenuItem="Translate";currentNavItem="Translate";currentNav(currentNavItem);')
+                                            | Translate
+                                    md-nav-item(md-nav-click='$root.buttonName = "Twitter";$root.currentMenuItem="Twitter";currentNavItem="Twitter";currentNav(currentNavItem);')
+                                            | Twitter
+                        md-menu-item
+                            md-menu
+                                md-nav-item(md-nav-click='$mdMenu.open()')
+                                    | ◀ Unity
+                                md-menu-content
+                                    md-nav-item(md-nav-click='$root.buttonName = "Unity Eggman";$root.currentMenuItem="Unity Eggman";currentNavItem="Unity Eggman";currentNav(currentNavItem);')
+                                            | Unity Eggman
+                                    md-nav-item(md-nav-click='$root.buttonName = "Unity Lost In Space";$root.currentMenuItem="Unity Lost In Space";currentNavItem="Unity Lost In Space";currentNav(currentNavItem);')
+                                            | Unity Lost In Space
+                                    md-nav-item(md-nav-click='$root.buttonName = "Unity Eggcite Bike";$root.currentMenuItem="Unity Eggcite Bike";currentNavItem="Unity Eggcite Bike";currentNav(currentNavItem);')
+                                            | Unity Eggcite Bike
+script(defer='', src="./js/navigation.js")
