@@ -1,81 +1,57 @@
-title AngularJS and PostgreSQL Example!
-div#angularJSExampleTableWrapper
-    div#angularJSExampleTableSidebarWrapper
-        div#angularJSExampleTableSidebarSearchTitle
-            h1.md-display-1 Search
-        div#angularJSExampleTableSidebarFilters(layout-gt-sm='row')
-            md-input-container.md-block(flex-gt-sm='')
-                label.md-body-1 Name
-                input.md-body-1(ng-model='searchName')
-            md-input-container.md-block(flex-gt-sm='')
-                label.md-body-1 Species
-                input.md-body-1(ng-model='searchSpecies')
-            md-input-container.md-block(flex-gt-xs='')
-                md-button(ng-click='refreshAngularJSExampleTableResults()') Search
-            //div#angularJSExampleTableSidebarFilterLabels
-            //    label Name
-            //    label Species
-            //div#angularJSExampleTableSidebarInputs
-            //    form(ng-submit='refreshAngularJSExampleTableResults()')
-            //        input(type='text', ng-model='searchName')
-            //        input(type='text', ng-model='searchSpecies')
-            //        input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
-        div#angularJSExampleTableSidebarTableTitleWrapper
-            h1.md-display-1 Character Selection
-        div#angularJSExampleTableSidebarTableWrapper
-            div#angularJSExampleTableSidebarTable
-                table#angularJSExampleTableResultsTableTH
-                    thead
-                        tbody
-                            th.md-body-1(width=100) Name
-                            th.md-body-1(width=100) Species
-                            th.md-body-1(width=0) Born
-                table#angularJSExampleTableResultsTableTD
-                    thead
-                        tbody
-                            tr(ng-repeat="character in allCharacters | orderBy: 'born':true | limitTo: 250", ng-click='setClickedRow(character.id)')
-                                td.md-body-1(width=100) {{ ::character.name }}
-                                td.md-body-1(width=100) {{ ::character.species }}
-                                td.md-body-1(width=0) {{ ::character.born | date:'short'}}
-                h2#angularJSExampleTableResultsEmptyTable(ng-show='allCharacters.length == 0') NO CHARACTERS FOUND
-    div#angularJSExampleTablePageWrapper
-        div#angularJSExampleTableInnerTitle
-            h1.md-display-1 Star Wars Characters
-                img#angularJSExampleTableImage(ng-src='./images/person.png', alt='')
-        div#angularJSExampeTableSplitWrapper
-            h2#starWarsCharacterAdd(ng-model='add', ng-click='showSection(true)') Add
-            h2#starWarsCharacterView(ng-model='view', ng-click='showSection(false)') Edit/View
-        div#angulaJSExampleTableEnterWrapper(ng-show='showAddCharacter')
-            div#angulaJSExampleTableTitle
-                h1.md-display-1 Add Character
-            div#angularJSExampleLabels
-                label.md-body-1 Name
-                label.md-body-1 Homeworld
-                label.md-body-1 Born
-                label.md-body-1 Died
-                label.md-body-1 Species
-                label.md-body-1 Gender
-                label.md-body-1 Affiliation
-                label.md-body-1 Associated
-                label.md-body-1 Masters
-                label.md-body-1 Apprentices
-            div#angularJSExampleInputs
-                input.md-body-1(type='text', ng-model='name')
-                input.md-body-1(type='text', ng-model='homeworld')
-                input.md-body-1(type='text', ng-model='born')
-                input.md-body-1(type='text', ng-model='died')
-                input.md-body-1(type='text', ng-model='species')
-                input.md-body-1(type='text', ng-model='gender')
-                input.md-body-1(type='text', ng-model='affiliation')
-                input.md-body-1(type='text', ng-model='associated')
-                input.md-body-1(type='text', ng-model='masters')
-                input.md-body-1(type='text', ng-model='apprentices')
-                input#angularJSExampeTableAddButton.md-body-1(type='button', value='Add Character', ng-click='addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices)')
-        div#anjularJSExampleTableShowCharacters(ng-show='showViewCharacters')
-            div#anjularJSExampleTableShowCharactersTest
-                h1.md-display-1 Character
-            div#anjularJSExampleTableResult
-                div#angularJSExampleTableLabels
+head
+    link(rel="stylesheet", href="./css/angularJSExampleTable.css", type="text/css")
+body
+    title AngularJS and PostgreSQL Example!
+    div#angularJSExampleTableWrapper
+        div#angularJSExampleTableSidebarWrapper
+            div#angularJSExampleTableSidebarSearchTitle
+                h1.md-display-1 Search
+            div#angularJSExampleTableSidebarFilters(layout-gt-sm='row')
+                md-input-container.md-block(flex-gt-sm='')
+                    label.md-body-1 Name
+                    input.md-body-1(ng-model='searchName')
+                md-input-container.md-block(flex-gt-sm='')
+                    label.md-body-1 Species
+                    input.md-body-1(ng-model='searchSpecies')
+                md-input-container.md-block(flex-gt-xs='')
+                    md-button(ng-click='refreshAngularJSExampleTableResults()') Search
+                //div#angularJSExampleTableSidebarFilterLabels
+                //    label Name
+                //    label Species
+                //div#angularJSExampleTableSidebarInputs
+                //    form(ng-submit='refreshAngularJSExampleTableResults()')
+                //        input(type='text', ng-model='searchName')
+                //        input(type='text', ng-model='searchSpecies')
+                //        input#angularJSExampleTableResultsSearchButton(type='button', value='Search', ng-click='refreshAngularJSExampleTableResults()')
+            div#angularJSExampleTableSidebarTableTitleWrapper
+                h1.md-display-1 Character Selection
+            div#angularJSExampleTableSidebarTableWrapper
+                div#angularJSExampleTableSidebarTable
+                    table#angularJSExampleTableResultsTableTH
+                        thead
+                            tbody
+                                th.md-body-1(width=100) Name
+                                th.md-body-1(width=100) Species
+                                th.md-body-1(width=0) Born
+                    table#angularJSExampleTableResultsTableTD
+                        thead
+                            tbody
+                                tr(ng-repeat="character in allCharacters | orderBy: 'born':true | limitTo: 250", ng-click='setClickedRow(character.id)')
+                                    td.md-body-1(width=100) {{ ::character.name }}
+                                    td.md-body-1(width=100) {{ ::character.species }}
+                                    td.md-body-1(width=0) {{ ::character.born | date:'short'}}
+                    h2#angularJSExampleTableResultsEmptyTable(ng-show='allCharacters.length == 0') NO CHARACTERS FOUND
+        div#angularJSExampleTablePageWrapper
+            div#angularJSExampleTableInnerTitle
+                h1.md-display-1 Star Wars Characters
+                    img#angularJSExampleTableImage(ng-src='./images/person.png', alt='')
+            div#angularJSExampeTableSplitWrapper
+                h2#starWarsCharacterAdd(ng-model='add', ng-click='showSection(true)') Add
+                h2#starWarsCharacterView(ng-model='view', ng-click='showSection(false)') Edit/View
+            div#angulaJSExampleTableEnterWrapper(ng-show='showAddCharacter')
+                div#angulaJSExampleTableTitle
+                    h1.md-display-1 Add Character
+                div#angularJSExampleLabels
                     label.md-body-1 Name
                     label.md-body-1 Homeworld
                     label.md-body-1 Born
@@ -86,15 +62,43 @@ div#angularJSExampleTableWrapper
                     label.md-body-1 Associated
                     label.md-body-1 Masters
                     label.md-body-1 Apprentices
-                div#angularJSExampleTableInputs
-                    input.md-body-1(ng-model='selectedCharacter[0].name')
-                    input.md-body-1(ng-model='selectedCharacter[0].homeworld')
-                    input.md-body-1(ng-model='selectedCharacter[0].born')
-                    input.md-body-1(ng-model='selectedCharacter[0].died')
-                    input.md-body-1(ng-model='selectedCharacter[0].species')
-                    input.md-body-1(ng-model='selectedCharacter[0].gender')
-                    input.md-body-1(ng-model='selectedCharacter[0].affiliation')
-                    input.md-body-1(ng-model='selectedCharacter[0].associated')
-                    input.md-body-1(ng-model='selectedCharacter[0].masters')
-                    input.md-body-1(ng-model='selectedCharacter[0].apprentices')
-                    input#angularJSExampleTableReSubmitButton.md-body-1(type='button', value='Update Character ', ng-click='reSubmitCharacter()')
+                div#angularJSExampleInputs
+                    input.md-body-1(type='text', ng-model='name')
+                    input.md-body-1(type='text', ng-model='homeworld')
+                    input.md-body-1(type='text', ng-model='born')
+                    input.md-body-1(type='text', ng-model='died')
+                    input.md-body-1(type='text', ng-model='species')
+                    input.md-body-1(type='text', ng-model='gender')
+                    input.md-body-1(type='text', ng-model='affiliation')
+                    input.md-body-1(type='text', ng-model='associated')
+                    input.md-body-1(type='text', ng-model='masters')
+                    input.md-body-1(type='text', ng-model='apprentices')
+                    input#angularJSExampeTableAddButton.md-body-1(type='button', value='Add Character', ng-click='addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices)')
+            div#anjularJSExampleTableShowCharacters(ng-show='showViewCharacters')
+                div#anjularJSExampleTableShowCharactersTest
+                    h1.md-display-1 Character
+                div#anjularJSExampleTableResult
+                    div#angularJSExampleTableLabels
+                        label.md-body-1 Name
+                        label.md-body-1 Homeworld
+                        label.md-body-1 Born
+                        label.md-body-1 Died
+                        label.md-body-1 Species
+                        label.md-body-1 Gender
+                        label.md-body-1 Affiliation
+                        label.md-body-1 Associated
+                        label.md-body-1 Masters
+                        label.md-body-1 Apprentices
+                    div#angularJSExampleTableInputs
+                        input.md-body-1(ng-model='selectedCharacter[0].name')
+                        input.md-body-1(ng-model='selectedCharacter[0].homeworld')
+                        input.md-body-1(ng-model='selectedCharacter[0].born')
+                        input.md-body-1(ng-model='selectedCharacter[0].died')
+                        input.md-body-1(ng-model='selectedCharacter[0].species')
+                        input.md-body-1(ng-model='selectedCharacter[0].gender')
+                        input.md-body-1(ng-model='selectedCharacter[0].affiliation')
+                        input.md-body-1(ng-model='selectedCharacter[0].associated')
+                        input.md-body-1(ng-model='selectedCharacter[0].masters')
+                        input.md-body-1(ng-model='selectedCharacter[0].apprentices')
+                        input#angularJSExampleTableReSubmitButton.md-body-1(type='button', value='Update Character ', ng-click='reSubmitCharacter()')
+script(defer='', src="./js/angularJSExampleTable.js")

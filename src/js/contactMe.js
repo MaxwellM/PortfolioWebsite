@@ -47,7 +47,7 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
 
     function myMap() {
         let mapOptions = {
-            center: new google.maps.LatLng(40.586667, -111.861244),
+            center: new google.maps.LatLng(41.233219, -112.027877),
             zoom: 10,
             mapTypeId: google.maps.MapTypeId.HYBRID
         };

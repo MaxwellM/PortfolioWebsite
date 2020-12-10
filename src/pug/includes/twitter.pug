@@ -1,27 +1,28 @@
-div#goExampleTwitterPageWrapper
-    div#goExampleTwitterTitle
-        h1.md-display-1 Twitter
-            img(src='./images/golang.png', alt='')
-    div#goExampleTwitterSubmitTweet
-        label.md-body-1 Tweet for MAXintosh.org!
-        div#goExampleTwitterSubmitInput
-            .md-inline-form(layout='row', ng-cloak='')
-                md-content(layout-gt-sm='row', layout-padding='')
-                    form#tweetForm(ng-submit='postTweet()')
-                        md-input-container.md-block(flex-gt-sm='')
-                            label.md-body-1 Enter someting to tweet!
-                            input(ng-model='tweet', style='width:450px')
-                        md-input-container.md-block(flex-gt-sm='')
-                            md-button(ng-click='postTweet()') Tweet
-        div#goExampleTwitterPostedTweetWrapper(ng-if='tweetID')
-            label.md-body-1 Posted Tweet!
-            div#goExampleTwitterPostedTweet
-                twitter-widget(twitter-widget-id="tweetID")
-    div#goExampleTwitterRecentTweetWrapper
-        label.md-body-1 Tweet by MAXintosh2010 (..me)
-        div#goExampleTwitterRecentTweet
-            twitter-widget(twitter-widget-id="'1166837255685599233'")
-
-
-
-
+head
+    link(rel="stylesheet", href="./css/twitter.css", type="text/css")
+body
+    div#goExampleTwitterPageWrapper
+        div#goExampleTwitterTitle
+            h1.md-display-1 Twitter
+                img(src='./images/golang.png', alt='')
+        div#goExampleTwitterSubmitTweet
+            label.md-body-1 Tweet for MAXintosh.org!
+            div#goExampleTwitterSubmitInput
+                .md-inline-form(layout='row', ng-cloak='')
+                    md-content(layout-gt-sm='row', layout-padding='')
+                        form#tweetForm(ng-submit='postTweet()')
+                            md-input-container.md-block(flex-gt-sm='')
+                                label.md-body-1 Enter someting to tweet!
+                                input(ng-model='tweet', style='width:450px')
+                            md-input-container.md-block(flex-gt-sm='')
+                                md-button(ng-click='postTweet()') Tweet
+            div#goExampleTwitterPostedTweetWrapper(ng-if='tweetID')
+                label.md-body-1 Posted Tweet!
+                div#goExampleTwitterPostedTweet
+                    twitter-widget(twitter-widget-id="tweetID")
+        div#goExampleTwitterRecentTweetWrapper
+            label.md-body-1 Tweet by MAXintosh2010 (..me)
+            div#goExampleTwitterRecentTweet
+                twitter-widget(twitter-widget-id="'1166837255685599233'")
+script(defer='', src="./js/twitter.js")
+script(defer='', src="./js/node_modules/ngtweet/dist/ngtweet.min.js")

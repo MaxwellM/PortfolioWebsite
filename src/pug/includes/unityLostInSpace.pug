@@ -1,3 +1,6 @@
+head
+    link(rel="stylesheet", href="./css/unityLostInSpace.css", type="text/css")
+    link(rel="stylesheet", href="./unityGames/LostInSpaceWebGL/TemplateData/style.css")
 title Unity3D WebGL Game!
 div#unityLostInSpaceLabelWrapper
     div#unityLostInSpaceTop
@@ -11,3 +14,5 @@ div#showLostInSpace(ng-if='playLostInSpace')
         .fullscreen
             img(src='./unityGames/LostInSpaceWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
         .title Lost in Space
+script(defer='', src="./js/unityLostInSpace.js")
+script(defer='', src='./unityGames/LostInSpaceWebGL/TemplateData/UnityProgress.js')

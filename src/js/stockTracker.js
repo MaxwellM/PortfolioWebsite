@@ -87,6 +87,7 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
     $scope.$on('$destroy', function() {
         console.log("cancelling interval");
         $interval.cancel($scope.promise);
+        $interval.cancel($scope.timerInterval);
     });
 
     function quickWindowResize() {

@@ -1,16 +1,20 @@
-div#goExampleFindOccurrencePageWrapper
-    div#goExampleFindOccurrenceTitle
-        h1.md-display-1 String Duplication Occurrences
-            img(src='./images/golang.png', alt='')
-    div#goExampleFindOccurrenceInputWrapper
-        h3.md-headline Enter a string containing duplicate words.
-        div#goExampleFindOccurrenceInnerWrapper(layout-gt-sm='row')
-            md-content(layout-gt-sm='row' layout-padding='')
-                div(layout-gt-xs='row')
-                    md-input-container.md-block(flex-gt-sm='')
-                        label.md-body-1 Enter some text to search for duplications.
-                        input(ng-model='string', style="width:450px")
-                    md-input-container.md-block(flex-gt-sm='')
-                        md-button(ng-click='findOccurrences(string)') Submit
-    div#goExampleFindOccurrenceReturnWrapper
-        label.md-body-1 {{ occurrences }}
+head
+    link(rel="stylesheet", href="./css/phraseOccurrence.css", type="text/css")
+body
+    div#goExampleFindOccurrencePageWrapper
+        div#goExampleFindOccurrenceTitle
+            h1.md-display-1 String Duplication Occurrences
+                img(src='./images/golang.png', alt='')
+        div#goExampleFindOccurrenceInputWrapper
+            h3.md-headline Enter a string containing duplicate words.
+            div#goExampleFindOccurrenceInnerWrapper(layout-gt-sm='row')
+                md-content(layout-gt-sm='row' layout-padding='')
+                    div(layout-gt-xs='row')
+                        md-input-container.md-block(flex-gt-sm='')
+                            label.md-body-1 Enter some text to search for duplications.
+                            input(ng-model='string', style="width:450px")
+                        md-input-container.md-block(flex-gt-sm='')
+                            md-button(ng-click='findOccurrences(string)') Submit
+        div#goExampleFindOccurrenceReturnWrapper
+            label.md-body-1 {{ occurrences }}
+script(defer='', src="./js/phraseOccurrence.js")

@@ -1,32 +1,37 @@
-title Maxwell Ross Morin's Contract Me Page.
-div#contactMeInsideWrapper
-    //h1 Contact Me
-    div#contactMeInfoWrapper
-        div#map
-        div#contactMeWrapper
-            div#contactMeTitle
-                h3.md-headline Contact Me
-                label.md-body Have a question or want to work together?
-            .md-inline-form(layout='column' ng-cloak='')
-                md-content(layout-gt-sm='row' layout-padding='')
-                    div#contactFormWrapper
-                        form(name='userForm')
-                            div(layout-gt-xs='row')
-                                md-input-container.md-block(flex-gt-sm='')
-                                    label First Name
-                                    input(ng-model='user.firstName')
-                                md-input-container.md-block(flex-gt-sm='')
-                                    label Last Name
-                                    input(ng-model='user.lastName')
-                                md-input-container.md-block(flex-gt-sm='')
-                                    label Email
-                                    input(ng-model='user.email', type='email', ng-pattern="emailRegex")
-                                md-input-container.md-block(flex-gt-sm='')
-                                    label Phone
-                                    input(ng-model='user.phone', ng-pattern="phoneRegex")
-                            div(layout-gt-xs='row')
-                                md-input-container.md-block(flex-gt-xs='')
-                                    label Message
-                                    textarea(ng-model='user.message' md-maxlength='500' rows='5' md-select-on-focus='')
-                            div(layout-gt-xs='row')
-                                md-button(ng-click='sendMessage()') Send Email
+head
+    link(rel="stylesheet", href="./css/contactMe.css", type="text/css")
+body
+    title Maxwell Ross Morin's Contract Me Page.
+    div#contactMeInsideWrapper
+        //h1 Contact Me
+        div#contactMeInfoWrapper
+            div#map
+            div#contactMeWrapper
+                div#contactMeTitle
+                    h3.md-headline Contact Me
+                    label.md-body Have a question or want to work together?
+                .md-inline-form(layout='column' ng-cloak='')
+                    md-content(layout-gt-sm='row' layout-padding='')
+                        div#contactFormWrapper
+                            form(name='userForm')
+                                div(layout-gt-xs='row')
+                                    md-input-container.md-block(flex-gt-sm='')
+                                        label First Name
+                                        input(ng-model='user.firstName')
+                                    md-input-container.md-block(flex-gt-sm='')
+                                        label Last Name
+                                        input(ng-model='user.lastName')
+                                    md-input-container.md-block(flex-gt-sm='')
+                                        label Email
+                                        input(ng-model='user.email', type='email', ng-pattern="emailRegex")
+                                    md-input-container.md-block(flex-gt-sm='')
+                                        label Phone
+                                        input(ng-model='user.phone', ng-pattern="phoneRegex")
+                                div(layout-gt-xs='row')
+                                    md-input-container.md-block(flex-gt-xs='')
+                                        label Message
+                                        textarea(ng-model='user.message' md-maxlength='500' rows='5' md-select-on-focus='')
+                                div(layout-gt-xs='row')
+                                    md-button(ng-click='sendMessage()') Send Email
+script(defer='', src="./js/contactMe.js")
+script(defer='', src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
