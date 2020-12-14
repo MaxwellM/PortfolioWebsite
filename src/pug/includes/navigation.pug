@@ -6,7 +6,7 @@ body
             md-nav-bar(md-selected-nav-item='currentNavItem', nav-bar-aria-label='navigation links')
                 md-nav-item(md-nav-click='$root.buttonName = "Maxwell Morin";')
                     | Maxwell Morin
-                md-nav-item(md-nav-click='$root.buttonName = "Contact Me";')
+                md-nav-item#contactMeButton(md-nav-click='$root.buttonName = "Contact Me";')
                     | Contact Me
                 md-nav-item(md-nav-click='$root.buttonName = "Resume";')
                     | Resume
