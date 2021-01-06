@@ -33,6 +33,7 @@ type VisitorLocationResult struct {
 	Ip       string                  `json:"ip"`
 	Isp      string                  `json:"isp"`
 	Location VisitorLocationLocation `json:"location"`
+	Timestamp time.Time              `json:"timestamp"`
 }
 
 type VisitorLocationAs struct {
@@ -101,7 +102,7 @@ func InitCreateMonth() {
 
 func EmptyVisitors() (string, error) {
 	commandTag, err := db.ConnPool.Exec(context.Background(),
-		`DELETE FROM 
+		`DELETE FROM
 				ips`)
 	if err != nil {
 		return "", err
@@ -143,31 +144,28 @@ func CreateMonth() (string, error) {
 					monthly_visitors
 				WHERE
 					month = $1
-					AND 
+					AND
 					year = $2)`,
 		m.String(), y).Scan(&exists)
-	fmt.Println("EXISTS: ", exists)
 	// If the row doesn't exist, we're going to create it!
 	if !exists {
 		// This inserts our quote and accompanying data into our table!
 		err = db.ConnPool.QueryRow(context.Background(),
-			`INSERT INTO 
+			`INSERT INTO
 				monthly_visitors(
 					month,
 					count,
 					year,
-					page_count) 
+					page_count)
 			VALUES(
-				$1, $2, $3, $4) 
-			RETURNING 
+				$1, $2, $3, $4)
+			RETURNING
 				id`,
 			m.String(), 0, y, 0).Scan(&lastInsertId)
 		if err != nil {
 			fmt.Println("Error saving new month to database: ", err)
 			return "", err
 		}
-
-		fmt.Println("LAST INSERT ID: ", lastInsertId)
 
 		return fmt.Sprintf("Added Month: %s to DB!!", m.String()), nil
 	} else {
@@ -179,11 +177,11 @@ func IncrementMonthlyPageCount() (string, error) {
 	current := time.Now().UTC()
 	_, m, _ := current.Date()
 	message, err := db.ConnPool.Exec(context.Background(),
-		`UPDATE 
+		`UPDATE
 				monthly_visitors
 			SET
 				page_count = page_count + 1
-			WHERE 
+			WHERE
 				month = $1`,
 		m.String())
 	if err != nil {
@@ -199,11 +197,11 @@ func IncrementMonthlyVisitors() (string, error) {
 	current := time.Now().UTC()
 	_, m, _ := current.Date()
 	_, err := db.ConnPool.Exec(context.Background(),
-		`UPDATE 
+		`UPDATE
 				monthly_visitors
-			SET 
+			SET
 				count = count + 1, page_count = page_count + 1
-			WHERE 
+			WHERE
 				month = $1`,
 		m.String())
 	if err != nil {
@@ -241,17 +239,12 @@ func CheckIfIPExists(ip string) (string, error) {
 			fmt.Println("Error scanning row: ", err)
 			return "", err
 		}
-		//fmt.Println("DBIP: ", dbIP)
-		//fmt.Println("IP: ", ip)
 		if dbIP == ip {
 			unique = false
 		}
 	}
 
-	//fmt.Println("COUNTER: ", counter)
-
 	if unique {
-		//fmt.Println("IP UNIQUE!")
 		message, err := WriteIPToDatabase(ip)
 		if err != nil {
 			fmt.Println("Error inserting IP to DB", message)
@@ -263,7 +256,6 @@ func CheckIfIPExists(ip string) (string, error) {
 		}
 	} else if !unique {
 		// Not unique, but we want to increment page_count!
-		//fmt.Println("IP NOT UNIQUE!")
 		pageCountReturn, err := IncrementMonthlyPageCount()
 		if err != nil {
 			fmt.Println("Error inserting IP into DB", pageCountReturn)
@@ -278,13 +270,13 @@ func WriteIPToDatabase(ip string) (string, error) {
 	now := time.Now()
 	// This inserts our quote and accompanying data into our table!
 	err := db.ConnPool.QueryRow(context.Background(),
-		`INSERT INTO 
+		`INSERT INTO
 				ips(
 					ip,
-					timestamp) 
+					timestamp)
 			VALUES(
-				$1, $2) 
-			RETURNING 
+				$1, $2)
+			RETURNING
 				id`,
 		ip, now).Scan(&lastInsertId)
 	if err != nil {
@@ -402,21 +394,24 @@ func ReadIPLocationDB() ([]*VisitorLocationResult, error) {
 
 	rows, err := db.ConnPool.Query(context.Background(),
 		`SELECT
-				as_asn,
-				as_domain,
-				as_name,
-				as_route,
-				ip,
-				location_city,
-				location_country,
-				location_lat,
-				location_lng,
-				location_postalcode,
-				location_region,
-				location_timezone,
-				isp
+				ip_locations.as_asn,
+				ip_locations.as_domain,
+				ip_locations.as_name,
+				ip_locations.as_route,
+				ip_locations.ip,
+				ip_locations.location_city,
+				ip_locations.location_country,
+				ip_locations.location_lat,
+				ip_locations.location_lng,
+				ip_locations.location_postalcode,
+				ip_locations.location_region,
+				ip_locations.location_timezone,
+				ip_locations.isp,
+				ips.timestamp
 			FROM
-				ip_locations`)
+				ip_locations, ips
+            WHERE
+                ip_locations.ip = ips.ip`)
 
 	if err != nil {
 		fmt.Println("There was an error reading the ip_locations table from the database:", err)
@@ -444,7 +439,8 @@ func ReadIPLocationDB() ([]*VisitorLocationResult, error) {
 			&res.Location.PostalCode,
 			&res.Location.Region,
 			&res.Location.Timezone,
-			&res.Isp)
+			&res.Isp,
+			&res.Timestamp)
 
 		if err != nil {
 			fmt.Println("There was an error querying that database for the IP Location Results:", err)
@@ -484,15 +480,12 @@ func WriteIPLocationToDB(ip string) (string, error) {
 		fmt.Println("Error obtaining IP Location", err)
 		return "", err
 	}
-	fmt.Println("IP LOCATION BEFORE: ", ipLocationReturn)
 
 	ipLocationReturnJSON, err := json.Marshal(ipLocationReturn)
 	if err != nil {
 		fmt.Println("Error marshaling IP Location", err)
 		return "", err
 	}
-	//ipLocationReturnJSONString := string(ipLocationReturnJSON)
-	//fmt.Println("IP LOCATION AFTER: ", string(ipLocationReturnJSON))
 
 	// Putting our IP Location information to a struct
 	var ipLocationResult VisitorLocationResult
@@ -504,7 +497,7 @@ func WriteIPLocationToDB(ip string) (string, error) {
 
 	// This inserts our quote and accompanying data into our table!
 	dbErr := db.ConnPool.QueryRow(context.Background(),
-		`INSERT INTO 
+		`INSERT INTO
 				ip_locations(
 					as_asn,
 					as_domain,
@@ -518,16 +511,16 @@ func WriteIPLocationToDB(ip string) (string, error) {
 					location_postalcode,
 					location_region,
 					location_timezone,
-					isp) 
+					isp)
 			VALUES(
-				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
-			RETURNING 
+				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+			RETURNING
 				id`,
 		ipLocationResult.As.Asn,
 		ipLocationResult.As.Domain,
 		ipLocationResult.As.Name,
 		ipLocationResult.As.Route,
-		ipLocationResult.Ip,
+		ip,
 		ipLocationResult.Location.City,
 		ipLocationResult.Location.Country,
 		ipLocationResult.Location.Lat,

@@ -71,7 +71,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 left: 50,
             },
             data: {
-                url: '/readMonthlyVisitors',
+                json: $scope.monthlyVisitors,
                 mimeType: 'json',
                 x: 'X',
                 xFormat: '%Y-%m-%dT%H:%M:%SZ',
@@ -127,8 +127,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             let results;
             results = res.data;
             $scope.visitors = results;
-            //getIPLocations($scope.visitors);
-            //drawChart(results);
         }, function (err) {
             alert("ERROR, /readVisitors: ", err);
         })

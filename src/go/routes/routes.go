@@ -103,7 +103,6 @@ func GetNewInventory(data *gin.Context) {
 
 func GetGithubInfo(data *gin.Context) {
 	url := data.Query("url")
-    fmt.Println("URL: ", url)
     resp, err := common.GetStringFromURL(url)
     if err != nil {
         data.JSON(http.StatusBadRequest, err.Error())
@@ -122,8 +121,6 @@ func GetGithubInfo(data *gin.Context) {
 // location data on an IP address if we find one.
 func ReadIP(data *gin.Context) {
     IP := data.GetHeader("X-Real-IP")
-
-    fmt.Println("IP FOR DISTANCE: ", IP)
 
     if IP != "" {
         url := fmt.Sprintf(`http://api.ipstack.com/`+IP+`?access_key=2724f648413b327eda2fd505ea8cb9ab`)
@@ -151,19 +148,17 @@ func VisitorCounter(data *gin.Context) {
 	//IP := data.Request.RemoteAddr
 	//IP := data.ClientIP()
 	IP := data.GetHeader("X-Real-IP")
+    if IP == "" {
+        IP = data.GetHeader("X-Forwarded-For")
+    }
+    if IP == "" {
+        IP = data.GetHeader("RemoteAddr")
 
-	//fmt.Println("FOUND IP: ", IP)
+    }
+    if IP == "" {
+        IP = data.GetHeader("Referer")
 
-	//header := data.Request.Header
-	//fmt.Println("HEADER: ", header)
-
-	//IP, err := visitorCounter.GetClientIPHelper(data.Request)
-	//if err != nil {
-	//	fmt.Println("Error parsing for IP!")
-	//	data.JSON(http.StatusBadRequest, err)
-	//}
-
-	//fmt.Println("IP: ", IP)
+    }
 
 	ips, err := visitorCounter.CheckIfIPExists(IP)
 	if err != nil {
@@ -241,8 +236,6 @@ func UpdateCharacter(data *gin.Context) {
 	var info temp
 	data.Bind(&info)
 
-	fmt.Println("EDITED CHARACTER: ", info.Character)
-
 	characterReturn, err := starWarsCharacterTableEample.ResubmitCharacter(info.Character)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
@@ -268,14 +261,11 @@ func LoadAngularJSExampleTableResults(data *gin.Context) {
 func SetClickedRow(data *gin.Context) {
 	id := data.DefaultQuery("id", "")
 
-	fmt.Println("ID: ", id)
-
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		fmt.Println("YOU SUCK MAX", err)
 	}
 
-	fmt.Println("ID AFTER: ", idInt)
 	quoteBuilderReturn, err := starWarsCharacterTableEample.RetreiveCharacter(idInt)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
@@ -288,8 +278,6 @@ func SetClickedRow(data *gin.Context) {
 func GetWeather(data *gin.Context) {
 	location := data.DefaultQuery("location", "331214")
 
-	fmt.Println("Location: ", location)
-
 	weatherReturn, err := weatherExample.UpdateAllWeather(location)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
@@ -301,8 +289,6 @@ func GetWeather(data *gin.Context) {
 
 func GetWeatherConditions(data *gin.Context) {
 	location := data.DefaultQuery("location", "331214")
-
-	fmt.Println("Location: ", location)
 
 	weatherReturn, err := weatherExample.GetCurrentConditions(location)
 	if err != nil {
@@ -335,8 +321,6 @@ func GetLocalCurrentConditions(data *gin.Context) {
 
 func GetIPLocation(data *gin.Context) {
 	//ip := data.DefaultQuery("ip", "")
-
-	//fmt.Println("IP: ", ip)
 
 	ipLocationReturn, err := visitorCounter.ReadIPLocationDB()
 	if err != nil {
@@ -374,8 +358,6 @@ func GetOccurrences(data *gin.Context) {
 	var info SearchString
 	data.Bind(&info)
 
-	fmt.Println("STRING 1: ", info.SplitString)
-
 	stringOccurrenceReturn, err := goExamples.GetStringOccurrences(info.SplitString)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
@@ -394,9 +376,6 @@ func Translate(data *gin.Context) {
 	var info TranslateString
 	data.Bind(&info)
 
-	fmt.Println("String Before: ", info.SplitString)
-	fmt.Println("Lang Before: ", info.Lang)
-
 	translationReturn, err := goExamples.TranslateString(info.SplitString, info.Lang)
 	if err != nil {
 		data.JSON(http.StatusBadRequest, err.Error())
@@ -413,8 +392,6 @@ func PostTweet(data *gin.Context) {
 
 	var info Tweet
 	data.Bind(&info)
-
-	fmt.Println("INFO: ", info.Tweet)
 
 	SubmitTweet, err := goExamples.SubmitTweet(info.Tweet)
 	if err != nil {

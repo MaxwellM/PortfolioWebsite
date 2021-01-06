@@ -64,6 +64,7 @@ body
                                             label.md-body-1(ng-show='visitor.location.city') City
                                             label.md-body-1(ng-show='visitor.location.region') Region
                                             label.md-body-1(ng-show='visitor.location.country') Country
+                                            label.md-body-1(ng-show='visitor.timestamp') Time
                                         div#angularJSExampleChartLocationInfoWrapper
                                             label.md-body-1(ng-show='visitor.ip') {{ ::visitor.ip }}
                                             label.md-body-1(ng-show='visitor.isp') {{ ::visitor.isp }}
@@ -71,6 +72,7 @@ body
                                             label.md-body-1(ng-show='visitor.location.city') {{ ::visitor.location.city }}
                                             label.md-body-1(ng-show='visitor.location.region') {{ ::visitor.location.region }}
                                             label.md-body-1(ng-show='visitor.location.country') {{ ::visitor.location.country }}
+                                            label.md-body-1(ng-show='visitor.timestamp') {{::visitor.timestamp}}
 script(defer='', src="./js/angularJSExampleChart.js")
 script(defer='', src="./js/node_modules/d3/dist/d3.min.js" charset="utf-8")
 script(defer='', src="./js/node_modules/c3/c3.min.js")
