@@ -4,6 +4,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.readVisitors = readVisitors;
     $scope.selectIPLocation = selectIPLocation;
+    $scope.getIPLocations = null;
 
     $scope.promise = null;
 
@@ -21,6 +22,15 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     $scope.distance = 0.0;
     $scope.browserCity = "";
     $scope.browserState = "";
+
+    $scope.myPage = 1;
+    $scope.myLimit = 10;
+
+    $scope.query = {
+        order: 'timestamp',
+        limit: 10,
+        page: 1
+    };
 
     function ping() {
         let start = performance.now();
@@ -119,6 +129,8 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             "July", "August", "September", "October", "November", "December"
         ];
         const d = new Date();
+        console.log("Month: ", d.getMonth());
+        console.log("Month2: ", monthNames[d.getMonth()]);
         return monthNames[d.getMonth()];
     }
 
@@ -164,12 +176,13 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         $scope.currentMonth = monthNames[d.getMonth()];
     }
 
-    function getIPLocations(ips) {
+    $scope.getIPLocations = function() {
         //let ip;
         $http.get("/getIPLocation").then(function (res) {
             let results;
             results = res.data;
             $scope.ipLocationList = results;
+            console.log("RESULTS: ", $scope.ipLocationList);
         }, function (err) {
             alert("Error obtaining the location for that IP: ", err);
         });
@@ -201,12 +214,14 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         $interval.cancel($scope.promise);
     });
 
-    getIPLocations();
     setCurrentMonth();
     readVisitors();
     readMonthlyVisitors();
 
     readIP();
+
+    $scope.getIPLocations();
+
     ping();
 
     $scope.start();
