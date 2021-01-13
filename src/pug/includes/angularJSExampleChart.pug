@@ -22,7 +22,7 @@ body
                             .md-subhead Response Time: {{ pingTime }} ms |
                             .md-subhead | Client: {{ browserCity }}, {{ browserState }} |
                             .md-subhead | Server: Dallas, TX |
-                            .md-subhead | Distance: {{ ::distance | limitTo:8}} Km
+                            .md-subhead | Distance: {{ distance | limitTo:8}} Km
             div#angularJSExampleChartTableWrapper(ng-show='ipLocationList.length')
                 md-table-container
                     table(md-table='', md-progress='getIPLocations')
