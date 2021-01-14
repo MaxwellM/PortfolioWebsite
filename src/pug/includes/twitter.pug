@@ -11,11 +11,13 @@ body
                 .md-inline-form(layout='row', ng-cloak='')
                     md-content(layout-gt-sm='row', layout-padding='')
                         form#tweetForm(ng-submit='postTweet()')
+                            div#goExampleTwitterInuputWrapper
+                                md-input-container.md-block(flex-gt-sm='')
+                                    label.md-body-1 Enter someting to tweet!
+                                    input(ng-model='tweet', style='width:450px')
                             md-input-container.md-block(flex-gt-sm='')
-                                label.md-body-1 Enter someting to tweet!
-                                input(ng-model='tweet', style='width:450px')
-                            md-input-container.md-block(flex-gt-sm='')
-                                md-button(ng-click='postTweet()') Tweet
+                                div#goExampleTwitterSubmitButtonWrapper
+                                    md-button(ng-click='postTweet()') Tweet
             div#goExampleTwitterPostedTweetWrapper(ng-if='tweetID')
                 label.md-body-1 Posted Tweet!
                 div#goExampleTwitterPostedTweet
