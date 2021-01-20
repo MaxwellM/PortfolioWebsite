@@ -30,7 +30,7 @@ body
                     img(src='./images/codewars.png', alt='')
                     label.md-body-1 CodeWars
         div#GithubContributions
-            h3.md-headline Github Contributions
+            h4.md-subheadline(ng-cloak) {{ totalContributions }} contributions in the last year
             div(class="calendar")
 script(defer='', src="./js/mainePage.js")
 script(defer='', src="./js/node_modules/github-calendar/dist/github-calendar.min.js")
