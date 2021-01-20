@@ -45,7 +45,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     function readIP() {
         $http.get("/readIP").then(function (res) {
             let results = res.data;
-            console.log("RESULTS: ", results);
             $scope.distance = calculateDistance(results.latitude, 32.779167 , results.longitude, -96.808891);
             $scope.browserCity = results.city;
             $scope.browserState = results.region_code;
@@ -57,13 +56,17 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     // Found this here:
     // https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
     function calculateDistance(lat1, lat2, long1, long2) {
-        var p = 0.017453292519943295;    // Math.PI / 180
-        var c = Math.cos;
-        var a = 0.5 - c((lat2 - lat1) * p)/2 +
+        const p = 0.017453292519943295;    // Math.PI / 180
+        const c = Math.cos;
+        const a = 0.5 - c((lat2 - lat1) * p) / 2 +
             c(lat1 * p) * c(lat2 * p) *
-            (1 - c((long2 - long1) * p))/2;
+            (1 - c((long2 - long1) * p)) / 2;
 
-        return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+
+        let kmDistance = 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+        // Convert to miles
+        let miDistance = kmDistance / 1.609344;
+        return miDistance;
     }
 
     function drawChart(data) {
@@ -182,7 +185,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             let results;
             results = res.data;
             $scope.ipLocationList = results;
-            console.log("RESULTS: ", $scope.ipLocationList);
         }, function (err) {
             alert("Error obtaining the location for that IP: ", err);
         });

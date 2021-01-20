@@ -14,15 +14,15 @@ body
                 div#angularJSExampleChartTopLeftTop
                     .md-headline Statistics for {{ currentMonthName }}
                     div#angularJSExampleChartTopLeftInnerWrapper
-                        .md-subhead Unique Visitors {{ ::currentMonthTotal }} |
-                        .md-subhead | Page Views {{ ::currentPageMonthTotal }}
+                        .md-subhead Unique Visitors {{ ::currentMonthTotal }} | Page Views {{ ::currentPageMonthTotal }}
                 div#angularJSExampleChartTopLeftBottom
                     .md-headline Live Connection Info
                         div#angularJSExampleChartTopLeftBottomWrapper
-                            .md-subhead Response Time: {{ pingTime }} ms |
-                            .md-subhead | Client: {{ browserCity }}, {{ browserState }} |
-                            .md-subhead | Server: Dallas, TX |
-                            .md-subhead | Distance: {{ distance | limitTo:8}} Km
+                            div#angularJSExampleChartRTWrapper
+                                .md-subhead RT:
+                                .md-subhead(ng-style=" pingTime >= 100 && pingTime < 1500  ? { color:'red' } : pingTime >= 25 && pingTime < 100 ? {color: 'khaki'} : pingTime >= 0 && pingTime < 25 ? {color: 'green'} : {color: ''}") {{ pingTime }}
+                                .md-subhead ms
+                            .md-subhead | Client: {{ browserCity }}, {{ browserState }} | Server: Dallas, TX | Distance: {{ distance | limitTo:8}} Mi
             div#angularJSExampleChartTableWrapper(ng-show='ipLocationList.length')
                 md-table-container
                     table(md-table='', md-progress='getIPLocations')
