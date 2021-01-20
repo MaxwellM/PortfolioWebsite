@@ -20,8 +20,9 @@ body
                         div#angularJSExampleChartTopLeftBottomWrapper
                             div#angularJSExampleChartRTWrapper
                                 .md-subhead RT:
-                                .md-subhead(ng-style=" pingTime >= 100 && pingTime < 1500  ? { color:'red' } : pingTime >= 25 && pingTime < 100 ? {color: 'khaki'} : pingTime >= 0 && pingTime < 25 ? {color: 'green'} : {color: ''}") {{ pingTime }}
+                                .md-subhead {{ pingTime }}
                                 .md-subhead ms
+                                div#RTCircle(ng-style=" pingTime >= 100 && pingTime < 1500  ? { backgroundColor:'red' } : pingTime >= 25 && pingTime < 100 ? {backgroundColor: 'khaki'} : pingTime >= 0 && pingTime < 25 ? {backgroundColor: 'green'} : {backgroundColor: ''}")
                             .md-subhead | Client: {{ browserCity }}, {{ browserState }} | Server: Dallas, TX | Distance: {{ distance | limitTo:8}} Mi
             div#angularJSExampleChartTableWrapper(ng-show='ipLocationList.length')
                 md-table-container
