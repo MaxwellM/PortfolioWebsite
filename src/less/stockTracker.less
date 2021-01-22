@@ -9,6 +9,56 @@ div#stockTrackerPageWrapper {
   overflow: auto;
 }
 
+div#stockTrackerPageTableWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+div#stockTrackerTopWrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f8fa;
+  text-align: center;
+  padding: 2em 0 2em 0;
+  h1 {
+    margin: 0;
+  }
+}
+
+div#stockTrackerMiddleWrapper {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 2em 0 2em 0;
+}
+
+div#stockTrackerMiddleInfo {
+  display: flex;
+  align-self: center;
+}
+
+div#stockTrackerMiddleInfo > label {
+  margin-right: 2em;
+}
+
+div#stockTrackerBottomWrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f8fa;
+}
+
+md-progress-linear {
+  height: 10px;
+}
+
+md-progress-linear .md-container {
+  height: 10px;
+}
+
+md-progress-linear .md-container .md-bar {
+  height: 10px;
+}
+
 div#stockTrackerUpdateInfoWrapper {
   display: flex;
   align-items: center;
@@ -22,5 +72,6 @@ div#stockTrackerUpdateInfoWrapper {
 div#stockTrackerItemWrapper {
   md-subhead {
     align-self: center;
+    margin-left: 1em;
   }
 }
