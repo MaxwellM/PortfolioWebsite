@@ -9,11 +9,10 @@ body
                 span.md-subhead Currently supports: BestBuy, Walmart, Target, and GameStop.
             div#stockTrackerMiddleWrapper
                 div#stockTrackerMiddleInfo
-                    label.md-body-1(ng-show="currentVendor") Checking: {{ currentVendor }}
-                    label.md-body-1(ng-show="lastUpdate") Last Update: {{ lastUpdate }}
-                    label.md-body-1(ng-show="timeLeft") Will update in: {{ timeLeft }}
+                    h4.md-headline(ng-show="currentVendor") Checking: {{ currentVendor }}
+                    h4.md-headline(ng-show="lastUpdate") Last Update: {{ lastUpdate }}
+                    h4.md-headline(ng-show="timeLeft") Next Update: {{ timeLeft }}
                 md-progress-linear.md-warn(md-mode='buffer' value='{{progressValue}}' md-buffer-value='{{progressValueBuffer}}')
-                //md-progress-linear(md-mode='determinate', md-diameter="20px", value='{{progressValue}}')
             div#stockTrackerBottomWrapper
                 div#stockTrackerItemWrapper(layout='row')
                     md-subhead Item to Track:
