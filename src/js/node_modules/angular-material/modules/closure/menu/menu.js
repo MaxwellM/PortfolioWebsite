@@ -2,7 +2,7 @@
  * AngularJS Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.2.1
+ * v1.2.2
  */
 goog.provide('ngmaterial.components.menu');
 goog.require('ngmaterial.components.backdrop');
@@ -716,7 +716,7 @@ function MenuProvider($$interimElementProvider) {
       }
 
       /**
-       * Check for valid opts and set some sane defaults
+       * Check for valid opts and set some useful defaults
        */
       function sanitizeAndConfigure() {
         if (!opts.target) {
@@ -814,7 +814,10 @@ function MenuProvider($$interimElementProvider) {
             if (focusTarget) {
               break;
             }
-            if (child.firstElementChild && !child.firstElementChild.disabled) {
+            // Need to check the attribute as well since this might be a custom element whose
+            // disabled property is undefined.
+            if (child.firstElementChild && !child.firstElementChild.disabled &&
+                !child.firstElementChild.getAttribute('disabled')) {
               focusTarget = child.firstElementChild;
               break;
             }

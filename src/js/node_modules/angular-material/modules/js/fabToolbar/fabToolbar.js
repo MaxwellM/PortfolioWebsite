@@ -2,7 +2,7 @@
  * AngularJS Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.2.1
+ * v1.2.2
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -95,7 +95,7 @@
 
       bindToController: true,
       controller: 'MdFabController',
-      controllerAs: 'vm',
+      controllerAs: 'ctrl',
 
       link: link
     };

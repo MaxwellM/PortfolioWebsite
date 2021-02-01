@@ -22,7 +22,7 @@ body
                                 .md-subhead RT:
                                 .md-subhead {{ pingTime }}
                                 .md-subhead ms
-                                div#RTCircle(ng-style=" pingTime >= 100 && pingTime < 1500  ? { backgroundColor:'red' } : pingTime >= 25 && pingTime < 100 ? {backgroundColor: 'khaki'} : pingTime >= 0 && pingTime < 25 ? {backgroundColor: 'green'} : {backgroundColor: ''}")
+                                div#RTCircle(ng-style=" pingTime >= 250 && pingTime < 1500  ? { backgroundColor:'red' } : pingTime >= 100 && pingTime < 250 ? {backgroundColor: 'khaki'} : pingTime >= 0 && pingTime < 100 ? {backgroundColor: 'green'} : {backgroundColor: ''}")
                             .md-subhead | Client: {{ browserCity }}, {{ browserState }} | Server: Dallas, TX | Distance: {{ distance | limitTo:8}} Mi
             div#angularJSExampleChartTableWrapper(ng-show='ipLocationList.length')
                 md-table-container
@@ -41,7 +41,7 @@ body
                                     span.md-body-1 Region
                                 th(md-column='', md-order-by='location.country')
                                     span.md-body-1 Country
-                                th(md-column='', md-order-by='timestamp')
+                                th(md-column='', md-desc, md-order-by='timestamp')
                                     span.md-body-1 Time
                         tbody(md-body='')
                             tr(md-row='' ng-repeat="result in ipLocationList | orderBy:query.order | limitTo: query.limit: (query.page - 1) * query.limit")

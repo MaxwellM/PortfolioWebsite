@@ -2,7 +2,7 @@
  * AngularJS Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.2.1
+ * v1.2.2
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -1014,13 +1014,14 @@ function MdPrefixer(initialAttributes, buildSelector) {
  * will not be unique.
  */
 UtilFactory['$inject'] = ["$document", "$timeout", "$compile", "$rootScope", "$$mdAnimate", "$interpolate", "$log", "$rootElement", "$window", "$$rAF"];
-var nextUniqueId = 0, isIos, isAndroid;
+var nextUniqueId = 0, isIos, isAndroid, isFirefox;
 
 // Support material-tools builds.
 if (window.navigator) {
   var userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
   isIos = userAgent.match(/ipad|iphone|ipod/i);
   isAndroid = userAgent.match(/android/i);
+  isFirefox = userAgent.match(/(firefox|minefield)/i);
 }
 
 /**
@@ -1631,8 +1632,9 @@ function UtilFactory($document, $timeout, $compile, $rootScope, $$mdAnimate, $in
       });
     },
 
-    /*
-     * getClosest replicates jQuery.closest() to walk up the DOM tree until it finds a matching nodeName
+    /**
+     * getClosest replicates jQuery.closest() to walk up the DOM tree until it finds a matching
+     * nodeName.
      *
      * @param {Node} el Element to start walking the DOM from
      * @param {string|function} validateWith If a string is passed, it will be evaluated against
@@ -2038,6 +2040,332 @@ function UtilFactory($document, $timeout, $compile, $rootScope, $$mdAnimate, $in
     sanitize: function(term) {
       if (!term) return term;
       return term.replace(/[\\^$*+?.()|{}[]/g, '\\$&');
+    },
+
+    /**********************************************************************************************
+     * The following functions were sourced from
+     * https://github.com/angular/components/blob/3c37e4b1c1cb74a3d0a90d173240fc730d21d9d4/src/cdk/a11y/interactivity-checker/interactivity-checker.ts
+     **********************************************************************************************/
+
+    /**
+     * Gets whether an element is disabled.
+     * @param {HTMLElement} element Element to be checked.
+     * @returns {boolean} Whether the element is disabled.
+     */
+    isDisabled: function(element) {
+      // This does not capture some cases, such as a non-form control with a disabled attribute or
+      // a form control inside of a disabled form, but should capture the most common cases.
+      return element.hasAttribute('disabled');
+    },
+
+    /**
+     * Gets whether an element is visible for the purposes of interactivity.
+     *
+     * This will capture states like `display: none` and `visibility: hidden`, but not things like
+     * being clipped by an `overflow: hidden` parent or being outside the viewport.
+     *
+     * @param {HTMLElement} element
+     * @returns {boolean} Whether the element is visible.
+     */
+    isVisible: function(element) {
+      return $mdUtil.hasGeometry(element) && getComputedStyle(element).visibility === 'visible';
+    },
+
+    /**
+     * Gets whether an element can be reached via Tab key.
+     * Assumes that the element has already been checked with isFocusable.
+     * @param {HTMLElement} element Element to be checked.
+     * @returns {boolean} Whether the element is tabbable.
+     */
+    isTabbable: function(element) {
+      var frameElement = $mdUtil.getFrameElement($mdUtil.getWindow(element));
+
+      if (frameElement) {
+        // Frame elements inherit their tabindex onto all child elements.
+        if ($mdUtil.getTabIndexValue(frameElement) === -1) {
+          return false;
+        }
+
+        // Browsers disable tabbing to an element inside of an invisible frame.
+        if (!$mdUtil.isVisible(frameElement)) {
+          return false;
+        }
+      }
+
+      var nodeName = element.nodeName.toLowerCase();
+      var tabIndexValue = $mdUtil.getTabIndexValue(element);
+
+      if (element.hasAttribute('contenteditable')) {
+        return tabIndexValue !== -1;
+      }
+
+      if (nodeName === 'iframe' || nodeName === 'object') {
+        // The frame or object's content may be tabbable depending on the content, but it's
+        // not possibly to reliably detect the content of the frames. We always consider such
+        // elements as non-tabbable.
+        return false;
+      }
+
+      // In iOS, the browser only considers some specific elements as tabbable.
+      if (isIos && !$mdUtil.isPotentiallyTabbableIOS(element)) {
+        return false;
+      }
+
+      if (nodeName === 'audio') {
+        // Audio elements without controls enabled are never tabbable, regardless
+        // of the tabindex attribute explicitly being set.
+        if (!element.hasAttribute('controls')) {
+          return false;
+        }
+        // Audio elements with controls are by default tabbable unless the
+        // tabindex attribute is set to `-1` explicitly.
+        return tabIndexValue !== -1;
+      }
+
+      if (nodeName === 'video') {
+        // For all video elements, if the tabindex attribute is set to `-1`, the video
+        // is not tabbable. Note: We cannot rely on the default `HTMLElement.tabIndex`
+        // property as that one is set to `-1` in Chrome, Edge and Safari v13.1. The
+        // tabindex attribute is the source of truth here.
+        if (tabIndexValue === -1) {
+          return false;
+        }
+        // If the tabindex is explicitly set, and not `-1` (as per check before), the
+        // video element is always tabbable (regardless of whether it has controls or not).
+        if (tabIndexValue !== null) {
+          return true;
+        }
+        // Otherwise (when no explicit tabindex is set), a video is only tabbable if it
+        // has controls enabled. Firefox is special as videos are always tabbable regardless
+        // of whether there are controls or not.
+        return isFirefox || element.hasAttribute('controls');
+      }
+
+      return element.tabIndex >= 0;
+    },
+
+    /**
+     * Gets whether an element can be focused by the user.
+     * @param {HTMLElement} element Element to be checked.
+     * @returns {boolean} Whether the element is focusable.
+     */
+    isFocusable: function(element) {
+      // Perform checks in order of left to most expensive.
+      // Again, naive approach that does not capture many edge cases and browser quirks.
+      return $mdUtil.isPotentiallyFocusable(element) && !$mdUtil.isDisabled(element) &&
+        $mdUtil.isVisible(element);
+    },
+
+    /**
+     * Gets whether an element is potentially focusable without taking current visible/disabled
+     * state into account.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    isPotentiallyFocusable: function(element) {
+      // Inputs are potentially focusable *unless* they're type="hidden".
+      if ($mdUtil.isHiddenInput(element)) {
+        return false;
+      }
+
+      return $mdUtil.isNativeFormElement(element) ||
+        $mdUtil.isAnchorWithHref(element) ||
+        element.hasAttribute('contenteditable') ||
+        $mdUtil.hasValidTabIndex(element);
+    },
+
+    /**
+     * Checks whether the specified element is potentially tabbable on iOS.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    isPotentiallyTabbableIOS: function(element) {
+      var nodeName = element.nodeName.toLowerCase();
+        var inputType = nodeName === 'input' && element.type;
+
+      return inputType === 'text'
+        || inputType === 'password'
+        || nodeName === 'select'
+        || nodeName === 'textarea';
+    },
+
+    /**
+     * Returns the parsed tabindex from the element attributes instead of returning the
+     * evaluated tabindex from the browsers defaults.
+     * @param {HTMLElement} element
+     * @returns {null|number}
+     */
+    getTabIndexValue: function(element) {
+      if (!$mdUtil.hasValidTabIndex(element)) {
+        return null;
+      }
+
+      // See browser issue in Gecko https://bugzilla.mozilla.org/show_bug.cgi?id=1128054
+      var tabIndex = parseInt(element.getAttribute('tabindex') || '', 10);
+
+      return isNaN(tabIndex) ? -1 : tabIndex;
+    },
+
+    /**
+     * Gets whether an element has a valid tabindex.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    hasValidTabIndex: function(element) {
+      if (!element.hasAttribute('tabindex') || element.tabIndex === undefined) {
+        return false;
+      }
+
+      var tabIndex = element.getAttribute('tabindex');
+
+      // IE11 parses tabindex="" as the value "-32768"
+      if (tabIndex == '-32768') {
+        return false;
+      }
+
+      return !!(tabIndex && !isNaN(parseInt(tabIndex, 10)));
+    },
+
+    /**
+     * Checks whether the specified element has any geometry / rectangles.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    hasGeometry: function(element) {
+      // Use logic from jQuery to check for an invisible element.
+      // See https://github.com/jquery/jquery/blob/8969732518470a7f8e654d5bc5be0b0076cb0b87/src/css/hiddenVisibleSelectors.js#L9
+      return !!(element.offsetWidth || element.offsetHeight ||
+        (typeof element.getClientRects === 'function' && element.getClientRects().length));
+    },
+
+    /**
+     * Returns the frame element from a window object. Since browsers like MS Edge throw errors if
+     * the frameElement property is being accessed from a different host address, this property
+     * should be accessed carefully.
+     * @param {Window} window
+     * @returns {null|HTMLElement}
+     */
+    getFrameElement: function(window) {
+      try {
+        return window.frameElement;
+      } catch (error) {
+        return null;
+      }
+    },
+
+    /**
+     * Gets the parent window of a DOM node with regards of being inside of an iframe.
+     * @param {HTMLElement} node
+     * @returns {Window}
+     */
+    getWindow: function(node) {
+      // ownerDocument is null if `node` itself *is* a document.
+      return node.ownerDocument && node.ownerDocument.defaultView || window;
+    },
+
+    /**
+     * Gets whether an element's
+     * @param {Node} element
+     * @returns {boolean}
+     */
+    isNativeFormElement: function(element) {
+      var nodeName = element.nodeName.toLowerCase();
+      return nodeName === 'input' ||
+        nodeName === 'select' ||
+        nodeName === 'button' ||
+        nodeName === 'textarea';
+    },
+
+    /**
+     * Gets whether an element is an `<input type="hidden">`.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    isHiddenInput: function(element) {
+      return $mdUtil.isInputElement(element) && element.type == 'hidden';
+    },
+
+    /**
+     * Gets whether an element is an anchor that has an href attribute.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    isAnchorWithHref: function(element) {
+      return $mdUtil.isAnchorElement(element) && element.hasAttribute('href');
+    },
+
+    /**
+     * Gets whether an element is an input element.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    isInputElement: function(element) {
+      return element.nodeName.toLowerCase() == 'input';
+    },
+
+    /**
+     * Gets whether an element is an anchor element.
+     * @param {HTMLElement} element
+     * @returns {boolean}
+     */
+    isAnchorElement: function(element) {
+      return element.nodeName.toLowerCase() == 'a';
+    },
+
+    /**********************************************************************************************
+     * The following two functions were sourced from
+     * https://github.com/angular/components/blob/3c37e4b1c1cb74a3d0a90d173240fc730d21d9d4/src/cdk/a11y/focus-trap/focus-trap.ts#L268-L311
+     **********************************************************************************************/
+
+    /**
+     * Get the first tabbable element from a DOM subtree (inclusive).
+     * @param {HTMLElement} root
+     * @returns {HTMLElement|null}
+     */
+    getFirstTabbableElement: function(root) {
+      if ($mdUtil.isFocusable(root) && $mdUtil.isTabbable(root)) {
+        return root;
+      }
+
+      // Iterate in DOM order. Note that IE doesn't have `children` for SVG so we fall
+      // back to `childNodes` which includes text nodes, comments etc.
+      var children = root.children || root.childNodes;
+
+      for (var i = 0; i < children.length; i++) {
+        var tabbableChild = children[i].nodeType === $document[0].ELEMENT_NODE ?
+          $mdUtil.getFirstTabbableElement(children[i]) : null;
+
+        if (tabbableChild) {
+          return tabbableChild;
+        }
+      }
+
+      return null;
+    },
+
+    /**
+     * Get the last tabbable element from a DOM subtree (inclusive).
+     * @param {HTMLElement} root
+     * @returns {HTMLElement|null}
+     */
+    getLastTabbableElement: function(root) {
+      if ($mdUtil.isFocusable(root) && $mdUtil.isTabbable(root)) {
+        return root;
+      }
+
+      // Iterate in reverse DOM order.
+      var children = root.children || root.childNodes;
+
+      for (var i = children.length - 1; i >= 0; i--) {
+        var tabbableChild = children[i].nodeType === $document[0].ELEMENT_NODE ?
+          $mdUtil.getLastTabbableElement(children[i]) : null;
+
+        if (tabbableChild) {
+          return tabbableChild;
+        }
+      }
+
+      return null;
     }
   };
 
@@ -2068,511 +2396,6 @@ angular.element.prototype.blur = angular.element.prototype.blur || function() {
     this[0].blur();
   }
   return this;
-};
-
-/**
- * @ngdoc module
- * @name material.core.aria
- * @description
- * Aria Expectations for AngularJS Material components.
- */
-MdAriaService['$inject'] = ["$$rAF", "$log", "$window", "$interpolate"];
-angular
-  .module('material.core')
-  .provider('$mdAria', MdAriaProvider);
-
-/**
- * @ngdoc service
- * @name $mdAriaProvider
- * @module material.core.aria
- *
- * @description
- *
- * Modify options of the `$mdAria` service, which will be used by most of the AngularJS Material
- * components.
- *
- * You are able to disable `$mdAria` warnings, by using the following markup.
- *
- * <hljs lang="js">
- *   app.config(function($mdAriaProvider) {
- *     // Globally disables all ARIA warnings.
- *     $mdAriaProvider.disableWarnings();
- *   });
- * </hljs>
- *
- */
-function MdAriaProvider() {
-
-  var config = {
-    /** Whether we should show ARIA warnings in the console if labels are missing on the element */
-    showWarnings: true
-  };
-
-  return {
-    disableWarnings: disableWarnings,
-    $get: ["$$rAF", "$log", "$window", "$interpolate", function($$rAF, $log, $window, $interpolate) {
-      return MdAriaService.apply(config, arguments);
-    }]
-  };
-
-  /**
-   * @ngdoc method
-   * @name $mdAriaProvider#disableWarnings
-   * @description Disables all ARIA warnings generated by AngularJS Material.
-   */
-  function disableWarnings() {
-    config.showWarnings = false;
-  }
-}
-
-/*
- * ngInject
- */
-function MdAriaService($$rAF, $log, $window, $interpolate) {
-
-  // Load the showWarnings option from the current context and store it inside of a scope variable,
-  // because the context will be probably lost in some function calls.
-  var showWarnings = this.showWarnings;
-
-  return {
-    expect: expect,
-    expectAsync: expectAsync,
-    expectWithText: expectWithText,
-    expectWithoutText: expectWithoutText,
-    getText: getText,
-    hasAriaLabel: hasAriaLabel,
-    parentHasAriaLabel: parentHasAriaLabel
-  };
-
-  /**
-   * Check if expected attribute has been specified on the target element or child
-   * @param {string|JQLite} element
-   * @param {string} attrName
-   * @param {string=} defaultValue What to set the attr to if no value is found
-   */
-  function expect(element, attrName, defaultValue) {
-
-    var node = angular.element(element)[0] || element;
-
-    // if node exists and neither it nor its children have the attribute
-    if (node &&
-       ((!node.hasAttribute(attrName) ||
-        node.getAttribute(attrName).length === 0) &&
-        !childHasAttribute(node, attrName))) {
-
-      defaultValue = angular.isString(defaultValue) ? defaultValue.trim() : '';
-      if (defaultValue.length) {
-        element.attr(attrName, defaultValue);
-      } else if (showWarnings) {
-        $log.warn('ARIA: Attribute "', attrName, '", required for accessibility, is missing on node:', node);
-      }
-
-    }
-  }
-
-  function expectAsync(element, attrName, defaultValueGetter) {
-    // Problem: when retrieving the element's contents synchronously to find the label,
-    // the text may not be defined yet in the case of a binding.
-    // There is a higher chance that a binding will be defined if we wait one frame.
-    $$rAF(function() {
-        expect(element, attrName, defaultValueGetter());
-    });
-  }
-
-  function expectWithText(element, attrName) {
-    var content = getText(element) || "";
-    var hasBinding = content.indexOf($interpolate.startSymbol()) > -1;
-
-    if (hasBinding) {
-      expectAsync(element, attrName, function() {
-        return getText(element);
-      });
-    } else {
-      expect(element, attrName, content);
-    }
-  }
-
-  function expectWithoutText(element, attrName) {
-    var content = getText(element);
-    var hasBinding = content.indexOf($interpolate.startSymbol()) > -1;
-
-    if (!hasBinding && !content) {
-      expect(element, attrName, content);
-    }
-  }
-
-  /**
-   * @param {Element|JQLite} element
-   * @returns {string}
-   */
-  function getText(element) {
-    element = element[0] || element;
-    var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
-    var text = '';
-
-    var node;
-    while (node = walker.nextNode()) {
-      if (!isAriaHiddenNode(node)) {
-        text += node.textContent;
-      }
-    }
-
-    return text.trim() || '';
-
-    /**
-     * @param {Node} node
-     * @returns {boolean}
-     */
-    function isAriaHiddenNode(node) {
-      while (node.parentNode && (node = node.parentNode) !== element) {
-        if (node.getAttribute && node.getAttribute('aria-hidden') === 'true') {
-          return true;
-        }
-      }
-    }
-  }
-
-  function childHasAttribute(node, attrName) {
-    var hasChildren = node.hasChildNodes(),
-        hasAttr = false;
-
-    function isHidden(el) {
-      var style = el.currentStyle ? el.currentStyle : $window.getComputedStyle(el);
-      return (style.display === 'none');
-    }
-
-    if (hasChildren) {
-      var children = node.childNodes;
-      for (var i=0; i < children.length; i++) {
-        var child = children[i];
-        if (child.nodeType === 1 && child.hasAttribute(attrName)) {
-          if (!isHidden(child)) {
-            hasAttr = true;
-          }
-        }
-      }
-    }
-    return hasAttr;
-  }
-
-  /**
-   * Check if expected element has aria label attribute
-   * @param element
-   */
-  function hasAriaLabel(element) {
-    var node = angular.element(element)[0] || element;
-
-    /* Check if compatible node type (ie: not HTML Document node) */
-    if (!node.hasAttribute) {
-      return false;
-    }
-
-    /* Check label or description attributes */
-    return node.hasAttribute('aria-label') || node.hasAttribute('aria-labelledby') || node.hasAttribute('aria-describedby');
-  }
-
-  /**
-   * Check if expected element's parent has aria label attribute and has valid role and tagName
-   * @param {string|JQLite|Node & ParentNode} element
-   * @param {number=} level Number of levels deep search should be performed
-   */
-  function parentHasAriaLabel(element, level) {
-    level = level || 1;
-    var node = angular.element(element)[0] || element;
-    if (!node.parentNode) {
-      return false;
-    }
-    if (performCheck(node.parentNode)) {
-      return true;
-    }
-    level--;
-    if (level) {
-      return parentHasAriaLabel(node.parentNode, level);
-    }
-    return false;
-
-    function performCheck(parentNode) {
-      if (!hasAriaLabel(parentNode)) {
-        return false;
-      }
-      /* Perform role block-list check */
-      if (parentNode.hasAttribute('role')) {
-        switch (parentNode.getAttribute('role').toLowerCase()) {
-          case 'command':
-          case 'definition':
-          case 'directory':
-          case 'grid':
-          case 'list':
-          case 'listitem':
-          case 'log':
-          case 'marquee':
-          case 'menu':
-          case 'menubar':
-          case 'note':
-          case 'presentation':
-          case 'separator':
-          case 'scrollbar':
-          case 'status':
-          case 'tablist':
-            return false;
-        }
-      }
-      /* Perform tagName block-list check */
-      switch (parentNode.tagName.toLowerCase()) {
-        case 'abbr':
-        case 'acronym':
-        case 'address':
-        case 'applet':
-        case 'audio':
-        case 'b':
-        case 'bdi':
-        case 'bdo':
-        case 'big':
-        case 'blockquote':
-        case 'br':
-        case 'canvas':
-        case 'caption':
-        case 'center':
-        case 'cite':
-        case 'code':
-        case 'col':
-        case 'data':
-        case 'dd':
-        case 'del':
-        case 'dfn':
-        case 'dir':
-        case 'div':
-        case 'dl':
-        case 'em':
-        case 'embed':
-        case 'fieldset':
-        case 'figcaption':
-        case 'font':
-        case 'h1':
-        case 'h2':
-        case 'h3':
-        case 'h4':
-        case 'h5':
-        case 'h6':
-        case 'hgroup':
-        case 'html':
-        case 'i':
-        case 'ins':
-        case 'isindex':
-        case 'kbd':
-        case 'keygen':
-        case 'label':
-        case 'legend':
-        case 'li':
-        case 'map':
-        case 'mark':
-        case 'menu':
-        case 'object':
-        case 'ol':
-        case 'output':
-        case 'pre':
-        case 'presentation':
-        case 'q':
-        case 'rt':
-        case 'ruby':
-        case 'samp':
-        case 'small':
-        case 'source':
-        case 'span':
-        case 'status':
-        case 'strike':
-        case 'strong':
-        case 'sub':
-        case 'sup':
-        case 'svg':
-        case 'tbody':
-        case 'td':
-        case 'th':
-        case 'thead':
-        case 'time':
-        case 'tr':
-        case 'track':
-        case 'tt':
-        case 'ul':
-        case 'var':
-          return false;
-      }
-      return true;
-    }
-  }
-}
-
-/**
- * @ngdoc module
- * @name material.core.interaction
- * @description
- * User interaction detection to provide proper accessibility.
- */
-MdInteractionService['$inject'] = ["$timeout", "$mdUtil", "$rootScope"];
-angular
-  .module('material.core.interaction', [])
-  .service('$mdInteraction', MdInteractionService);
-
-
-/**
- * @ngdoc service
- * @name $mdInteraction
- * @module material.core.interaction
- *
- * @description
- *
- * Service which keeps track of the last interaction type and validates them for several browsers.
- * The service hooks into the document's body and listens for touch, mouse and keyboard events.
- *
- * The most recent interaction type can be retrieved by calling the `getLastInteractionType` method.
- *
- * Here is an example markup for using the interaction service.
- *
- * <hljs lang="js">
- *   var lastType = $mdInteraction.getLastInteractionType();
- *
- *   if (lastType === 'keyboard') {
- *     // We only restore the focus for keyboard users.
- *     restoreFocus();
- *   }
- * </hljs>
- *
- */
-function MdInteractionService($timeout, $mdUtil, $rootScope) {
-  this.$timeout = $timeout;
-  this.$mdUtil = $mdUtil;
-  this.$rootScope = $rootScope;
-
-  // IE browsers can also trigger pointer events, which also leads to an interaction.
-  this.pointerEvent = 'MSPointerEvent' in window ? 'MSPointerDown' : 'PointerEvent' in window ? 'pointerdown' : null;
-  this.bodyElement = angular.element(document.body);
-  this.isBuffering = false;
-  this.bufferTimeout = null;
-  this.lastInteractionType = null;
-  this.lastInteractionTime = null;
-  this.inputHandler = this.onInputEvent.bind(this);
-  this.bufferedInputHandler = this.onBufferInputEvent.bind(this);
-
-  // Type Mappings for the different events
-  // There will be three three interaction types
-  // `keyboard`, `mouse` and `touch`
-  // type `pointer` will be evaluated in `pointerMap` for IE Browser events
-  this.inputEventMap = {
-    'keydown': 'keyboard',
-    'mousedown': 'mouse',
-    'mouseenter': 'mouse',
-    'touchstart': 'touch',
-    'pointerdown': 'pointer',
-    'MSPointerDown': 'pointer'
-  };
-
-  // IE PointerDown events will be validated in `touch` or `mouse`
-  // Index numbers referenced here: https://msdn.microsoft.com/library/windows/apps/hh466130.aspx
-  this.iePointerMap = {
-    2: 'touch',
-    3: 'touch',
-    4: 'mouse'
-  };
-
-  this.initializeEvents();
-  this.$rootScope.$on('$destroy', this.deregister.bind(this));
-}
-
-/**
- * Removes all event listeners created by $mdInteration on the
- * body element.
- */
-MdInteractionService.prototype.deregister = function() {
-
-    this.bodyElement.off('keydown mousedown', this.inputHandler);
-
-    if ('ontouchstart' in document.documentElement) {
-      this.bodyElement.off('touchstart', this.bufferedInputHandler);
-    }
-
-    if (this.pointerEvent) {
-      this.bodyElement.off(this.pointerEvent, this.inputHandler);
-    }
-
-};
-
-/**
- * Initializes the interaction service, by registering all interaction events to the
- * body element.
- */
-MdInteractionService.prototype.initializeEvents = function() {
-
-  this.bodyElement.on('keydown mousedown', this.inputHandler);
-
-  if ('ontouchstart' in document.documentElement) {
-    this.bodyElement.on('touchstart', this.bufferedInputHandler);
-  }
-
-  if (this.pointerEvent) {
-    this.bodyElement.on(this.pointerEvent, this.inputHandler);
-  }
-
-};
-
-/**
- * Event listener for normal interaction events, which should be tracked.
- * @param event {MouseEvent|KeyboardEvent|PointerEvent|TouchEvent}
- */
-MdInteractionService.prototype.onInputEvent = function(event) {
-  if (this.isBuffering) {
-    return;
-  }
-
-  var type = this.inputEventMap[event.type];
-
-  if (type === 'pointer') {
-    type = this.iePointerMap[event.pointerType] || event.pointerType;
-  }
-
-  this.lastInteractionType = type;
-  this.lastInteractionTime = this.$mdUtil.now();
-};
-
-/**
- * Event listener for interaction events which should be buffered (touch events).
- * @param event {TouchEvent}
- */
-MdInteractionService.prototype.onBufferInputEvent = function(event) {
-  this.$timeout.cancel(this.bufferTimeout);
-
-  this.onInputEvent(event);
-  this.isBuffering = true;
-
-  // The timeout of 650ms is needed to delay the touchstart, because otherwise the touch will call
-  // the `onInput` function multiple times.
-  this.bufferTimeout = this.$timeout(function() {
-    this.isBuffering = false;
-  }.bind(this), 650, false);
-
-};
-
-/**
- * @ngdoc method
- * @name $mdInteraction#getLastInteractionType
- * @description Retrieves the last interaction type triggered in body.
- * @returns {string|null} Last interaction type.
- */
-MdInteractionService.prototype.getLastInteractionType = function() {
-  return this.lastInteractionType;
-};
-
-/**
- * @ngdoc method
- * @name $mdInteraction#isUserInvoked
- * @description Method to detect whether any interaction happened recently or not.
- * @param {number=} checkDelay Time to check for any interaction to have been triggered.
- * @returns {boolean} Whether there was any interaction or not.
- */
-MdInteractionService.prototype.isUserInvoked = function(checkDelay) {
-  var delay = angular.isNumber(checkDelay) ? checkDelay : 15;
-
-  // Check for any interaction to be within the specified check time.
-  return this.lastInteractionTime >= this.$mdUtil.now() - delay;
 };
 
 /**
@@ -2952,6 +2775,338 @@ function MdCompilerProvider() {
   };
 }
 
+
+/**
+ * @ngdoc module
+ * @name material.core.aria
+ * @description
+ * Aria Expectations for AngularJS Material components.
+ */
+MdAriaService['$inject'] = ["$$rAF", "$log", "$window", "$interpolate"];
+angular
+  .module('material.core')
+  .provider('$mdAria', MdAriaProvider);
+
+/**
+ * @ngdoc service
+ * @name $mdAriaProvider
+ * @module material.core.aria
+ *
+ * @description
+ *
+ * Modify options of the `$mdAria` service, which will be used by most of the AngularJS Material
+ * components.
+ *
+ * You are able to disable `$mdAria` warnings, by using the following markup.
+ *
+ * <hljs lang="js">
+ *   app.config(function($mdAriaProvider) {
+ *     // Globally disables all ARIA warnings.
+ *     $mdAriaProvider.disableWarnings();
+ *   });
+ * </hljs>
+ *
+ */
+function MdAriaProvider() {
+
+  var config = {
+    /** Whether we should show ARIA warnings in the console if labels are missing on the element */
+    showWarnings: true
+  };
+
+  return {
+    disableWarnings: disableWarnings,
+    $get: ["$$rAF", "$log", "$window", "$interpolate", function($$rAF, $log, $window, $interpolate) {
+      return MdAriaService.apply(config, arguments);
+    }]
+  };
+
+  /**
+   * @ngdoc method
+   * @name $mdAriaProvider#disableWarnings
+   * @description Disables all ARIA warnings generated by AngularJS Material.
+   */
+  function disableWarnings() {
+    config.showWarnings = false;
+  }
+}
+
+/*
+ * ngInject
+ */
+function MdAriaService($$rAF, $log, $window, $interpolate) {
+
+  // Load the showWarnings option from the current context and store it inside of a scope variable,
+  // because the context will be probably lost in some function calls.
+  var showWarnings = this.showWarnings;
+
+  return {
+    expect: expect,
+    expectAsync: expectAsync,
+    expectWithText: expectWithText,
+    expectWithoutText: expectWithoutText,
+    getText: getText,
+    hasAriaLabel: hasAriaLabel,
+    parentHasAriaLabel: parentHasAriaLabel
+  };
+
+  /**
+   * Check if expected attribute has been specified on the target element or child
+   * @param {string|JQLite} element
+   * @param {string} attrName
+   * @param {string=} defaultValue What to set the attr to if no value is found
+   */
+  function expect(element, attrName, defaultValue) {
+
+    var node = angular.element(element)[0] || element;
+
+    // if node exists and neither it nor its children have the attribute
+    if (node &&
+       ((!node.hasAttribute(attrName) ||
+        node.getAttribute(attrName).length === 0) &&
+        !childHasAttribute(node, attrName))) {
+
+      defaultValue = angular.isString(defaultValue) ? defaultValue.trim() : '';
+      if (defaultValue.length) {
+        element.attr(attrName, defaultValue);
+      } else if (showWarnings) {
+        $log.warn('ARIA: Attribute "', attrName, '", required for accessibility, is missing on node:', node);
+      }
+
+    }
+  }
+
+  function expectAsync(element, attrName, defaultValueGetter) {
+    // Problem: when retrieving the element's contents synchronously to find the label,
+    // the text may not be defined yet in the case of a binding.
+    // There is a higher chance that a binding will be defined if we wait one frame.
+    $$rAF(function() {
+        expect(element, attrName, defaultValueGetter());
+    });
+  }
+
+  function expectWithText(element, attrName) {
+    var content = getText(element) || "";
+    var hasBinding = content.indexOf($interpolate.startSymbol()) > -1;
+
+    if (hasBinding) {
+      expectAsync(element, attrName, function() {
+        return getText(element);
+      });
+    } else {
+      expect(element, attrName, content);
+    }
+  }
+
+  function expectWithoutText(element, attrName) {
+    var content = getText(element);
+    var hasBinding = content.indexOf($interpolate.startSymbol()) > -1;
+
+    if (!hasBinding && !content) {
+      expect(element, attrName, content);
+    }
+  }
+
+  /**
+   * @param {Element|JQLite} element
+   * @returns {string}
+   */
+  function getText(element) {
+    element = element[0] || element;
+    var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+    var text = '';
+
+    var node;
+    while (node = walker.nextNode()) {
+      if (!isAriaHiddenNode(node)) {
+        text += node.textContent;
+      }
+    }
+
+    return text.trim() || '';
+
+    /**
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    function isAriaHiddenNode(node) {
+      while (node.parentNode && (node = node.parentNode) !== element) {
+        if (node.getAttribute && node.getAttribute('aria-hidden') === 'true') {
+          return true;
+        }
+      }
+    }
+  }
+
+  function childHasAttribute(node, attrName) {
+    var hasChildren = node.hasChildNodes(),
+        hasAttr = false;
+
+    function isHidden(el) {
+      var style = el.currentStyle ? el.currentStyle : $window.getComputedStyle(el);
+      return (style.display === 'none');
+    }
+
+    if (hasChildren) {
+      var children = node.childNodes;
+      for (var i=0; i < children.length; i++) {
+        var child = children[i];
+        if (child.nodeType === 1 && child.hasAttribute(attrName)) {
+          if (!isHidden(child)) {
+            hasAttr = true;
+          }
+        }
+      }
+    }
+    return hasAttr;
+  }
+
+  /**
+   * Check if expected element has aria label attribute
+   * @param element
+   */
+  function hasAriaLabel(element) {
+    var node = angular.element(element)[0] || element;
+
+    /* Check if compatible node type (ie: not HTML Document node) */
+    if (!node.hasAttribute) {
+      return false;
+    }
+
+    /* Check label or description attributes */
+    return node.hasAttribute('aria-label') || node.hasAttribute('aria-labelledby') || node.hasAttribute('aria-describedby');
+  }
+
+  /**
+   * Check if expected element's parent has aria label attribute and has valid role and tagName
+   * @param {string|JQLite|Node & ParentNode} element
+   * @param {number=} level Number of levels deep search should be performed
+   */
+  function parentHasAriaLabel(element, level) {
+    level = level || 1;
+    var node = angular.element(element)[0] || element;
+    if (!node.parentNode) {
+      return false;
+    }
+    if (performCheck(node.parentNode)) {
+      return true;
+    }
+    level--;
+    if (level) {
+      return parentHasAriaLabel(node.parentNode, level);
+    }
+    return false;
+
+    function performCheck(parentNode) {
+      if (!hasAriaLabel(parentNode)) {
+        return false;
+      }
+      /* Perform role block-list check */
+      if (parentNode.hasAttribute('role')) {
+        switch (parentNode.getAttribute('role').toLowerCase()) {
+          case 'command':
+          case 'definition':
+          case 'directory':
+          case 'grid':
+          case 'list':
+          case 'listitem':
+          case 'log':
+          case 'marquee':
+          case 'menu':
+          case 'menubar':
+          case 'note':
+          case 'presentation':
+          case 'separator':
+          case 'scrollbar':
+          case 'status':
+          case 'tablist':
+            return false;
+        }
+      }
+      /* Perform tagName block-list check */
+      switch (parentNode.tagName.toLowerCase()) {
+        case 'abbr':
+        case 'acronym':
+        case 'address':
+        case 'applet':
+        case 'audio':
+        case 'b':
+        case 'bdi':
+        case 'bdo':
+        case 'big':
+        case 'blockquote':
+        case 'br':
+        case 'canvas':
+        case 'caption':
+        case 'center':
+        case 'cite':
+        case 'code':
+        case 'col':
+        case 'data':
+        case 'dd':
+        case 'del':
+        case 'dfn':
+        case 'dir':
+        case 'div':
+        case 'dl':
+        case 'em':
+        case 'embed':
+        case 'fieldset':
+        case 'figcaption':
+        case 'font':
+        case 'h1':
+        case 'h2':
+        case 'h3':
+        case 'h4':
+        case 'h5':
+        case 'h6':
+        case 'hgroup':
+        case 'html':
+        case 'i':
+        case 'ins':
+        case 'isindex':
+        case 'kbd':
+        case 'keygen':
+        case 'label':
+        case 'legend':
+        case 'li':
+        case 'map':
+        case 'mark':
+        case 'menu':
+        case 'object':
+        case 'ol':
+        case 'output':
+        case 'pre':
+        case 'presentation':
+        case 'q':
+        case 'rt':
+        case 'ruby':
+        case 'samp':
+        case 'small':
+        case 'source':
+        case 'span':
+        case 'status':
+        case 'strike':
+        case 'strong':
+        case 'sub':
+        case 'sup':
+        case 'svg':
+        case 'tbody':
+        case 'td':
+        case 'th':
+        case 'thead':
+        case 'time':
+        case 'tr':
+        case 'track':
+        case 'tt':
+        case 'ul':
+        case 'var':
+          return false;
+      }
+      return true;
+    }
+  }
+}
 
 
 MdGesture['$inject'] = ["$$MdGestureHandler", "$$rAF", "$timeout", "$mdUtil"];
@@ -3781,486 +3936,178 @@ function canFocus(element) {
   );
 }
 
-(function() {
-  'use strict';
+/**
+ * @ngdoc module
+ * @name material.core.interaction
+ * @description
+ * User interaction detection to provide proper accessibility.
+ */
+MdInteractionService['$inject'] = ["$timeout", "$mdUtil", "$rootScope"];
+angular
+  .module('material.core.interaction', [])
+  .service('$mdInteraction', MdInteractionService);
 
-  var $mdUtil, $interpolate, $log;
 
-  var SUFFIXES = /(-gt)?-(sm|md|lg|print)/g;
-  var WHITESPACE = /\s+/g;
+/**
+ * @ngdoc service
+ * @name $mdInteraction
+ * @module material.core.interaction
+ *
+ * @description
+ *
+ * Service which keeps track of the last interaction type and validates them for several browsers.
+ * The service hooks into the document's body and listens for touch, mouse and keyboard events.
+ *
+ * The most recent interaction type can be retrieved by calling the `getLastInteractionType` method.
+ *
+ * Here is an example markup for using the interaction service.
+ *
+ * <hljs lang="js">
+ *   var lastType = $mdInteraction.getLastInteractionType();
+ *
+ *   if (lastType === 'keyboard') {
+ *     // We only restore the focus for keyboard users.
+ *     restoreFocus();
+ *   }
+ * </hljs>
+ *
+ */
+function MdInteractionService($timeout, $mdUtil, $rootScope) {
+  this.$timeout = $timeout;
+  this.$mdUtil = $mdUtil;
+  this.$rootScope = $rootScope;
 
-  var FLEX_OPTIONS = ['grow', 'initial', 'auto', 'none', 'noshrink', 'nogrow'];
-  var LAYOUT_OPTIONS = ['row', 'column'];
-  var ALIGNMENT_MAIN_AXIS= ["", "start", "center", "end", "stretch", "space-around", "space-between"];
-  var ALIGNMENT_CROSS_AXIS= ["", "start", "center", "end", "stretch"];
+  // IE browsers can also trigger pointer events, which also leads to an interaction.
+  this.pointerEvent = 'MSPointerEvent' in window ? 'MSPointerDown' : 'PointerEvent' in window ? 'pointerdown' : null;
+  this.bodyElement = angular.element(document.body);
+  this.isBuffering = false;
+  this.bufferTimeout = null;
+  this.lastInteractionType = null;
+  this.lastInteractionTime = null;
+  this.inputHandler = this.onInputEvent.bind(this);
+  this.bufferedInputHandler = this.onBufferInputEvent.bind(this);
 
-  var config = {
-    /**
-     * Enable directive attribute-to-class conversions
-     * Developers can use `<body md-layout-css />` to quickly
-     * disable the Layout directives and prohibit the injection of Layout classNames
-     */
-    enabled: true,
-
-    /**
-     * List of mediaQuery breakpoints and associated suffixes
-     *   [
-     *    { suffix: "sm", mediaQuery: "screen and (max-width: 599px)" },
-     *    { suffix: "md", mediaQuery: "screen and (min-width: 600px) and (max-width: 959px)" }
-     *   ]
-     */
-    breakpoints: []
+  // Type Mappings for the different events
+  // There will be three three interaction types
+  // `keyboard`, `mouse` and `touch`
+  // type `pointer` will be evaluated in `pointerMap` for IE Browser events
+  this.inputEventMap = {
+    'keydown': 'keyboard',
+    'mousedown': 'mouse',
+    'mouseenter': 'mouse',
+    'touchstart': 'touch',
+    'pointerdown': 'pointer',
+    'MSPointerDown': 'pointer'
   };
 
-  registerLayoutAPI(angular.module('material.core.layout', ['ng']));
+  // IE PointerDown events will be validated in `touch` or `mouse`
+  // Index numbers referenced here: https://msdn.microsoft.com/library/windows/apps/hh466130.aspx
+  this.iePointerMap = {
+    2: 'touch',
+    3: 'touch',
+    4: 'mouse'
+  };
 
-  /**
-   *   registerLayoutAPI()
-   *
-   *   The original AngularJS Material Layout solution used attribute selectors and CSS.
-   *
-   *  ```html
-   *  <div layout="column"> My Content </div>
-   *  ```
-   *
-   *  ```css
-   *  [layout] {
-   *    box-sizing: border-box;
-   *    display:flex;
-   *  }
-   *  [layout=column] {
-   *    flex-direction : column
-   *  }
-   *  ```
-   *
-   *  Use of attribute selectors creates significant performance impacts in some
-   *  browsers... mainly IE.
-   *
-   *  This module registers directives that allow the same layout attributes to be
-   *  interpreted and converted to class selectors. The directive will add equivalent classes to
-   *  each element that contains a Layout directive.
-   *
-   * ```html
-   *   <div layout="column" class="layout layout-column"> My Content </div>
-   * ```
-   *
-   *  ```css
-   *  .layout {
-   *    box-sizing: border-box;
-   *    display:flex;
-   *  }
-   *  .layout-column {
-   *    flex-direction : column
-   *  }
-   *  ```
-   */
-  function registerLayoutAPI(module){
-    var PREFIX_REGEXP = /^((?:x|data)[:\-_])/i;
-    var SPECIAL_CHARS_REGEXP = /([:\-_]+(.))/g;
+  this.initializeEvents();
+  this.$rootScope.$on('$destroy', this.deregister.bind(this));
+}
 
-    // NOTE: these are also defined in constants::MEDIA_PRIORITY and constants::MEDIA
-    var BREAKPOINTS     = ["", "xs", "gt-xs", "sm", "gt-sm", "md", "gt-md", "lg", "gt-lg", "xl", "print"];
-    var API_WITH_VALUES = ["layout", "flex", "flex-order", "flex-offset", "layout-align"];
-    var API_NO_VALUES   = ["show", "hide", "layout-padding", "layout-margin"];
+/**
+ * Removes all event listeners created by $mdInteration on the
+ * body element.
+ */
+MdInteractionService.prototype.deregister = function() {
 
+    this.bodyElement.off('keydown mousedown', this.inputHandler);
 
-    // Build directive registration functions for the standard Layout API... for all breakpoints.
-    angular.forEach(BREAKPOINTS, function(mqb) {
-
-      // Attribute directives with expected, observable value(s)
-      angular.forEach(API_WITH_VALUES, function(name){
-        var fullName = mqb ? name + "-" + mqb : name;
-        module.directive(directiveNormalize(fullName), attributeWithObserve(fullName));
-      });
-
-      // Attribute directives with no expected value(s)
-      angular.forEach(API_NO_VALUES, function(name){
-        var fullName = mqb ? name + "-" + mqb : name;
-        module.directive(directiveNormalize(fullName), attributeWithoutValue(fullName));
-      });
-
-    });
-
-    // Register other, special directive functions for the Layout features:
-    module
-      .provider('$$mdLayout', function() {
-        // Publish internal service for Layouts
-        return {
-          $get : angular.noop,
-          validateAttributeValue : validateAttributeValue,
-          validateAttributeUsage : validateAttributeUsage,
-          /**
-           * Easy way to disable/enable the Layout API.
-           * When disabled, this stops all attribute-to-classname generations
-           */
-          disableLayouts  : function(isDisabled) {
-            config.enabled =  (isDisabled !== true);
-          }
-        };
-      })
-
-      .directive('mdLayoutCss'        , disableLayoutDirective)
-      .directive('ngCloak'            , buildCloakInterceptor('ng-cloak'))
-
-      .directive('layoutWrap'   , attributeWithoutValue('layout-wrap'))
-      .directive('layoutNowrap' , attributeWithoutValue('layout-nowrap'))
-      .directive('layoutNoWrap' , attributeWithoutValue('layout-no-wrap'))
-      .directive('layoutFill'   , attributeWithoutValue('layout-fill'))
-
-      // Determine if
-      .config(detectDisabledLayouts);
-
-    /**
-     * Converts snake_case to camelCase.
-     * Also there is special case for Moz prefix starting with upper case letter.
-     * @param name Name to normalize
-     */
-    function directiveNormalize(name) {
-      return name
-        .replace(PREFIX_REGEXP, '')
-        .replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
-          return offset ? letter.toUpperCase() : letter;
-        });
-    }
-  }
-
-
-  /**
-    * Detect if any of the HTML tags has a [md-layouts-disabled] attribute;
-    * If yes, then immediately disable all layout API features
-    *
-    * Note: this attribute should be specified on either the HTML or BODY tags
-    * ngInject
-    */
-   function detectDisabledLayouts() {
-     var isDisabled = !!document.querySelector('[md-layouts-disabled]');
-     config.enabled = !isDisabled;
-   }
-
-  /**
-   * Special directive that will disable ALL Layout conversions of layout
-   * attribute(s) to classname(s).
-   *
-   * <link rel="stylesheet" href="angular-material.min.css">
-   * <link rel="stylesheet" href="angular-material.layout.css">
-   *
-   * <body md-layout-css>
-   *  ...
-   * </body>
-   *
-   * Note: Using md-layout-css directive requires the developer to load the Material
-   * Layout Attribute stylesheet (which only uses attribute selectors):
-   *
-   *       `angular-material.layout.css`
-   *
-   * Another option is to use the LayoutProvider to configure and disable the attribute
-   * conversions; this would obviate the use of the `md-layout-css` directive
-   */
-  function disableLayoutDirective() {
-    // Return a 1x-only, first-match attribute directive
-    config.enabled = false;
-
-    return {
-      restrict : 'A',
-      priority : '900'
-    };
-  }
-
-  /**
-   * Tail-hook ngCloak to delay the uncloaking while Layout transformers
-   * finish processing. Eliminates flicker with Material.Layouts
-   */
-  function buildCloakInterceptor(className) {
-    return ['$timeout', function($timeout){
-      return {
-        restrict : 'A',
-        priority : -10,   // run after normal ng-cloak
-        compile  : function(element) {
-          if (!config.enabled) return angular.noop;
-
-          // Re-add the cloak
-          element.addClass(className);
-
-          return function(scope, element) {
-            // Wait while layout injectors configure, then uncloak
-            // NOTE: $rAF does not delay enough... and this is a 1x-only event,
-            //       $timeout is acceptable.
-            $timeout(function(){
-              element.removeClass(className);
-            }, 10, false);
-          };
-        }
-      };
-    }];
-  }
-
-
-  // *********************************************************************************
-  //
-  // These functions create registration functions for AngularJS Material Layout attribute
-  // directives. This provides easy translation to switch AngularJS Material attribute selectors to
-  // CLASS selectors and directives; which has huge performance implications for IE Browsers.
-  //
-  // *********************************************************************************
-
-  /**
-   * Creates a directive registration function where a possible dynamic attribute
-   * value will be observed/watched.
-   * @param {string} className attribute name; eg `layout-gt-md` with value ="row"
-   */
-  function attributeWithObserve(className) {
-
-    return ['$mdUtil', '$interpolate', "$log", function(_$mdUtil_, _$interpolate_, _$log_) {
-      $mdUtil = _$mdUtil_;
-      $interpolate = _$interpolate_;
-      $log = _$log_;
-
-      return {
-        restrict: 'A',
-        compile: function(element, attr) {
-          var linkFn;
-          if (config.enabled) {
-            // immediately replace static (non-interpolated) invalid values...
-
-            validateAttributeUsage(className, attr, element, $log);
-
-            validateAttributeValue(className,
-              getNormalizedAttrValue(className, attr, ""),
-              buildUpdateFn(element, className, attr)
-            );
-
-            linkFn = translateWithValueToCssClass;
-          }
-
-          // Use for postLink to account for transforms after ng-transclude.
-          return linkFn || angular.noop;
-        }
-      };
-    }];
-
-    /**
-     * Observe deprecated layout attributes and update the element's layout classes to match.
-     */
-    function translateWithValueToCssClass(scope, element, attrs) {
-      var updateFn = updateClassWithValue(element, className, attrs);
-      var unwatch = attrs.$observe(attrs.$normalize(className), updateFn);
-
-      updateFn(getNormalizedAttrValue(className, attrs, ""));
-      scope.$on("$destroy", function() { unwatch(); });
-    }
-  }
-
-  /**
-   * Creates a registration function for AngularJS Material Layout attribute directive.
-   * This is a `simple` transpose of attribute usage to class usage; where we ignore
-   * any attribute value.
-   */
-  function attributeWithoutValue(className) {
-    return ['$mdUtil', '$interpolate', "$log", function(_$mdUtil_, _$interpolate_, _$log_) {
-      $mdUtil = _$mdUtil_;
-      $interpolate = _$interpolate_;
-      $log = _$log_;
-
-      return {
-        restrict: 'A',
-        compile: function(element, attr) {
-          var linkFn;
-          if (config.enabled) {
-            // immediately replace static (non-interpolated) invalid values...
-
-            validateAttributeValue(className,
-              getNormalizedAttrValue(className, attr, ""),
-              buildUpdateFn(element, className, attr)
-            );
-
-            translateToCssClass(null, element);
-
-            // Use for postLink to account for transforms after ng-transclude.
-            linkFn = translateToCssClass;
-          }
-
-          return linkFn || angular.noop;
-        }
-      };
-    }];
-
-    /**
-     * Add transformed class selector.
-     */
-    function translateToCssClass(scope, element) {
-      element.addClass(className);
-    }
-  }
-
-  /**
-   * After link-phase, do NOT remove deprecated layout attribute selector.
-   * Instead watch the attribute so interpolated data-bindings to layout
-   * selectors will continue to be supported.
-   *
-   * $observe() the className and update with new class (after removing the last one)
-   *
-   * e.g. `layout="{{layoutDemo.direction}}"` will update...
-   *
-   * NOTE: The value must match one of the specified styles in the CSS.
-   * For example `flex-gt-md="{{size}}`  where `scope.size == 47` will NOT work since
-   * only breakpoints for 0, 5, 10, 15... 100, 33, 34, 66, 67 are defined.
-   */
-  function updateClassWithValue(element, className) {
-    var lastClass;
-
-    return function updateClassFn(newValue) {
-      var value = validateAttributeValue(className, newValue || "");
-      if (angular.isDefined(value)) {
-        if (lastClass) element.removeClass(lastClass);
-        lastClass = !value ? className : className + "-" + value.trim().replace(WHITESPACE, "-");
-        element.addClass(lastClass);
-      }
-    };
-  }
-
-  /**
-   * Centralize warnings for known flexbox issues (especially IE-related issues)
-   */
-  function validateAttributeUsage(className, attr, element, $log){
-    var message, usage, url;
-    var nodeName = element[0].nodeName.toLowerCase();
-
-    switch (className.replace(SUFFIXES,"")) {
-      case "flex":
-        if ((nodeName === "md-button") || (nodeName === "fieldset")){
-          // @see https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers
-          // Use <div flex> wrapper inside (preferred) or outside
-
-          usage = "<" + nodeName + " " + className + "></" + nodeName + ">";
-          url = "https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers";
-          message = "Markup '{0}' may not work as expected in IE Browsers. Consult '{1}' for details.";
-
-          $log.warn($mdUtil.supplant(message, [usage, url]));
-        }
-    }
-  }
-
-
-  /**
-   * For the Layout attribute value, validate or replace with default fallback value.
-   */
-  function validateAttributeValue(className, value, updateFn) {
-    var origValue = value;
-
-    if (!needsInterpolation(value)) {
-      switch (className.replace(SUFFIXES,"")) {
-        case 'layout'        :
-          if (!findIn(value, LAYOUT_OPTIONS)) {
-            value = LAYOUT_OPTIONS[0];    // 'row';
-          }
-          break;
-
-        case 'flex'          :
-          if (!findIn(value, FLEX_OPTIONS)) {
-            if (isNaN(value)) {
-              value = '';
-            }
-          }
-          break;
-
-        case 'flex-offset' :
-        case 'flex-order'    :
-          if (!value || isNaN(+value)) {
-            value = '0';
-          }
-          break;
-
-        case 'layout-align'  :
-          var axis = extractAlignAxis(value);
-          value = $mdUtil.supplant("{main}-{cross}",axis);
-          break;
-
-        case 'layout-padding' :
-        case 'layout-margin'  :
-        case 'layout-fill'    :
-        case 'layout-wrap'    :
-        case 'layout-nowrap' :
-          value = '';
-          break;
-      }
-
-      if (value !== origValue) {
-        (updateFn || angular.noop)(value);
-      }
+    if ('ontouchstart' in document.documentElement) {
+      this.bodyElement.off('touchstart', this.bufferedInputHandler);
     }
 
-    return value ? value.trim() : "";
-  }
-
-  /**
-   * Replace current attribute value with fallback value
-   */
-  function buildUpdateFn(element, className, attrs) {
-    return function updateAttrValue(fallback) {
-      if (!needsInterpolation(fallback)) {
-        // Do not modify the element's attribute value; so
-        // uses '<ui-layout layout="/api/sidebar.html" />' will not
-        // be affected. Just update the attrs value.
-        attrs[attrs.$normalize(className)] = fallback;
-      }
-    };
-  }
-
-  /**
-   * See if the original value has interpolation symbols:
-   * e.g.  flex-gt-md="{{triggerPoint}}"
-   */
-  function needsInterpolation(value) {
-    return (value || "").indexOf($interpolate.startSymbol()) > -1;
-  }
-
-  function getNormalizedAttrValue(className, attrs, defaultVal) {
-    var normalizedAttr = attrs.$normalize(className);
-    return attrs[normalizedAttr] ? attrs[normalizedAttr].trim().replace(WHITESPACE, "-") :
-      defaultVal || null;
-  }
-
-  function findIn(item, list, replaceWith) {
-    item = replaceWith && item ? item.replace(WHITESPACE, replaceWith) : item;
-
-    var found = false;
-    if (item) {
-      list.forEach(function(it) {
-        it = replaceWith ? it.replace(WHITESPACE, replaceWith) : it;
-        found = found || (it === item);
-      });
-    }
-    return found;
-  }
-
-  function extractAlignAxis(attrValue) {
-    var axis = {
-      main : "start",
-      cross: "stretch"
-    }, values;
-
-    attrValue = (attrValue || "");
-
-    if (attrValue.indexOf("-") === 0 || attrValue.indexOf(" ") === 0) {
-      // For missing main-axis values
-      attrValue = "none" + attrValue;
+    if (this.pointerEvent) {
+      this.bodyElement.off(this.pointerEvent, this.inputHandler);
     }
 
-    values = attrValue.toLowerCase().trim().replace(WHITESPACE, "-").split("-");
-    if (values.length && (values[0] === "space")) {
-      // for main-axis values of "space-around" or "space-between"
-      values = [values[0]+"-"+values[1],values[2]];
-    }
+};
 
-    if (values.length > 0) axis.main  = values[0] || axis.main;
-    if (values.length > 1) axis.cross = values[1] || axis.cross;
+/**
+ * Initializes the interaction service, by registering all interaction events to the
+ * body element.
+ */
+MdInteractionService.prototype.initializeEvents = function() {
 
-    if (ALIGNMENT_MAIN_AXIS.indexOf(axis.main) < 0)   axis.main = "start";
-    if (ALIGNMENT_CROSS_AXIS.indexOf(axis.cross) < 0) axis.cross = "stretch";
+  this.bodyElement.on('keydown mousedown', this.inputHandler);
 
-    return axis;
+  if ('ontouchstart' in document.documentElement) {
+    this.bodyElement.on('touchstart', this.bufferedInputHandler);
   }
-})();
+
+  if (this.pointerEvent) {
+    this.bodyElement.on(this.pointerEvent, this.inputHandler);
+  }
+
+};
+
+/**
+ * Event listener for normal interaction events, which should be tracked.
+ * @param event {MouseEvent|KeyboardEvent|PointerEvent|TouchEvent}
+ */
+MdInteractionService.prototype.onInputEvent = function(event) {
+  if (this.isBuffering) {
+    return;
+  }
+
+  var type = this.inputEventMap[event.type];
+
+  if (type === 'pointer') {
+    type = this.iePointerMap[event.pointerType] || event.pointerType;
+  }
+
+  this.lastInteractionType = type;
+  this.lastInteractionTime = this.$mdUtil.now();
+};
+
+/**
+ * Event listener for interaction events which should be buffered (touch events).
+ * @param event {TouchEvent}
+ */
+MdInteractionService.prototype.onBufferInputEvent = function(event) {
+  this.$timeout.cancel(this.bufferTimeout);
+
+  this.onInputEvent(event);
+  this.isBuffering = true;
+
+  // The timeout of 650ms is needed to delay the touchstart, because otherwise the touch will call
+  // the `onInput` function multiple times.
+  this.bufferTimeout = this.$timeout(function() {
+    this.isBuffering = false;
+  }.bind(this), 650, false);
+
+};
+
+/**
+ * @ngdoc method
+ * @name $mdInteraction#getLastInteractionType
+ * @description Retrieves the last interaction type triggered in body.
+ * @returns {string|null} Last interaction type.
+ */
+MdInteractionService.prototype.getLastInteractionType = function() {
+  return this.lastInteractionType;
+};
+
+/**
+ * @ngdoc method
+ * @name $mdInteraction#isUserInvoked
+ * @description Method to detect whether any interaction happened recently or not.
+ * @param {number=} checkDelay Time to check for any interaction to have been triggered.
+ * @returns {boolean} Whether there was any interaction or not.
+ */
+MdInteractionService.prototype.isUserInvoked = function(checkDelay) {
+  var delay = angular.isNumber(checkDelay) ? checkDelay : 15;
+
+  // Check for any interaction to be within the specified check time.
+  return this.lastInteractionTime >= this.$mdUtil.now() - delay;
+};
 
 angular.module('material.core')
   .provider('$$interimElement', InterimElementProvider);
@@ -5044,6 +4891,487 @@ function InterimElementProvider() {
   }
 }
 
+(function() {
+  'use strict';
+
+  var $mdUtil, $interpolate, $log;
+
+  var SUFFIXES = /(-gt)?-(sm|md|lg|print)/g;
+  var WHITESPACE = /\s+/g;
+
+  var FLEX_OPTIONS = ['grow', 'initial', 'auto', 'none', 'noshrink', 'nogrow'];
+  var LAYOUT_OPTIONS = ['row', 'column'];
+  var ALIGNMENT_MAIN_AXIS= ["", "start", "center", "end", "stretch", "space-around", "space-between"];
+  var ALIGNMENT_CROSS_AXIS= ["", "start", "center", "end", "stretch"];
+
+  var config = {
+    /**
+     * Enable directive attribute-to-class conversions
+     * Developers can use `<body md-layout-css />` to quickly
+     * disable the Layout directives and prohibit the injection of Layout classNames
+     */
+    enabled: true,
+
+    /**
+     * List of mediaQuery breakpoints and associated suffixes
+     *   [
+     *    { suffix: "sm", mediaQuery: "screen and (max-width: 599px)" },
+     *    { suffix: "md", mediaQuery: "screen and (min-width: 600px) and (max-width: 959px)" }
+     *   ]
+     */
+    breakpoints: []
+  };
+
+  registerLayoutAPI(angular.module('material.core.layout', ['ng']));
+
+  /**
+   *   registerLayoutAPI()
+   *
+   *   The original AngularJS Material Layout solution used attribute selectors and CSS.
+   *
+   *  ```html
+   *  <div layout="column"> My Content </div>
+   *  ```
+   *
+   *  ```css
+   *  [layout] {
+   *    box-sizing: border-box;
+   *    display:flex;
+   *  }
+   *  [layout=column] {
+   *    flex-direction : column
+   *  }
+   *  ```
+   *
+   *  Use of attribute selectors creates significant performance impacts in some
+   *  browsers... mainly IE.
+   *
+   *  This module registers directives that allow the same layout attributes to be
+   *  interpreted and converted to class selectors. The directive will add equivalent classes to
+   *  each element that contains a Layout directive.
+   *
+   * ```html
+   *   <div layout="column" class="layout layout-column"> My Content </div>
+   * ```
+   *
+   *  ```css
+   *  .layout {
+   *    box-sizing: border-box;
+   *    display:flex;
+   *  }
+   *  .layout-column {
+   *    flex-direction : column
+   *  }
+   *  ```
+   */
+  function registerLayoutAPI(module){
+    var PREFIX_REGEXP = /^((?:x|data)[:\-_])/i;
+    var SPECIAL_CHARS_REGEXP = /([:\-_]+(.))/g;
+
+    // NOTE: these are also defined in constants::MEDIA_PRIORITY and constants::MEDIA
+    var BREAKPOINTS     = ["", "xs", "gt-xs", "sm", "gt-sm", "md", "gt-md", "lg", "gt-lg", "xl", "print"];
+    var API_WITH_VALUES = ["layout", "flex", "flex-order", "flex-offset", "layout-align"];
+    var API_NO_VALUES   = ["show", "hide", "layout-padding", "layout-margin"];
+
+
+    // Build directive registration functions for the standard Layout API... for all breakpoints.
+    angular.forEach(BREAKPOINTS, function(mqb) {
+
+      // Attribute directives with expected, observable value(s)
+      angular.forEach(API_WITH_VALUES, function(name){
+        var fullName = mqb ? name + "-" + mqb : name;
+        module.directive(directiveNormalize(fullName), attributeWithObserve(fullName));
+      });
+
+      // Attribute directives with no expected value(s)
+      angular.forEach(API_NO_VALUES, function(name){
+        var fullName = mqb ? name + "-" + mqb : name;
+        module.directive(directiveNormalize(fullName), attributeWithoutValue(fullName));
+      });
+
+    });
+
+    // Register other, special directive functions for the Layout features:
+    module
+      .provider('$$mdLayout', function() {
+        // Publish internal service for Layouts
+        return {
+          $get : angular.noop,
+          validateAttributeValue : validateAttributeValue,
+          validateAttributeUsage : validateAttributeUsage,
+          /**
+           * Easy way to disable/enable the Layout API.
+           * When disabled, this stops all attribute-to-classname generations
+           */
+          disableLayouts  : function(isDisabled) {
+            config.enabled =  (isDisabled !== true);
+          }
+        };
+      })
+
+      .directive('mdLayoutCss'        , disableLayoutDirective)
+      .directive('ngCloak'            , buildCloakInterceptor('ng-cloak'))
+
+      .directive('layoutWrap'   , attributeWithoutValue('layout-wrap'))
+      .directive('layoutNowrap' , attributeWithoutValue('layout-nowrap'))
+      .directive('layoutNoWrap' , attributeWithoutValue('layout-no-wrap'))
+      .directive('layoutFill'   , attributeWithoutValue('layout-fill'))
+
+      // Determine if
+      .config(detectDisabledLayouts);
+
+    /**
+     * Converts snake_case to camelCase.
+     * Also there is special case for Moz prefix starting with upper case letter.
+     * @param name Name to normalize
+     */
+    function directiveNormalize(name) {
+      return name
+        .replace(PREFIX_REGEXP, '')
+        .replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+          return offset ? letter.toUpperCase() : letter;
+        });
+    }
+  }
+
+
+  /**
+    * Detect if any of the HTML tags has a [md-layouts-disabled] attribute;
+    * If yes, then immediately disable all layout API features
+    *
+    * Note: this attribute should be specified on either the HTML or BODY tags
+    * ngInject
+    */
+   function detectDisabledLayouts() {
+     var isDisabled = !!document.querySelector('[md-layouts-disabled]');
+     config.enabled = !isDisabled;
+   }
+
+  /**
+   * Special directive that will disable ALL Layout conversions of layout
+   * attribute(s) to classname(s).
+   *
+   * <link rel="stylesheet" href="angular-material.min.css">
+   * <link rel="stylesheet" href="angular-material.layout.css">
+   *
+   * <body md-layout-css>
+   *  ...
+   * </body>
+   *
+   * Note: Using md-layout-css directive requires the developer to load the Material
+   * Layout Attribute stylesheet (which only uses attribute selectors):
+   *
+   *       `angular-material.layout.css`
+   *
+   * Another option is to use the LayoutProvider to configure and disable the attribute
+   * conversions; this would obviate the use of the `md-layout-css` directive
+   */
+  function disableLayoutDirective() {
+    // Return a 1x-only, first-match attribute directive
+    config.enabled = false;
+
+    return {
+      restrict : 'A',
+      priority : '900'
+    };
+  }
+
+  /**
+   * Tail-hook ngCloak to delay the uncloaking while Layout transformers
+   * finish processing. Eliminates flicker with Material.Layouts
+   */
+  function buildCloakInterceptor(className) {
+    return ['$timeout', function($timeout){
+      return {
+        restrict : 'A',
+        priority : -10,   // run after normal ng-cloak
+        compile  : function(element) {
+          if (!config.enabled) return angular.noop;
+
+          // Re-add the cloak
+          element.addClass(className);
+
+          return function(scope, element) {
+            // Wait while layout injectors configure, then uncloak
+            // NOTE: $rAF does not delay enough... and this is a 1x-only event,
+            //       $timeout is acceptable.
+            $timeout(function(){
+              element.removeClass(className);
+            }, 10, false);
+          };
+        }
+      };
+    }];
+  }
+
+
+  // *********************************************************************************
+  //
+  // These functions create registration functions for AngularJS Material Layout attribute
+  // directives. This provides easy translation to switch AngularJS Material attribute selectors to
+  // CLASS selectors and directives; which has huge performance implications for IE Browsers.
+  //
+  // *********************************************************************************
+
+  /**
+   * Creates a directive registration function where a possible dynamic attribute
+   * value will be observed/watched.
+   * @param {string} className attribute name; eg `layout-gt-md` with value ="row"
+   */
+  function attributeWithObserve(className) {
+
+    return ['$mdUtil', '$interpolate', "$log", function(_$mdUtil_, _$interpolate_, _$log_) {
+      $mdUtil = _$mdUtil_;
+      $interpolate = _$interpolate_;
+      $log = _$log_;
+
+      return {
+        restrict: 'A',
+        compile: function(element, attr) {
+          var linkFn;
+          if (config.enabled) {
+            // immediately replace static (non-interpolated) invalid values...
+
+            validateAttributeUsage(className, attr, element, $log);
+
+            validateAttributeValue(className,
+              getNormalizedAttrValue(className, attr, ""),
+              buildUpdateFn(element, className, attr)
+            );
+
+            linkFn = translateWithValueToCssClass;
+          }
+
+          // Use for postLink to account for transforms after ng-transclude.
+          return linkFn || angular.noop;
+        }
+      };
+    }];
+
+    /**
+     * Observe deprecated layout attributes and update the element's layout classes to match.
+     */
+    function translateWithValueToCssClass(scope, element, attrs) {
+      var updateFn = updateClassWithValue(element, className, attrs);
+      var unwatch = attrs.$observe(attrs.$normalize(className), updateFn);
+
+      updateFn(getNormalizedAttrValue(className, attrs, ""));
+      scope.$on("$destroy", function() { unwatch(); });
+    }
+  }
+
+  /**
+   * Creates a registration function for AngularJS Material Layout attribute directive.
+   * This is a `simple` transpose of attribute usage to class usage; where we ignore
+   * any attribute value.
+   */
+  function attributeWithoutValue(className) {
+    return ['$mdUtil', '$interpolate', "$log", function(_$mdUtil_, _$interpolate_, _$log_) {
+      $mdUtil = _$mdUtil_;
+      $interpolate = _$interpolate_;
+      $log = _$log_;
+
+      return {
+        restrict: 'A',
+        compile: function(element, attr) {
+          var linkFn;
+          if (config.enabled) {
+            // immediately replace static (non-interpolated) invalid values...
+
+            validateAttributeValue(className,
+              getNormalizedAttrValue(className, attr, ""),
+              buildUpdateFn(element, className, attr)
+            );
+
+            translateToCssClass(null, element);
+
+            // Use for postLink to account for transforms after ng-transclude.
+            linkFn = translateToCssClass;
+          }
+
+          return linkFn || angular.noop;
+        }
+      };
+    }];
+
+    /**
+     * Add transformed class selector.
+     */
+    function translateToCssClass(scope, element) {
+      element.addClass(className);
+    }
+  }
+
+  /**
+   * After link-phase, do NOT remove deprecated layout attribute selector.
+   * Instead watch the attribute so interpolated data-bindings to layout
+   * selectors will continue to be supported.
+   *
+   * $observe() the className and update with new class (after removing the last one)
+   *
+   * e.g. `layout="{{layoutDemo.direction}}"` will update...
+   *
+   * NOTE: The value must match one of the specified styles in the CSS.
+   * For example `flex-gt-md="{{size}}`  where `scope.size == 47` will NOT work since
+   * only breakpoints for 0, 5, 10, 15... 100, 33, 34, 66, 67 are defined.
+   */
+  function updateClassWithValue(element, className) {
+    var lastClass;
+
+    return function updateClassFn(newValue) {
+      var value = validateAttributeValue(className, newValue || "");
+      if (angular.isDefined(value)) {
+        if (lastClass) element.removeClass(lastClass);
+        lastClass = !value ? className : className + "-" + value.trim().replace(WHITESPACE, "-");
+        element.addClass(lastClass);
+      }
+    };
+  }
+
+  /**
+   * Centralize warnings for known flexbox issues (especially IE-related issues)
+   */
+  function validateAttributeUsage(className, attr, element, $log){
+    var message, usage, url;
+    var nodeName = element[0].nodeName.toLowerCase();
+
+    switch (className.replace(SUFFIXES,"")) {
+      case "flex":
+        if ((nodeName === "md-button") || (nodeName === "fieldset")){
+          // @see https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers
+          // Use <div flex> wrapper inside (preferred) or outside
+
+          usage = "<" + nodeName + " " + className + "></" + nodeName + ">";
+          url = "https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers";
+          message = "Markup '{0}' may not work as expected in IE Browsers. Consult '{1}' for details.";
+
+          $log.warn($mdUtil.supplant(message, [usage, url]));
+        }
+    }
+  }
+
+
+  /**
+   * For the Layout attribute value, validate or replace with default fallback value.
+   */
+  function validateAttributeValue(className, value, updateFn) {
+    var origValue = value;
+
+    if (!needsInterpolation(value)) {
+      switch (className.replace(SUFFIXES,"")) {
+        case 'layout'        :
+          if (!findIn(value, LAYOUT_OPTIONS)) {
+            value = LAYOUT_OPTIONS[0];    // 'row';
+          }
+          break;
+
+        case 'flex'          :
+          if (!findIn(value, FLEX_OPTIONS)) {
+            if (isNaN(value)) {
+              value = '';
+            }
+          }
+          break;
+
+        case 'flex-offset' :
+        case 'flex-order'    :
+          if (!value || isNaN(+value)) {
+            value = '0';
+          }
+          break;
+
+        case 'layout-align'  :
+          var axis = extractAlignAxis(value);
+          value = $mdUtil.supplant("{main}-{cross}",axis);
+          break;
+
+        case 'layout-padding' :
+        case 'layout-margin'  :
+        case 'layout-fill'    :
+        case 'layout-wrap'    :
+        case 'layout-nowrap' :
+          value = '';
+          break;
+      }
+
+      if (value !== origValue) {
+        (updateFn || angular.noop)(value);
+      }
+    }
+
+    return value ? value.trim() : "";
+  }
+
+  /**
+   * Replace current attribute value with fallback value
+   */
+  function buildUpdateFn(element, className, attrs) {
+    return function updateAttrValue(fallback) {
+      if (!needsInterpolation(fallback)) {
+        // Do not modify the element's attribute value; so
+        // uses '<ui-layout layout="/api/sidebar.html" />' will not
+        // be affected. Just update the attrs value.
+        attrs[attrs.$normalize(className)] = fallback;
+      }
+    };
+  }
+
+  /**
+   * See if the original value has interpolation symbols:
+   * e.g.  flex-gt-md="{{triggerPoint}}"
+   */
+  function needsInterpolation(value) {
+    return (value || "").indexOf($interpolate.startSymbol()) > -1;
+  }
+
+  function getNormalizedAttrValue(className, attrs, defaultVal) {
+    var normalizedAttr = attrs.$normalize(className);
+    return attrs[normalizedAttr] ? attrs[normalizedAttr].trim().replace(WHITESPACE, "-") :
+      defaultVal || null;
+  }
+
+  function findIn(item, list, replaceWith) {
+    item = replaceWith && item ? item.replace(WHITESPACE, replaceWith) : item;
+
+    var found = false;
+    if (item) {
+      list.forEach(function(it) {
+        it = replaceWith ? it.replace(WHITESPACE, replaceWith) : it;
+        found = found || (it === item);
+      });
+    }
+    return found;
+  }
+
+  function extractAlignAxis(attrValue) {
+    var axis = {
+      main : "start",
+      cross: "stretch"
+    }, values;
+
+    attrValue = (attrValue || "");
+
+    if (attrValue.indexOf("-") === 0 || attrValue.indexOf(" ") === 0) {
+      // For missing main-axis values
+      attrValue = "none" + attrValue;
+    }
+
+    values = attrValue.toLowerCase().trim().replace(WHITESPACE, "-").split("-");
+    if (values.length && (values[0] === "space")) {
+      // for main-axis values of "space-around" or "space-between"
+      values = [values[0]+"-"+values[1],values[2]];
+    }
+
+    if (values.length > 0) axis.main  = values[0] || axis.main;
+    if (values.length > 1) axis.cross = values[1] || axis.cross;
+
+    if (ALIGNMENT_MAIN_AXIS.indexOf(axis.main) < 0)   axis.main = "start";
+    if (ALIGNMENT_CROSS_AXIS.indexOf(axis.cross) < 0) axis.cross = "stretch";
+
+    return axis;
+  }
+})();
+
 /**
  * @ngdoc module
  * @name material.core.liveannouncer
@@ -5134,6 +5462,126 @@ MdLiveAnnouncer.prototype._createLiveElement = function() {
   return liveEl;
 };
 
+/**
+ * @ngdoc service
+ * @name $$mdMeta
+ * @module material.core.meta
+ *
+ * @description
+ *
+ * A provider and a service that simplifies meta tags access
+ *
+ * Note: This is intended only for use with dynamic meta tags such as browser color and title.
+ * Tags that are only processed when the page is rendered (such as `charset`, and `http-equiv`)
+ * will not work since `$$mdMeta` adds the tags after the page has already been loaded.
+ *
+ * ```js
+ * app.config(function($$mdMetaProvider) {
+ *   var removeMeta = $$mdMetaProvider.setMeta('meta-name', 'content');
+ *   var metaValue  = $$mdMetaProvider.getMeta('meta-name'); // -> 'content'
+ *
+ *   removeMeta();
+ * });
+ *
+ * app.controller('myController', function($$mdMeta) {
+ *   var removeMeta = $$mdMeta.setMeta('meta-name', 'content');
+ *   var metaValue  = $$mdMeta.getMeta('meta-name'); // -> 'content'
+ *
+ *   removeMeta();
+ * });
+ * ```
+ *
+ * @returns {$$mdMeta.$service}
+ *
+ */
+angular.module('material.core.meta', [])
+  .provider('$$mdMeta', function () {
+    var head = angular.element(document.head);
+    var metaElements = {};
+
+    /**
+     * Checks if the requested element was written manually and maps it
+     *
+     * @param {string} name meta tag 'name' attribute value
+     * @returns {boolean} returns true if there is an element with the requested name
+     */
+    function mapExistingElement(name) {
+      if (metaElements[name]) {
+        return true;
+      }
+
+      var element = document.getElementsByName(name)[0];
+
+      if (!element) {
+        return false;
+      }
+
+      metaElements[name] = angular.element(element);
+
+      return true;
+    }
+
+    /**
+     * @ngdoc method
+     * @name $$mdMeta#setMeta
+     *
+     * @description
+     * Creates meta element with the 'name' and 'content' attributes,
+     * if the meta tag is already created than we replace the 'content' value
+     *
+     * @param {string} name meta tag 'name' attribute value
+     * @param {string} content meta tag 'content' attribute value
+     * @returns {function} remove function
+     *
+     */
+    function setMeta(name, content) {
+      mapExistingElement(name);
+
+      if (!metaElements[name]) {
+        var newMeta = angular.element('<meta name="' + name + '" content="' + content + '"/>');
+        head.append(newMeta);
+        metaElements[name] = newMeta;
+      }
+      else {
+        metaElements[name].attr('content', content);
+      }
+
+      return function () {
+        metaElements[name].attr('content', '');
+        metaElements[name].remove();
+        delete metaElements[name];
+      };
+    }
+
+    /**
+     * @ngdoc method
+     * @name $$mdMeta#getMeta
+     *
+     * @description
+     * Gets the 'content' attribute value of the wanted meta element
+     *
+     * @param {string} name meta tag 'name' attribute value
+     * @returns {string} content attribute value
+     */
+    function getMeta(name) {
+      if (!mapExistingElement(name)) {
+        throw Error('$$mdMeta: could not find a meta tag with the name \'' + name + '\'');
+      }
+
+      return metaElements[name].attr('content');
+    }
+
+    var module = {
+      setMeta: setMeta,
+      getMeta: getMeta
+    };
+
+    return angular.extend({}, module, {
+      $get: function () {
+        return module;
+      }
+    });
+  });
   /**
    * @ngdoc module
    * @name material.core.componentRegistry
@@ -5260,126 +5708,6 @@ MdLiveAnnouncer.prototype._createLiveElement = function() {
 
   }
 
-/**
- * @ngdoc service
- * @name $$mdMeta
- * @module material.core.meta
- *
- * @description
- *
- * A provider and a service that simplifies meta tags access
- *
- * Note: This is intended only for use with dynamic meta tags such as browser color and title.
- * Tags that are only processed when the page is rendered (such as `charset`, and `http-equiv`)
- * will not work since `$$mdMeta` adds the tags after the page has already been loaded.
- *
- * ```js
- * app.config(function($$mdMetaProvider) {
- *   var removeMeta = $$mdMetaProvider.setMeta('meta-name', 'content');
- *   var metaValue  = $$mdMetaProvider.getMeta('meta-name'); // -> 'content'
- *
- *   removeMeta();
- * });
- *
- * app.controller('myController', function($$mdMeta) {
- *   var removeMeta = $$mdMeta.setMeta('meta-name', 'content');
- *   var metaValue  = $$mdMeta.getMeta('meta-name'); // -> 'content'
- *
- *   removeMeta();
- * });
- * ```
- *
- * @returns {$$mdMeta.$service}
- *
- */
-angular.module('material.core.meta', [])
-  .provider('$$mdMeta', function () {
-    var head = angular.element(document.head);
-    var metaElements = {};
-
-    /**
-     * Checks if the requested element was written manually and maps it
-     *
-     * @param {string} name meta tag 'name' attribute value
-     * @returns {boolean} returns true if there is an element with the requested name
-     */
-    function mapExistingElement(name) {
-      if (metaElements[name]) {
-        return true;
-      }
-
-      var element = document.getElementsByName(name)[0];
-
-      if (!element) {
-        return false;
-      }
-
-      metaElements[name] = angular.element(element);
-
-      return true;
-    }
-
-    /**
-     * @ngdoc method
-     * @name $$mdMeta#setMeta
-     *
-     * @description
-     * Creates meta element with the 'name' and 'content' attributes,
-     * if the meta tag is already created than we replace the 'content' value
-     *
-     * @param {string} name meta tag 'name' attribute value
-     * @param {string} content meta tag 'content' attribute value
-     * @returns {function} remove function
-     *
-     */
-    function setMeta(name, content) {
-      mapExistingElement(name);
-
-      if (!metaElements[name]) {
-        var newMeta = angular.element('<meta name="' + name + '" content="' + content + '"/>');
-        head.append(newMeta);
-        metaElements[name] = newMeta;
-      }
-      else {
-        metaElements[name].attr('content', content);
-      }
-
-      return function () {
-        metaElements[name].attr('content', '');
-        metaElements[name].remove();
-        delete metaElements[name];
-      };
-    }
-
-    /**
-     * @ngdoc method
-     * @name $$mdMeta#getMeta
-     *
-     * @description
-     * Gets the 'content' attribute value of the wanted meta element
-     *
-     * @param {string} name meta tag 'name' attribute value
-     * @returns {string} content attribute value
-     */
-    function getMeta(name) {
-      if (!mapExistingElement(name)) {
-        throw Error('$$mdMeta: could not find a meta tag with the name \'' + name + '\'');
-      }
-
-      return metaElements[name].attr('content');
-    }
-
-    var module = {
-      setMeta: setMeta,
-      getMeta: getMeta
-    };
-
-    return angular.extend({}, module, {
-      $get: function () {
-        return module;
-      }
-    });
-  });
 angular.module('material.core.theming.palette', [])
 .constant('$mdColorPalette', {
   'red': {
@@ -6899,14 +7227,13 @@ function generateAllThemes($injector, $mdTheming) {
   // Expose contrast colors for palettes to ensure that text is always readable
   angular.forEach(PALETTES, sanitizePalette);
 
-  // MD_THEME_CSS is a string generated by the build process that includes all the themable
+  // MD_THEME_CSS is a string generated by the build process that includes all the themeable
   // components as templates
 
   // Break the CSS into individual rules
-  var rules = themeCss
-                  .split(/}(?!([}'";]))/)
-                  .filter(function(rule) { return rule && rule.trim().length; })
-                  .map(function(rule) { return rule.trim() + '}'; });
+  var rules = splitCss(themeCss).map(function(rule) {
+    return rule.trim();
+  });
 
   THEME_COLOR_TYPES.forEach(function(type) {
     rulesByType[type] = '';
@@ -7037,6 +7364,52 @@ function generateAllThemes($injector, $mdTheming) {
         opacity: getOpacityValues(contrastType)
       };
     });
+  }
+
+  /**
+   * @param {string} themeCss
+   * @returns {[]} a string representing a CSS file that is split, producing an array with a rule
+   *  at each index.
+   */
+  function splitCss(themeCss) {
+    var result = [];
+    var currentRule = '';
+    var openedCurlyBrackets = 0;
+    var closedCurlyBrackets = 0;
+
+    for (var i = 0; i < themeCss.length; i++) {
+      var character = themeCss.charAt(i);
+
+      // Check for content in quotes
+      if (character === '\'' || character === '"') {
+        // Append text in quotes to current rule
+        var textInQuotes = themeCss.substring(i, themeCss.indexOf(character, i + 1));
+        currentRule += textInQuotes;
+
+        // Jump to the closing quote char
+        i += textInQuotes.length;
+      } else {
+        currentRule += character;
+
+        if (character === '}') {
+          closedCurlyBrackets++;
+          if (closedCurlyBrackets === openedCurlyBrackets) {
+            closedCurlyBrackets = 0;
+            openedCurlyBrackets = 0;
+            result.push(currentRule);
+            currentRule = '';
+          }
+        } else if (character === '{') {
+          openedCurlyBrackets++;
+        }
+      }
+    }
+    // Add comments added after last valid rule.
+    if (currentRule !== '') {
+      result.push(currentRule);
+    }
+
+    return result;
   }
 }
 
@@ -8440,7 +8813,7 @@ if (angular.version.minor >= 4) {
 }
 
 (function(){ 
-angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-THEME_NAME-theme{background:\"{{background-hue-1}}\"}md-autocomplete.md-THEME_NAME-theme[disabled]:not([md-floating-label]){background:\"{{background-hue-2}}\"}md-autocomplete.md-THEME_NAME-theme button md-icon path{fill:\"{{background-600}}\"}md-autocomplete.md-THEME_NAME-theme button:after{background:\"{{background-600-0.3}}\"}md-autocomplete.md-THEME_NAME-theme input{color:\"{{foreground-1}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-input-container.md-input-focused .md-input{border-color:\"{{accent-color}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-input-container.md-input-focused label,md-autocomplete.md-THEME_NAME-theme.md-accent md-input-container.md-input-focused md-icon{color:\"{{accent-color}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-progress-linear .md-container{background-color:\"{{accent-100}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-progress-linear .md-bar{background-color:\"{{accent-color}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-input-container.md-input-focused .md-input{border-color:\"{{warn-A700}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-input-container.md-input-focused label,md-autocomplete.md-THEME_NAME-theme.md-warn md-input-container.md-input-focused md-icon{color:\"{{warn-A700}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-progress-linear .md-container{background-color:\"{{warn-100}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-progress-linear .md-bar{background-color:\"{{warn-color}}\"}.md-autocomplete-standard-list-container.md-THEME_NAME-theme,.md-autocomplete-suggestions-container.md-THEME_NAME-theme{background:\"{{background-hue-1}}\"}.md-autocomplete-standard-list-container.md-THEME_NAME-theme .md-autocomplete-suggestion,.md-autocomplete-suggestions-container.md-THEME_NAME-theme .md-autocomplete-suggestion{color:\"{{foreground-1}}\"}.md-autocomplete-standard-list-container.md-THEME_NAME-theme .md-autocomplete-suggestion.selected,.md-autocomplete-standard-list-container.md-THEME_NAME-theme .md-autocomplete-suggestion:hover,.md-autocomplete-suggestions-container.md-THEME_NAME-theme .md-autocomplete-suggestion.selected,.md-autocomplete-suggestions-container.md-THEME_NAME-theme .md-autocomplete-suggestion:hover{background:\"{{background-500-0.18}}\"}md-backdrop{background-color:\"{{background-900-0.0}}\"}md-backdrop.md-opaque.md-THEME_NAME-theme{background-color:\"{{background-900-1.0}}\"}md-bottom-sheet.md-THEME_NAME-theme{background-color:\"{{background-color}}\";border-top-color:\"{{background-hue-3}}\"}md-bottom-sheet.md-THEME_NAME-theme.md-list md-list-item{color:\"{{foreground-1}}\"}md-bottom-sheet.md-THEME_NAME-theme .md-subheader{background-color:\"{{background-color}}\";color:\"{{foreground-1}}\"}.md-button.md-THEME_NAME-theme:not([disabled]):hover{background-color:\"{{background-500-0.2}}\"}.md-button.md-THEME_NAME-theme:not([disabled]).md-focused{background-color:\"{{background-500-0.2}}\"}.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover{background-color:transparent}.md-button.md-THEME_NAME-theme.md-fab{background-color:\"{{accent-color}}\";color:\"{{accent-contrast}}\"}.md-button.md-THEME_NAME-theme.md-fab md-icon{color:\"{{accent-contrast}}\"}.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-primary{color:\"{{primary-color}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab,.md-button.md-THEME_NAME-theme.md-primary.md-raised{color:\"{{primary-contrast}}\";background-color:\"{{primary-color}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]) md-icon,.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]) md-icon{color:\"{{primary-contrast}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover,.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover{background-color:\"{{primary-600}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused{background-color:\"{{primary-600}}\"}.md-button.md-THEME_NAME-theme.md-primary:not([disabled]) md-icon{color:\"{{primary-color}}\"}.md-button.md-THEME_NAME-theme.md-raised{color:\"{{background-900}}\";background-color:\"{{background-50}}\"}.md-button.md-THEME_NAME-theme.md-raised:not([disabled]) md-icon{color:\"{{background-900}}\"}.md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover{background-color:\"{{background-50}}\"}.md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused{background-color:\"{{background-200}}\"}.md-button.md-THEME_NAME-theme.md-warn{color:\"{{warn-color}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab,.md-button.md-THEME_NAME-theme.md-warn.md-raised{color:\"{{warn-contrast}}\";background-color:\"{{warn-color}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]) md-icon,.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]) md-icon{color:\"{{warn-contrast}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover,.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover{background-color:\"{{warn-600}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused{background-color:\"{{warn-600}}\"}.md-button.md-THEME_NAME-theme.md-warn:not([disabled]) md-icon{color:\"{{warn-color}}\"}.md-button.md-THEME_NAME-theme.md-accent{color:\"{{accent-color}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab,.md-button.md-THEME_NAME-theme.md-accent.md-raised{color:\"{{accent-contrast}}\";background-color:\"{{accent-color}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]) md-icon,.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]) md-icon{color:\"{{accent-contrast}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover,.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-accent:not([disabled]) md-icon{color:\"{{accent-color}}\"}.md-button.md-THEME_NAME-theme.md-accent[disabled],.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled],.md-button.md-THEME_NAME-theme.md-warn[disabled],.md-button.md-THEME_NAME-theme[disabled]{color:\"{{foreground-3}}\";cursor:default}.md-button.md-THEME_NAME-theme.md-accent[disabled] md-icon,.md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon,.md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon,.md-button.md-THEME_NAME-theme.md-warn[disabled] md-icon,.md-button.md-THEME_NAME-theme[disabled] md-icon{color:\"{{foreground-3}}\"}.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled]{background-color:\"{{foreground-4}}\"}.md-button.md-THEME_NAME-theme[disabled]{background-color:transparent}._md a.md-THEME_NAME-theme:not(.md-button).md-primary{color:\"{{primary-color}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-primary:hover{color:\"{{primary-700}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-accent{color:\"{{accent-color}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-accent:hover{color:\"{{accent-A700}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-warn{color:\"{{warn-color}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-warn:hover{color:\"{{warn-700}}\"}md-card.md-THEME_NAME-theme{color:\"{{foreground-1}}\";background-color:\"{{background-hue-1}}\";border-radius:2px}md-card.md-THEME_NAME-theme .md-card-image{border-radius:2px 2px 0 0}md-card.md-THEME_NAME-theme md-card-header md-card-avatar md-icon{color:\"{{background-color}}\";background-color:\"{{foreground-3}}\"}md-card.md-THEME_NAME-theme md-card-header md-card-header-text .md-subhead{color:\"{{foreground-2}}\"}md-card.md-THEME_NAME-theme md-card-title md-card-title-text:not(:only-child) .md-subhead{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme .md-ripple{color:\"{{accent-A700}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple{color:\"{{background-600}}\"}md-checkbox.md-THEME_NAME-theme.md-checked.md-focused .md-container:before{background-color:\"{{accent-color-0.26}}\"}md-checkbox.md-THEME_NAME-theme .md-ink-ripple{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-ink-ripple{color:\"{{accent-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-icon{background-color:\"{{accent-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after{border-color:\"{{background-default}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple{color:\"{{primary-600}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple{color:\"{{background-600}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ink-ripple{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple{color:\"{{primary-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon{background-color:\"{{primary-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked.md-focused .md-container:before{background-color:\"{{primary-color-0.26}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after{border-color:\"{{primary-contrast-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-indeterminate[disabled] .md-container{color:\"{{foreground-3}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple{color:\"{{warn-600}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ink-ripple{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple{color:\"{{warn-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon{background-color:\"{{warn-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked.md-focused:not([disabled]) .md-container:before{background-color:\"{{warn-color-0.26}}\"}md-checkbox.md-THEME_NAME-theme[disabled]:not(.md-checked) .md-icon{border-color:\"{{foreground-3}}\"}md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon{background-color:\"{{foreground-3}}\"}md-checkbox.md-THEME_NAME-theme[disabled] .md-label{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips{box-shadow:0 1px \"{{foreground-4}}\"}md-chips.md-THEME_NAME-theme .md-chips.md-focused{box-shadow:0 2px \"{{primary-color}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input{color:\"{{foreground-1}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::-webkit-input-placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input:-ms-input-placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::-ms-input-placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input:-moz-placeholder,md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::-moz-placeholder{color:\"{{foreground-3}}\";opacity:1}md-chips.md-THEME_NAME-theme md-chip{background:\"{{background-300}}\";color:\"{{background-800}}\"}md-chips.md-THEME_NAME-theme md-chip md-icon{color:\"{{background-700}}\"}md-chips.md-THEME_NAME-theme md-chip.md-focused{background:\"{{primary-color}}\";color:\"{{primary-contrast}}\"}md-chips.md-THEME_NAME-theme md-chip.md-focused md-icon{color:\"{{primary-contrast}}\"}md-chips.md-THEME_NAME-theme md-chip._md-chip-editing{background:transparent;color:\"{{background-800}}\"}md-chips.md-THEME_NAME-theme .md-chip-remove-container button.md-chip-remove md-icon,md-chips.md-THEME_NAME-theme .md-chip-remove-container buttonmd-chip-remove md-icon{color:\"{{foreground-2}}\";fill:\"{{foreground-2}}\"}.md-contact-suggestion span.md-contact-email{color:\"{{background-400}}\"}md-content.md-THEME_NAME-theme{color:\"{{foreground-1}}\";background-color:\"{{background-default}}\"}.md-THEME_NAME-theme .md-calendar{background:\"{{background-hue-1}}\";color:\"{{foreground-1-0.87}}\"}.md-THEME_NAME-theme .md-calendar tr:last-child td{border-bottom-color:\"{{background-hue-2}}\"}.md-THEME_NAME-theme .md-calendar-day-header{background:\"{{background-500-0.32}}\";color:\"{{foreground-1-0.87}}\"}.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today .md-calendar-date-selection-indicator{border:1px solid \"{{primary-500}}\"}.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today.md-calendar-date-disabled{color:\"{{primary-500-0.6}}\"}.md-calendar-date.md-focus .md-THEME_NAME-theme .md-calendar-date-selection-indicator,.md-THEME_NAME-theme .md-calendar-date-selection-indicator:hover{background:\"{{background-500-0.32}}\"}.md-THEME_NAME-theme .md-calendar-date.md-calendar-selected-date .md-calendar-date-selection-indicator,.md-THEME_NAME-theme .md-calendar-date.md-focus.md-calendar-selected-date .md-calendar-date-selection-indicator{background:\"{{primary-500}}\";color:\"{{primary-500-contrast}}\";border-color:transparent}.md-THEME_NAME-theme .md-calendar-date-disabled,.md-THEME_NAME-theme .md-calendar-month-label-disabled{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-calendar-month-label md-icon,.md-THEME_NAME-theme .md-datepicker-input{color:\"{{foreground-1}}\"}.md-THEME_NAME-theme .md-datepicker-input::-webkit-input-placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input:-ms-input-placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input::-ms-input-placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input::placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input:-moz-placeholder,.md-THEME_NAME-theme .md-datepicker-input::-moz-placeholder{color:\"{{foreground-3}}\";opacity:1}.md-THEME_NAME-theme .md-datepicker-input-container{border-bottom-color:\"{{foreground-4}}\"}.md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused{border-bottom-color:\"{{primary-color}}\"}.md-accent .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused{border-bottom-color:\"{{accent-color}}\"}.md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-invalid,.md-warn .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused{border-bottom-color:\"{{warn-A700}}\"}.md-THEME_NAME-theme .md-datepicker-calendar-pane{border-color:\"{{background-hue-1}}\"}.md-THEME_NAME-theme .md-datepicker-triangle-button .md-datepicker-expand-triangle{border-top-color:\"{{foreground-2}}\"}.md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon{color:\"{{primary-color}}\"}.md-accent .md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon,.md-THEME_NAME-theme .md-datepicker-open.md-accent .md-datepicker-calendar-icon{color:\"{{accent-color}}\"}.md-THEME_NAME-theme .md-datepicker-open.md-warn .md-datepicker-calendar-icon,.md-warn .md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon{color:\"{{warn-A700}}\"}.md-THEME_NAME-theme .md-datepicker-calendar{background:\"{{background-hue-1}}\"}.md-THEME_NAME-theme .md-datepicker-input-mask-opaque{box-shadow:0 0 0 9999px \"{{background-hue-1}}\"}.md-THEME_NAME-theme .md-datepicker-open .md-datepicker-input-container{background:\"{{background-hue-1}}\"}md-dialog.md-THEME_NAME-theme{border-radius:4px;background-color:\"{{background-hue-1}}\";color:\"{{foreground-1}}\"}md-dialog.md-THEME_NAME-theme.md-content-overflow md-dialog-actions{border-top-color:\"{{foreground-4}}\"}md-divider.md-THEME_NAME-theme{border-color:\"{{foreground-4}}\"}md-icon.md-THEME_NAME-theme{color:\"{{foreground-2}}\"}md-icon.md-THEME_NAME-theme.md-primary{color:\"{{primary-color}}\"}md-icon.md-THEME_NAME-theme.md-accent{color:\"{{accent-color}}\"}md-icon.md-THEME_NAME-theme.md-warn{color:\"{{warn-color}}\"}md-input-container.md-THEME_NAME-theme .md-input{color:\"{{background-default-contrast}}\";border-color:\"{{background-default-contrast-divider}}\"}md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input::-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input::placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder,md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder{color:\"{{background-default-contrast-secondary}}\";opacity:1}md-input-container.md-THEME_NAME-theme>md-icon{color:\"{{background-default-contrast}}\"}md-input-container.md-THEME_NAME-theme .md-placeholder,md-input-container.md-THEME_NAME-theme label{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme label.md-required:after{color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-focused):not(.md-input-invalid) label.md-required:after{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input-message-animation,md-input-container.md-THEME_NAME-theme .md-input-messages-animation{color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme .md-input-message-animation .md-char-counter,md-input-container.md-THEME_NAME-theme .md-input-messages-animation .md-char-counter{color:\"{{background-default-contrast}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::-webkit-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input:-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input:-moz-placeholder,md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::-moz-placeholder{color:\"{{background-default-contrast-secondary}}\";opacity:1}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused md-icon{color:\"{{primary-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent md-icon{color:\"{{accent-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn md-icon{color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input{border-color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter,md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input-message-animation,md-input-container.md-THEME_NAME-theme.md-input-invalid label{color:\"{{warn-A700}}\"}[disabled] md-input-container.md-THEME_NAME-theme .md-input,md-input-container.md-THEME_NAME-theme .md-input[disabled]{border-bottom-color:transparent;color:\"{{background-default-contrast-disabled}}\";background-image:linear-gradient(90deg,\"{{background-default-contrast-disabled}}\" 0,\"{{background-default-contrast-disabled}}\" 33%,transparent 0);background-image:-ms-linear-gradient(left,transparent 0,\"{{background-default-contrast-disabled}}\" 100%)}md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h3,md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h4,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h3,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h4{color:\"{{foreground-1}}\"}md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text p,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text p{color:\"{{foreground-2}}\"}md-list.md-THEME_NAME-theme .md-proxy-focus.md-focused div.md-no-style{background-color:\"{{background-100}}\"}md-list.md-THEME_NAME-theme md-list-item .md-avatar-icon{background-color:\"{{foreground-3}}\";color:\"{{background-color}}\"}md-list.md-THEME_NAME-theme md-list-item>md-icon{color:\"{{foreground-2}}\"}md-list.md-THEME_NAME-theme md-list-item>md-icon.md-highlight{color:\"{{primary-color}}\"}md-list.md-THEME_NAME-theme md-list-item>md-icon.md-highlight.md-accent{color:\"{{accent-color}}\"}md-menu-content.md-THEME_NAME-theme{background-color:\"{{background-hue-1}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item{color:\"{{foreground-1}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item md-icon{color:\"{{foreground-2}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item .md-button[disabled]{color:\"{{foreground-3}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item .md-button[disabled] md-icon{color:\"{{foreground-3}}\"}md-menu-content.md-THEME_NAME-theme md-menu-divider{background-color:\"{{foreground-4}}\"}md-menu-bar.md-THEME_NAME-theme>button.md-button{color:\"{{foreground-1}}\";border-radius:2px}md-menu-bar.md-THEME_NAME-theme md-menu>button{color:\"{{foreground-1}}\"}md-menu-bar.md-THEME_NAME-theme md-menu.md-open>button,md-menu-bar.md-THEME_NAME-theme md-menu>button:focus{outline:none;background-color:\"{{ background-500-0.18}}\"}md-menu-bar.md-THEME_NAME-theme.md-open:not(.md-keyboard-mode) md-menu:hover>button{background-color:\"{{ background-500-0.18}}\"}md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:focus,md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:hover{background:transparent}md-menu-content.md-THEME_NAME-theme .md-menu>.md-button:after{color:\"{{foreground-2}}\"}md-menu-content.md-THEME_NAME-theme .md-menu.md-open>.md-button{background-color:\"{{ background-500-0.18}}\"}md-toolbar.md-THEME_NAME-theme.md-menu-toolbar{background-color:\"{{background-hue-1}}\";color:\"{{foreground-1}}\"}md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler{background-color:\"{{primary-color}}\";color:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler md-icon{color:\"{{primary-contrast}}\"}md-nav-bar.md-THEME_NAME-theme .md-nav-bar{background-color:transparent;border-color:\"{{foreground-4}}\"}md-nav-bar.md-THEME_NAME-theme .md-button._md-nav-button.md-unselected{color:\"{{foreground-2}}\"}md-nav-bar.md-THEME_NAME-theme .md-button._md-nav-button[disabled]{color:\"{{foreground-3}}\"}md-nav-bar.md-THEME_NAME-theme md-nav-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar{background-color:\"{{accent-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button{color:\"{{accent-A100}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button.md-active,md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{accent-contrast}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{accent-contrast-0.1}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar md-nav-ink-bar{color:\"{{primary-600-1}}\";background:\"{{primary-600-1}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar{background-color:\"{{warn-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button{color:\"{{warn-100}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button.md-active,md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{warn-contrast}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{warn-contrast-0.1}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar{background-color:\"{{primary-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button{color:\"{{primary-100}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button.md-active,md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{primary-contrast}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{primary-contrast-0.1}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar{background-color:\"{{primary-color}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button{color:\"{{primary-100}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-active,md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{primary-contrast}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{primary-contrast-0.1}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar{background-color:\"{{accent-color}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button{color:\"{{accent-A100}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-active,md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{accent-contrast}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{accent-contrast-0.1}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar md-nav-ink-bar{color:\"{{primary-600-1}}\";background:\"{{primary-600-1}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar{background-color:\"{{warn-color}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button{color:\"{{warn-100}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-active,md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{warn-contrast}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{warn-contrast-0.1}}\"}._md-panel-backdrop.md-THEME_NAME-theme{background-color:\"{{background-900-1.0}}\"}md-progress-circular.md-THEME_NAME-theme path{stroke:\"{{primary-color}}\"}md-progress-circular.md-THEME_NAME-theme.md-warn path{stroke:\"{{warn-color}}\"}md-progress-circular.md-THEME_NAME-theme.md-accent path{stroke:\"{{accent-color}}\"}md-progress-linear.md-THEME_NAME-theme .md-container{background-color:\"{{primary-100}}\"}md-progress-linear.md-THEME_NAME-theme .md-bar{background-color:\"{{primary-color}}\"}md-progress-linear.md-THEME_NAME-theme.md-warn .md-container{background-color:\"{{warn-100}}\"}md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar{background-color:\"{{warn-color}}\"}md-progress-linear.md-THEME_NAME-theme.md-accent .md-container{background-color:\"{{accent-100}}\"}md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar{background-color:\"{{accent-color}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-primary .md-bar1{background-color:\"{{primary-100}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-primary .md-dashed:before{background:radial-gradient(\"{{primary-100}}\" 0,\"{{primary-100}}\" 16%,transparent 42%)}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1{background-color:\"{{warn-100}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before{background:radial-gradient(\"{{warn-100}}\" 0,\"{{warn-100}}\" 16%,transparent 42%)}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1{background-color:\"{{accent-100}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before{background:radial-gradient(\"{{accent-100}}\" 0,\"{{accent-100}}\" 16%,transparent 42%)}md-radio-button.md-THEME_NAME-theme .md-off{border-color:\"{{foreground-2}}\"}md-radio-button.md-THEME_NAME-theme .md-on{background-color:\"{{accent-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme.md-checked .md-off{border-color:\"{{accent-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple{color:\"{{accent-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme .md-container .md-ripple{color:\"{{accent-A700}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on{background-color:\"{{primary-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off{border-color:\"{{primary-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple{color:\"{{primary-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple{color:\"{{primary-600}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on{background-color:\"{{warn-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off{border-color:\"{{warn-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple{color:\"{{warn-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple{color:\"{{warn-600}}\"}md-radio-button.md-THEME_NAME-theme[disabled],md-radio-group.md-THEME_NAME-theme[disabled]{color:\"{{foreground-3}}\"}md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off,md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-off{border-color:\"{{foreground-3}}\"}md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on,md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-on{border-color:\"{{foreground-3}}\"}md-radio-group.md-THEME_NAME-theme .md-checked .md-ink-ripple{color:\"{{accent-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme .md-checked:not([disabled]).md-primary .md-ink-ripple,md-radio-group.md-THEME_NAME-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple{color:\"{{primary-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused.ng-empty>md-radio-button:first-child .md-container:before{background-color:\"{{foreground-3-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked .md-container:before{background-color:\"{{accent-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-primary .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-primary .md-checked .md-container:before{background-color:\"{{primary-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-warn .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-warn .md-checked .md-container:before{background-color:\"{{warn-color-0.26}}\"}md-input-container md-select.md-THEME_NAME-theme .md-select-value span:first-child:after{color:\"{{warn-A700}}\"}md-input-container:not(.md-input-focused):not(.md-input-invalid) md-select.md-THEME_NAME-theme .md-select-value span:first-child:after{color:\"{{foreground-3}}\"}md-input-container.md-input-focused:not(.md-input-has-value) md-select.md-THEME_NAME-theme .md-select-value{color:\"{{primary-color}}\"}md-input-container.md-input-focused:not(.md-input-has-value) md-select.md-THEME_NAME-theme .md-select-value.md-select-placeholder{color:\"{{primary-color}}\"}md-input-container.md-input-invalid md-select.md-THEME_NAME-theme .md-select-value{color:\"{{warn-A700}}\"!important;border-bottom-color:\"{{warn-A700}}\"!important}md-input-container.md-input-invalid md-select.md-THEME_NAME-theme.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-input-container:not(.md-input-invalid).md-input-focused.md-accent .md-select-value{border-color:\"{{accent-color}}\"}md-input-container:not(.md-input-invalid).md-input-focused.md-accent .md-select-value span{color:\"{{accent-color}}\"}md-input-container:not(.md-input-invalid).md-input-focused.md-warn .md-select-value{border-color:\"{{warn-A700}}\"}md-input-container:not(.md-input-invalid).md-input-focused.md-warn .md-select-value span{color:\"{{warn-A700}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-value{border-bottom-color:transparent;background-image:linear-gradient(90deg,\"{{foreground-3}}\" 0,\"{{foreground-3}}\" 33%,transparent 0);background-image:-ms-linear-gradient(left,transparent 0,\"{{foreground-3}}\" 100%)}md-select.md-THEME_NAME-theme .md-select-value{border-bottom-color:\"{{foreground-4}}\"}md-select.md-THEME_NAME-theme .md-select-value.md-select-placeholder{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme .md-select-value span:first-child:after{color:\"{{warn-A700}}\"}md-select.md-THEME_NAME-theme.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-select.md-THEME_NAME-theme.ng-invalid.ng-touched .md-select-value{color:\"{{warn-A700}}\"!important;border-bottom-color:\"{{warn-A700}}\"!important}md-select.md-THEME_NAME-theme.ng-invalid.ng-touched.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value{border-bottom-color:\"{{primary-color}}\";color:\"{{ foreground-1 }}\"}md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value.md-select-placeholder{color:\"{{ foreground-1 }}\"}md-select.md-THEME_NAME-theme:not([disabled]):focus.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-select.md-THEME_NAME-theme:not([disabled]):focus.md-accent .md-select-value{border-bottom-color:\"{{accent-color}}\"}md-select.md-THEME_NAME-theme:not([disabled]):focus.md-warn .md-select-value{border-bottom-color:\"{{warn-color}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-value{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-value.md-select-placeholder{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-icon{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme .md-select-icon{color:\"{{foreground-2}}\"}md-select-menu.md-THEME_NAME-theme md-content{background-color:\"{{background-hue-1}}\"}md-select-menu.md-THEME_NAME-theme md-content md-optgroup{color:\"{{foreground-2}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option{color:\"{{foreground-1}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[disabled] .md-text{color:\"{{foreground-3}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option:not([disabled]):hover{background-color:\"{{background-500-0.10}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option:not([disabled]).md-focused,md-select-menu.md-THEME_NAME-theme md-content md-option:not([disabled]):focus{background-color:\"{{background-500-0.18}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected]{color:\"{{primary-500}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-focused,md-select-menu.md-THEME_NAME-theme md-content md-option[selected]:focus{color:\"{{primary-600}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-accent{color:\"{{accent-color}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-accent.md-focused,md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-accent:focus{color:\"{{accent-A700}}\"}.md-checkbox-enabled.md-THEME_NAME-theme .md-ripple{color:\"{{primary-600}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-ripple{color:\"{{background-600}}\"}.md-checkbox-enabled.md-THEME_NAME-theme .md-ink-ripple{color:\"{{foreground-2}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-ink-ripple{color:\"{{primary-color-0.87}}\"}.md-checkbox-enabled.md-THEME_NAME-theme:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-icon{background-color:\"{{primary-color-0.87}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected].md-focused .md-container:before{background-color:\"{{primary-color-0.26}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-icon:after{border-color:\"{{primary-contrast-0.87}}\"}.md-checkbox-enabled.md-THEME_NAME-theme .md-indeterminate[disabled] .md-container{color:\"{{foreground-3}}\"}.md-checkbox-enabled.md-THEME_NAME-theme md-option .md-text{color:\"{{foreground-1}}\"}md-sidenav.md-THEME_NAME-theme,md-sidenav.md-THEME_NAME-theme md-content{background-color:\"{{background-hue-1}}\"}md-slider.md-THEME_NAME-theme .md-track{background-color:\"{{foreground-3}}\"}md-slider.md-THEME_NAME-theme .md-track-ticks{color:\"{{background-contrast}}\"}md-slider.md-THEME_NAME-theme .md-focus-ring{background-color:\"{{accent-A200-0.2}}\"}md-slider.md-THEME_NAME-theme .md-disabled-thumb{border-color:\"{{background-color}}\";background-color:\"{{background-color}}\"}md-slider.md-THEME_NAME-theme.md-min .md-thumb:after{background-color:\"{{background-color}}\";border-color:\"{{foreground-3}}\"}md-slider.md-THEME_NAME-theme.md-min .md-focus-ring{background-color:\"{{foreground-3-0.38}}\"}md-slider.md-THEME_NAME-theme.md-min[md-discrete] .md-thumb:after{background-color:\"{{background-contrast}}\";border-color:transparent}md-slider.md-THEME_NAME-theme.md-min[md-discrete] .md-sign{background-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme.md-min[md-discrete] .md-sign:after{border-top-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme.md-min[md-discrete][md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme .md-track.md-track-fill{background-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-thumb:after{border-color:\"{{accent-color}}\";background-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-sign{background-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-sign:after{border-top-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme[md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-thumb-text{color:\"{{accent-contrast}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-focus-ring{background-color:\"{{warn-200-0.38}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill{background-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after{border-color:\"{{warn-color}}\";background-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-sign{background-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-sign:after{border-top-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn[md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text{color:\"{{warn-contrast}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-focus-ring{background-color:\"{{primary-200-0.38}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill{background-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after{border-color:\"{{primary-color}}\";background-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-sign{background-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-sign:after{border-top-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary[md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text{color:\"{{primary-contrast}}\"}md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after{border-color:transparent}md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after,md-slider.md-THEME_NAME-theme[disabled][md-discrete] .md-thumb:after{background-color:\"{{foreground-3}}\";border-color:transparent}md-slider.md-THEME_NAME-theme[disabled][readonly] .md-sign{background-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme[disabled][readonly] .md-sign:after{border-top-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme[disabled][readonly][md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme[disabled][readonly] .md-disabled-thumb{border-color:transparent;background-color:transparent}md-slider-container[disabled]>:first-child:not(md-slider),md-slider-container[disabled]>:last-child:not(md-slider){color:\"{{foreground-3}}\"}.md-subheader.md-THEME_NAME-theme{color:\"{{ foreground-2-0.54 }}\";background-color:\"{{background-default}}\"}.md-subheader.md-THEME_NAME-theme.md-primary{color:\"{{primary-color}}\"}.md-subheader.md-THEME_NAME-theme.md-accent{color:\"{{accent-color}}\"}.md-subheader.md-THEME_NAME-theme.md-warn{color:\"{{warn-color}}\"}md-switch.md-THEME_NAME-theme .md-ink-ripple{color:\"{{background-500}}\"}md-switch.md-THEME_NAME-theme .md-thumb{background-color:\"{{background-50}}\"}md-switch.md-THEME_NAME-theme .md-bar{background-color:\"{{background-500}}\"}md-switch.md-THEME_NAME-theme.md-focused:not(.md-checked) .md-thumb:before{background-color:\"{{foreground-4}}\"}md-switch.md-THEME_NAME-theme.md-focused[disabled] .md-thumb:before{background-color:\"{{foreground-4}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]) .md-ink-ripple{color:\"{{accent-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]) .md-thumb{background-color:\"{{accent-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]) .md-bar{background-color:\"{{accent-color-0.5}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-focused .md-thumb:before{background-color:\"{{accent-color-0.26}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary .md-ink-ripple{color:\"{{primary-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary .md-thumb{background-color:\"{{primary-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary .md-bar{background-color:\"{{primary-color-0.5}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary.md-focused .md-thumb:before{background-color:\"{{primary-color-0.26}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn .md-ink-ripple{color:\"{{warn-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn .md-thumb{background-color:\"{{warn-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn .md-bar{background-color:\"{{warn-color-0.5}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn.md-focused .md-thumb:before{background-color:\"{{warn-color-0.26}}\"}md-switch.md-THEME_NAME-theme[disabled] .md-thumb{background-color:\"{{background-400}}\"}md-switch.md-THEME_NAME-theme[disabled] .md-bar{background-color:\"{{foreground-4}}\"}md-tabs.md-THEME_NAME-theme md-tabs-wrapper{background-color:transparent;border-color:\"{{foreground-4}}\"}md-tabs.md-THEME_NAME-theme md-next-button md-icon,md-tabs.md-THEME_NAME-theme md-prev-button md-icon{color:\"{{foreground-2}}\"}md-tabs.md-THEME_NAME-theme md-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-tabs.md-THEME_NAME-theme .md-tab{color:\"{{foreground-2}}\"}md-tabs.md-THEME_NAME-theme .md-tab[disabled],md-tabs.md-THEME_NAME-theme .md-tab[disabled] md-icon{color:\"{{foreground-3}}\"}md-tabs.md-THEME_NAME-theme .md-tab.md-active,md-tabs.md-THEME_NAME-theme .md-tab.md-active md-icon,md-tabs.md-THEME_NAME-theme .md-tab.md-focused,md-tabs.md-THEME_NAME-theme .md-tab.md-focused md-icon{color:\"{{accent-color}}\"}md-tabs.md-THEME_NAME-theme .md-tab.md-focused{background:\"{{primary-color-0.1}}\"}md-tabs.md-THEME_NAME-theme .md-tab .md-ripple-container{color:\"{{accent-A100}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper{background-color:\"{{accent-500}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper md-next-button md-icon,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper md-prev-button md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{accent-500-contrast-1}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{accent-500-contrast-0.1}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-500-contrast}}\";background:\"{{accent-500-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper{background-color:\"{{primary-color}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper md-next-button md-icon,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper md-prev-button md-icon{color:\"{{primary-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{primary-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{primary-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{primary-contrast-0.1}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-tabs.md-THEME_NAME-theme.md-primary.md-no-ink-bar-color>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{primary-contrast}}\";background:\"{{primary-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper{background-color:\"{{warn-500}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper md-next-button md-icon,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper md-prev-button md-icon{color:\"{{warn-500-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{warn-500-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{warn-500-contrast-1}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{warn-500-contrast-0.1}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{warn-500-contrast}}\";background:\"{{warn-500-contrast}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper{background-color:\"{{primary-color}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-next-button md-icon,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-prev-button md-icon{color:\"{{primary-contrast}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{primary-contrast-0.7}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{primary-contrast}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{primary-contrast-0.1}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme.md-no-ink-bar-color>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{primary-contrast}}\";background:\"{{primary-contrast}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper{background-color:\"{{accent-500}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-next-button md-icon,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-prev-button md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{accent-500-contrast-1}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{accent-500-contrast-0.1}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-500-contrast}}\";background:\"{{accent-500-contrast}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper{background-color:\"{{warn-500}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-next-button md-icon,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-prev-button md-icon{color:\"{{warn-500-contrast}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{warn-500-contrast-0.7}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{warn-500-contrast-1}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{warn-500-contrast-0.1}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{warn-500-contrast}}\";background:\"{{warn-500-contrast}}\"}md-toast.md-THEME_NAME-theme .md-toast-content{background-color:#323232;color:\"{{background-50}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button{color:\"{{background-50}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button.md-highlight{color:\"{{accent-color}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button.md-highlight.md-primary{color:\"{{primary-color}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button.md-highlight.md-warn{color:\"{{warn-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar){background-color:\"{{primary-color}}\";color:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-icon{color:\"{{primary-contrast}}\";fill:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) .md-button[disabled] md-icon{color:\"{{primary-contrast-0.26}}\";fill:\"{{primary-contrast-0.26}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input{color:\"{{primary-default-contrast}}\";border-color:\"{{primary-default-contrast-divider}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::-webkit-input-placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input:-ms-input-placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::-ms-input-placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input:-moz-placeholder{color:\"{{primary-default-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::-moz-placeholder{color:\"{{primary-default-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::-webkit-input-placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input:-ms-input-placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::-ms-input-placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input:-moz-placeholder{color:\"{{primary-default-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::-moz-placeholder{color:\"{{primary-default-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused .md-input,md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-A700}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent{background-color:\"{{accent-500}}\";color:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent .md-ink-ripple{color:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-icon{color:\"{{accent-500-contrast}}\";fill:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent .md-button[disabled] md-icon{color:\"{{accent-500-contrast-0.26}}\";fill:\"{{accent-500-contrast-0.26}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input{color:\"{{accent-500-contrast}}\";border-color:\"{{accent-500-contrast-divider}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::-webkit-input-placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input:-ms-input-placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::-ms-input-placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input:-moz-placeholder{color:\"{{accent-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::-moz-placeholder{color:\"{{accent-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::-webkit-input-placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input:-ms-input-placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::-ms-input-placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input:-moz-placeholder{color:\"{{accent-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::-moz-placeholder{color:\"{{accent-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused .md-input,md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-A700}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn{background-color:\"{{warn-500}}\";color:\"{{warn-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-icon{color:\"{{warn-500-contrast}}\";fill:\"{{warn-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input{color:\"{{warn-500-contrast}}\";border-color:\"{{warn-500-contrast-divider}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::-webkit-input-placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input:-ms-input-placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::-ms-input-placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input:-moz-placeholder{color:\"{{warn-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::-moz-placeholder{color:\"{{warn-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::-webkit-input-placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input:-ms-input-placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::-ms-input-placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input:-moz-placeholder{color:\"{{warn-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::-moz-placeholder{color:\"{{warn-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused .md-input,md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-500-contrast}}\"}.md-panel.md-tooltip.md-THEME_NAME-theme{color:\"{{background-700-contrast}}\";background-color:\"{{background-700}}\"}body.md-THEME_NAME-theme,html.md-THEME_NAME-theme{color:\"{{foreground-1}}\";background-color:\"{{background-color}}\"}"); 
+angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-THEME_NAME-theme{background:\"{{background-hue-1}}\"}md-autocomplete.md-THEME_NAME-theme[disabled]:not([md-floating-label]){background:\"{{background-hue-2}}\"}md-autocomplete.md-THEME_NAME-theme button md-icon path{fill:\"{{background-600}}\"}md-autocomplete.md-THEME_NAME-theme button:after{background:\"{{background-600-0.3}}\"}md-autocomplete.md-THEME_NAME-theme input{color:\"{{foreground-1}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-input-container.md-input-focused .md-input{border-color:\"{{accent-color}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-input-container.md-input-focused label,md-autocomplete.md-THEME_NAME-theme.md-accent md-input-container.md-input-focused md-icon{color:\"{{accent-color}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-progress-linear .md-container{background-color:\"{{accent-100}}\"}md-autocomplete.md-THEME_NAME-theme.md-accent md-progress-linear .md-bar{background-color:\"{{accent-color}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-input-container.md-input-focused .md-input{border-color:\"{{warn-A700}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-input-container.md-input-focused label,md-autocomplete.md-THEME_NAME-theme.md-warn md-input-container.md-input-focused md-icon{color:\"{{warn-A700}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-progress-linear .md-container{background-color:\"{{warn-100}}\"}md-autocomplete.md-THEME_NAME-theme.md-warn md-progress-linear .md-bar{background-color:\"{{warn-color}}\"}.md-autocomplete-standard-list-container.md-THEME_NAME-theme,.md-autocomplete-suggestions-container.md-THEME_NAME-theme{background:\"{{background-hue-1}}\"}.md-autocomplete-standard-list-container.md-THEME_NAME-theme .md-autocomplete-suggestion,.md-autocomplete-suggestions-container.md-THEME_NAME-theme .md-autocomplete-suggestion{color:\"{{foreground-1}}\"}.md-autocomplete-standard-list-container.md-THEME_NAME-theme .md-autocomplete-suggestion.selected,.md-autocomplete-standard-list-container.md-THEME_NAME-theme .md-autocomplete-suggestion:hover,.md-autocomplete-suggestions-container.md-THEME_NAME-theme .md-autocomplete-suggestion.selected,.md-autocomplete-suggestions-container.md-THEME_NAME-theme .md-autocomplete-suggestion:hover{background:\"{{background-500-0.18}}\"}md-backdrop{background-color:\"{{background-900-0.0}}\"}md-backdrop.md-opaque.md-THEME_NAME-theme{background-color:\"{{background-900-1.0}}\"}md-bottom-sheet.md-THEME_NAME-theme{background-color:\"{{background-color}}\";border-top-color:\"{{background-hue-3}}\"}md-bottom-sheet.md-THEME_NAME-theme.md-list md-list-item{color:\"{{foreground-1}}\"}md-bottom-sheet.md-THEME_NAME-theme .md-subheader{background-color:\"{{background-color}}\";color:\"{{foreground-1}}\"}.md-button.md-THEME_NAME-theme:not([disabled]):hover{background-color:\"{{background-500-0.2}}\"}.md-button.md-THEME_NAME-theme:not([disabled]).md-focused{background-color:\"{{background-500-0.2}}\"}.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover{background-color:transparent}.md-button.md-THEME_NAME-theme.md-fab{background-color:\"{{accent-color}}\";color:\"{{accent-contrast}}\"}.md-button.md-THEME_NAME-theme.md-fab md-icon{color:\"{{accent-contrast}}\"}.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-primary{color:\"{{primary-color}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab,.md-button.md-THEME_NAME-theme.md-primary.md-raised{color:\"{{primary-contrast}}\";background-color:\"{{primary-color}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]) md-icon,.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]) md-icon{color:\"{{primary-contrast}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover,.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover{background-color:\"{{primary-600}}\"}.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused{background-color:\"{{primary-600}}\"}.md-button.md-THEME_NAME-theme.md-primary:not([disabled]) md-icon{color:\"{{primary-color}}\"}.md-button.md-THEME_NAME-theme.md-raised{color:\"{{background-900}}\";background-color:\"{{background-50}}\"}.md-button.md-THEME_NAME-theme.md-raised:not([disabled]) md-icon{color:\"{{background-900}}\"}.md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover{background-color:\"{{background-50}}\"}.md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused{background-color:\"{{background-200}}\"}.md-button.md-THEME_NAME-theme.md-warn{color:\"{{warn-color}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab,.md-button.md-THEME_NAME-theme.md-warn.md-raised{color:\"{{warn-contrast}}\";background-color:\"{{warn-color}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]) md-icon,.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]) md-icon{color:\"{{warn-contrast}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover,.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover{background-color:\"{{warn-600}}\"}.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused{background-color:\"{{warn-600}}\"}.md-button.md-THEME_NAME-theme.md-warn:not([disabled]) md-icon{color:\"{{warn-color}}\"}.md-button.md-THEME_NAME-theme.md-accent{color:\"{{accent-color}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab,.md-button.md-THEME_NAME-theme.md-accent.md-raised{color:\"{{accent-contrast}}\";background-color:\"{{accent-color}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]) md-icon,.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]) md-icon{color:\"{{accent-contrast}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover,.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused,.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused{background-color:\"{{accent-A700}}\"}.md-button.md-THEME_NAME-theme.md-accent:not([disabled]) md-icon{color:\"{{accent-color}}\"}.md-button.md-THEME_NAME-theme.md-accent[disabled],.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled],.md-button.md-THEME_NAME-theme.md-warn[disabled],.md-button.md-THEME_NAME-theme[disabled]{color:\"{{foreground-3}}\";cursor:default}.md-button.md-THEME_NAME-theme.md-accent[disabled] md-icon,.md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon,.md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon,.md-button.md-THEME_NAME-theme.md-warn[disabled] md-icon,.md-button.md-THEME_NAME-theme[disabled] md-icon{color:\"{{foreground-3}}\"}.md-button.md-THEME_NAME-theme.md-fab[disabled],.md-button.md-THEME_NAME-theme.md-raised[disabled]{background-color:\"{{foreground-4}}\"}.md-button.md-THEME_NAME-theme[disabled]{background-color:transparent}._md a.md-THEME_NAME-theme:not(.md-button).md-primary{color:\"{{primary-color}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-primary:hover{color:\"{{primary-700}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-accent{color:\"{{accent-color}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-accent:hover{color:\"{{accent-A700}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-warn{color:\"{{warn-color}}\"}._md a.md-THEME_NAME-theme:not(.md-button).md-warn:hover{color:\"{{warn-700}}\"}md-card.md-THEME_NAME-theme{color:\"{{foreground-1}}\";background-color:\"{{background-hue-1}}\";border-radius:2px}md-card.md-THEME_NAME-theme .md-card-image{border-radius:2px 2px 0 0}md-card.md-THEME_NAME-theme md-card-header md-card-avatar md-icon{color:\"{{background-color}}\";background-color:\"{{foreground-3}}\"}md-card.md-THEME_NAME-theme md-card-header md-card-header-text .md-subhead{color:\"{{foreground-2}}\"}md-card.md-THEME_NAME-theme md-card-title md-card-title-text:not(:only-child) .md-subhead{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme .md-ripple{color:\"{{accent-A700}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple{color:\"{{background-600}}\"}md-checkbox.md-THEME_NAME-theme.md-checked.md-focused .md-container:before{background-color:\"{{accent-color-0.26}}\"}md-checkbox.md-THEME_NAME-theme .md-ink-ripple{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-ink-ripple{color:\"{{accent-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-icon{background-color:\"{{accent-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after{border-color:\"{{background-default}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple{color:\"{{primary-600}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple{color:\"{{background-600}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ink-ripple{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple{color:\"{{primary-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon{background-color:\"{{primary-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked.md-focused .md-container:before{background-color:\"{{primary-color-0.26}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after{border-color:\"{{primary-contrast-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-indeterminate[disabled] .md-container{color:\"{{foreground-3}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple{color:\"{{warn-600}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ink-ripple{color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple{color:\"{{warn-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon{background-color:\"{{warn-color-0.87}}\"}md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked.md-focused:not([disabled]) .md-container:before{background-color:\"{{warn-color-0.26}}\"}md-checkbox.md-THEME_NAME-theme[disabled]:not(.md-checked) .md-icon{border-color:\"{{foreground-3}}\"}md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon{background-color:\"{{foreground-3}}\"}md-checkbox.md-THEME_NAME-theme[disabled] .md-label{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips{box-shadow:0 1px \"{{foreground-4}}\"}md-chips.md-THEME_NAME-theme .md-chips.md-focused{box-shadow:0 2px \"{{primary-color}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input{color:\"{{foreground-1}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::-webkit-input-placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input:-ms-input-placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::-ms-input-placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::placeholder{color:\"{{foreground-3}}\"}md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input:-moz-placeholder,md-chips.md-THEME_NAME-theme .md-chips .md-chip-input-container input::-moz-placeholder{color:\"{{foreground-3}}\";opacity:1}md-chips.md-THEME_NAME-theme md-chip{background:\"{{background-300}}\";color:\"{{background-800}}\"}md-chips.md-THEME_NAME-theme md-chip md-icon{color:\"{{background-700}}\"}md-chips.md-THEME_NAME-theme md-chip.md-focused{background:\"{{primary-color}}\";color:\"{{primary-contrast}}\"}md-chips.md-THEME_NAME-theme md-chip.md-focused md-icon{color:\"{{primary-contrast}}\"}md-chips.md-THEME_NAME-theme md-chip._md-chip-editing{background:transparent;color:\"{{background-800}}\"}md-chips.md-THEME_NAME-theme .md-chip-remove-container button.md-chip-remove md-icon,md-chips.md-THEME_NAME-theme .md-chip-remove-container buttonmd-chip-remove md-icon{color:\"{{foreground-2}}\";fill:\"{{foreground-2}}\"}.md-contact-suggestion span.md-contact-email{color:\"{{background-400}}\"}md-content.md-THEME_NAME-theme{color:\"{{foreground-1}}\";background-color:\"{{background-default}}\"}.md-THEME_NAME-theme .md-calendar{background:\"{{background-hue-1}}\";color:\"{{foreground-1-0.87}}\"}.md-THEME_NAME-theme .md-calendar tr:last-child td{border-bottom-color:\"{{background-hue-2}}\"}.md-THEME_NAME-theme .md-calendar-day-header{background:\"{{background-500-0.32}}\";color:\"{{foreground-1-0.87}}\"}.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today .md-calendar-date-selection-indicator{border:1px solid \"{{primary-500}}\"}.md-THEME_NAME-theme .md-calendar-date.md-calendar-date-today.md-calendar-date-disabled{color:\"{{primary-500-0.6}}\"}.md-calendar-date.md-focus .md-THEME_NAME-theme .md-calendar-date-selection-indicator,.md-THEME_NAME-theme .md-calendar-date-selection-indicator:hover{background:\"{{background-500-0.32}}\"}.md-THEME_NAME-theme .md-calendar-date.md-calendar-selected-date .md-calendar-date-selection-indicator,.md-THEME_NAME-theme .md-calendar-date.md-focus.md-calendar-selected-date .md-calendar-date-selection-indicator{background:\"{{primary-500}}\";color:\"{{primary-500-contrast}}\";border-color:transparent}.md-THEME_NAME-theme .md-calendar-date-disabled,.md-THEME_NAME-theme .md-calendar-month-label-disabled{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-calendar-month-label md-icon,.md-THEME_NAME-theme .md-datepicker-input{color:\"{{foreground-1}}\"}.md-THEME_NAME-theme .md-datepicker-input::-webkit-input-placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input:-ms-input-placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input::-ms-input-placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input::placeholder{color:\"{{foreground-3}}\"}.md-THEME_NAME-theme .md-datepicker-input:-moz-placeholder,.md-THEME_NAME-theme .md-datepicker-input::-moz-placeholder{color:\"{{foreground-3}}\";opacity:1}.md-THEME_NAME-theme .md-datepicker-input-container{border-bottom-color:\"{{foreground-4}}\"}.md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused{border-bottom-color:\"{{primary-color}}\"}.md-accent .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused{border-bottom-color:\"{{accent-color}}\"}.md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-invalid,.md-warn .md-THEME_NAME-theme .md-datepicker-input-container.md-datepicker-focused{border-bottom-color:\"{{warn-A700}}\"}.md-THEME_NAME-theme .md-datepicker-calendar-pane{border-color:\"{{background-hue-1}}\"}.md-THEME_NAME-theme .md-datepicker-triangle-button .md-datepicker-expand-triangle{border-top-color:\"{{foreground-2}}\"}.md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon{color:\"{{primary-color}}\"}.md-accent .md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon,.md-THEME_NAME-theme .md-datepicker-open.md-accent .md-datepicker-calendar-icon{color:\"{{accent-color}}\"}.md-THEME_NAME-theme .md-datepicker-open.md-warn .md-datepicker-calendar-icon,.md-warn .md-THEME_NAME-theme .md-datepicker-open .md-datepicker-calendar-icon{color:\"{{warn-A700}}\"}.md-THEME_NAME-theme .md-datepicker-calendar{background:\"{{background-hue-1}}\"}.md-THEME_NAME-theme .md-datepicker-input-mask-opaque{box-shadow:0 0 0 9999px \"{{background-hue-1}}\"}.md-THEME_NAME-theme .md-datepicker-open .md-datepicker-input-container{background:\"{{background-hue-1}}\"}md-dialog.md-THEME_NAME-theme{border-radius:4px;background-color:\"{{background-hue-1}}\";color:\"{{foreground-1}}\"}md-dialog.md-THEME_NAME-theme.md-content-overflow md-dialog-actions{border-top-color:\"{{foreground-4}}\"}md-divider.md-THEME_NAME-theme{border-color:\"{{foreground-4}}\"}md-fab-speed-dial.md-THEME_NAME-theme md-fab-trigger .md-fab.md-button[disabled]{background-color:\"{{foreground-4}}\"}md-fab-speed-dial.md-THEME_NAME-theme md-fab-actions .md-fab-action-item .md-button.md-fab.md-raised.md-mini.md-focused,md-fab-speed-dial.md-THEME_NAME-theme md-fab-actions .md-fab-action-item .md-button.md-fab.md-raised.md-mini:hover{background-color:\"{{background-500}}\"}md-icon.md-THEME_NAME-theme{color:\"{{foreground-2}}\"}md-icon.md-THEME_NAME-theme.md-primary{color:\"{{primary-color}}\"}md-icon.md-THEME_NAME-theme.md-accent{color:\"{{accent-color}}\"}md-icon.md-THEME_NAME-theme.md-warn{color:\"{{warn-color}}\"}md-input-container.md-THEME_NAME-theme .md-input{color:\"{{background-default-contrast}}\";border-color:\"{{background-default-contrast-divider}}\"}md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input::-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input::placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder,md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder{color:\"{{background-default-contrast-secondary}}\";opacity:1}md-input-container.md-THEME_NAME-theme>md-icon{color:\"{{background-default-contrast}}\"}md-input-container.md-THEME_NAME-theme .md-placeholder,md-input-container.md-THEME_NAME-theme label{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme label.md-required:after{color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-focused):not(.md-input-invalid) label.md-required:after{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme .md-input-message-animation,md-input-container.md-THEME_NAME-theme .md-input-messages-animation{color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme .md-input-message-animation .md-char-counter,md-input-container.md-THEME_NAME-theme .md-input-messages-animation .md-char-counter{color:\"{{background-default-contrast}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::-webkit-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input:-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::-ms-input-placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::placeholder{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme.md-input-focused .md-input:-moz-placeholder,md-input-container.md-THEME_NAME-theme.md-input-focused .md-input::-moz-placeholder{color:\"{{background-default-contrast-secondary}}\";opacity:1}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label{color:\"{{background-default-contrast-secondary}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused md-icon{color:\"{{primary-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent md-icon{color:\"{{accent-color}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label,md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn md-icon{color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input{border-color:\"{{warn-A700}}\"}md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter,md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input-message-animation,md-input-container.md-THEME_NAME-theme.md-input-invalid label{color:\"{{warn-A700}}\"}[disabled] md-input-container.md-THEME_NAME-theme .md-input,md-input-container.md-THEME_NAME-theme .md-input[disabled]{border-bottom-color:transparent;color:\"{{background-default-contrast-disabled}}\";background-image:linear-gradient(90deg,\"{{background-default-contrast-disabled}}\" 0,\"{{background-default-contrast-disabled}}\" 33%,transparent 0);background-image:-ms-linear-gradient(left,transparent 0,\"{{background-default-contrast-disabled}}\" 100%)}md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h3,md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h4,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h3,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h4{color:\"{{foreground-1}}\"}md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text p,md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text p{color:\"{{foreground-2}}\"}md-list.md-THEME_NAME-theme .md-proxy-focus.md-focused div.md-no-style{background-color:\"{{background-100}}\"}md-list.md-THEME_NAME-theme md-list-item .md-avatar-icon{background-color:\"{{foreground-3}}\";color:\"{{background-color}}\"}md-list.md-THEME_NAME-theme md-list-item>md-icon{color:\"{{foreground-2}}\"}md-list.md-THEME_NAME-theme md-list-item>md-icon.md-highlight{color:\"{{primary-color}}\"}md-list.md-THEME_NAME-theme md-list-item>md-icon.md-highlight.md-accent{color:\"{{accent-color}}\"}md-menu-content.md-THEME_NAME-theme{background-color:\"{{background-hue-1}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item{color:\"{{foreground-1}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item md-icon{color:\"{{foreground-2}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item .md-button[disabled]{color:\"{{foreground-3}}\"}md-menu-content.md-THEME_NAME-theme md-menu-item .md-button[disabled] md-icon{color:\"{{foreground-3}}\"}md-menu-content.md-THEME_NAME-theme md-menu-divider{background-color:\"{{foreground-4}}\"}md-menu-bar.md-THEME_NAME-theme>button.md-button{color:\"{{foreground-1}}\";border-radius:2px}md-menu-bar.md-THEME_NAME-theme md-menu>button{color:\"{{foreground-1}}\"}md-menu-bar.md-THEME_NAME-theme md-menu.md-open>button,md-menu-bar.md-THEME_NAME-theme md-menu>button:focus{outline:none;background-color:\"{{ background-500-0.18}}\"}md-menu-bar.md-THEME_NAME-theme.md-open:not(.md-keyboard-mode) md-menu:hover>button{background-color:\"{{ background-500-0.18}}\"}md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:focus,md-menu-bar.md-THEME_NAME-theme:not(.md-keyboard-mode):not(.md-open) md-menu button:hover{background:transparent}md-menu-content.md-THEME_NAME-theme .md-menu>.md-button:after{color:\"{{foreground-2}}\"}md-menu-content.md-THEME_NAME-theme .md-menu.md-open>.md-button{background-color:\"{{ background-500-0.18}}\"}md-toolbar.md-THEME_NAME-theme.md-menu-toolbar{background-color:\"{{background-hue-1}}\";color:\"{{foreground-1}}\"}md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler{background-color:\"{{primary-color}}\";color:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme.md-menu-toolbar md-toolbar-filler md-icon{color:\"{{primary-contrast}}\"}md-nav-bar.md-THEME_NAME-theme .md-nav-bar{background-color:transparent;border-color:\"{{foreground-4}}\"}md-nav-bar.md-THEME_NAME-theme .md-button._md-nav-button.md-unselected{color:\"{{foreground-2}}\"}md-nav-bar.md-THEME_NAME-theme .md-button._md-nav-button[disabled]{color:\"{{foreground-3}}\"}md-nav-bar.md-THEME_NAME-theme md-nav-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar{background-color:\"{{accent-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button{color:\"{{accent-A100}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button.md-active,md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{accent-contrast}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{accent-contrast-0.1}}\"}md-nav-bar.md-THEME_NAME-theme.md-accent>.md-nav-bar md-nav-ink-bar{color:\"{{primary-600-1}}\";background:\"{{primary-600-1}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar{background-color:\"{{warn-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button{color:\"{{warn-100}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button.md-active,md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{warn-contrast}}\"}md-nav-bar.md-THEME_NAME-theme.md-warn>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{warn-contrast-0.1}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar{background-color:\"{{primary-color}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button{color:\"{{primary-100}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button.md-active,md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{primary-contrast}}\"}md-nav-bar.md-THEME_NAME-theme.md-primary>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{primary-contrast-0.1}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar{background-color:\"{{primary-color}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button{color:\"{{primary-100}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-active,md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{primary-contrast}}\"}md-toolbar>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{primary-contrast-0.1}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar{background-color:\"{{accent-color}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button{color:\"{{accent-A100}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-active,md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{accent-contrast}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{accent-contrast-0.1}}\"}md-toolbar.md-accent>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar md-nav-ink-bar{color:\"{{primary-600-1}}\";background:\"{{primary-600-1}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar{background-color:\"{{warn-color}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button{color:\"{{warn-100}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-active,md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{color:\"{{warn-contrast}}\"}md-toolbar.md-warn>md-nav-bar.md-THEME_NAME-theme>.md-nav-bar .md-button._md-nav-button.md-focused{background:\"{{warn-contrast-0.1}}\"}._md-panel-backdrop.md-THEME_NAME-theme{background-color:\"{{background-900-1.0}}\"}md-progress-circular.md-THEME_NAME-theme path{stroke:\"{{primary-color}}\"}md-progress-circular.md-THEME_NAME-theme.md-warn path{stroke:\"{{warn-color}}\"}md-progress-circular.md-THEME_NAME-theme.md-accent path{stroke:\"{{accent-color}}\"}md-progress-linear.md-THEME_NAME-theme .md-container{background-color:\"{{primary-100}}\"}md-progress-linear.md-THEME_NAME-theme .md-bar{background-color:\"{{primary-color}}\"}md-progress-linear.md-THEME_NAME-theme.md-warn .md-container{background-color:\"{{warn-100}}\"}md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar{background-color:\"{{warn-color}}\"}md-progress-linear.md-THEME_NAME-theme.md-accent .md-container{background-color:\"{{accent-100}}\"}md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar{background-color:\"{{accent-color}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-primary .md-bar1{background-color:\"{{primary-100}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-primary .md-dashed:before{background:radial-gradient(\"{{primary-100}}\" 0,\"{{primary-100}}\" 16%,transparent 42%)}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1{background-color:\"{{warn-100}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before{background:radial-gradient(\"{{warn-100}}\" 0,\"{{warn-100}}\" 16%,transparent 42%)}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1{background-color:\"{{accent-100}}\"}md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before{background:radial-gradient(\"{{accent-100}}\" 0,\"{{accent-100}}\" 16%,transparent 42%)}md-radio-button.md-THEME_NAME-theme .md-off{border-color:\"{{foreground-2}}\"}md-radio-button.md-THEME_NAME-theme .md-on{background-color:\"{{accent-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme.md-checked .md-off{border-color:\"{{accent-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple{color:\"{{accent-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme .md-container .md-ripple{color:\"{{accent-A700}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on{background-color:\"{{primary-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off{border-color:\"{{primary-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple{color:\"{{primary-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple{color:\"{{primary-600}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-on,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on{background-color:\"{{warn-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off{border-color:\"{{warn-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple{color:\"{{warn-color-0.87}}\"}md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple,md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple,md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple{color:\"{{warn-600}}\"}md-radio-button.md-THEME_NAME-theme[disabled],md-radio-group.md-THEME_NAME-theme[disabled]{color:\"{{foreground-3}}\"}md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off,md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-off{border-color:\"{{foreground-3}}\"}md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on,md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-on{border-color:\"{{foreground-3}}\"}md-radio-group.md-THEME_NAME-theme .md-checked .md-ink-ripple{color:\"{{accent-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme .md-checked:not([disabled]).md-primary .md-ink-ripple,md-radio-group.md-THEME_NAME-theme.md-primary .md-checked:not([disabled]) .md-ink-ripple{color:\"{{primary-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused.ng-empty>md-radio-button:first-child .md-container:before{background-color:\"{{foreground-3-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked .md-container:before{background-color:\"{{accent-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-primary .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-primary .md-checked .md-container:before{background-color:\"{{primary-color-0.26}}\"}md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-warn .md-container:before,md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty).md-warn .md-checked .md-container:before{background-color:\"{{warn-color-0.26}}\"}md-input-container md-select.md-THEME_NAME-theme .md-select-value span:first-child:after{color:\"{{warn-A700}}\"}md-input-container:not(.md-input-focused):not(.md-input-invalid) md-select.md-THEME_NAME-theme .md-select-value span:first-child:after{color:\"{{foreground-3}}\"}md-input-container.md-input-focused:not(.md-input-has-value) md-select.md-THEME_NAME-theme .md-select-value{color:\"{{primary-color}}\"}md-input-container.md-input-focused:not(.md-input-has-value) md-select.md-THEME_NAME-theme .md-select-value.md-select-placeholder{color:\"{{primary-color}}\"}md-input-container.md-input-invalid md-select.md-THEME_NAME-theme .md-select-value{color:\"{{warn-A700}}\"!important;border-bottom-color:\"{{warn-A700}}\"!important}md-input-container.md-input-invalid md-select.md-THEME_NAME-theme.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-input-container:not(.md-input-invalid).md-input-focused.md-accent .md-select-value{border-color:\"{{accent-color}}\"}md-input-container:not(.md-input-invalid).md-input-focused.md-accent .md-select-value span{color:\"{{accent-color}}\"}md-input-container:not(.md-input-invalid).md-input-focused.md-warn .md-select-value{border-color:\"{{warn-A700}}\"}md-input-container:not(.md-input-invalid).md-input-focused.md-warn .md-select-value span{color:\"{{warn-A700}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-value{border-bottom-color:transparent;background-image:linear-gradient(90deg,\"{{foreground-3}}\" 0,\"{{foreground-3}}\" 33%,transparent 0);background-image:-ms-linear-gradient(left,transparent 0,\"{{foreground-3}}\" 100%)}md-select.md-THEME_NAME-theme .md-select-value{border-bottom-color:\"{{foreground-4}}\"}md-select.md-THEME_NAME-theme .md-select-value.md-select-placeholder{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme .md-select-value span:first-child:after{color:\"{{warn-A700}}\"}md-select.md-THEME_NAME-theme.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-select.md-THEME_NAME-theme.ng-invalid.ng-touched .md-select-value{color:\"{{warn-A700}}\"!important;border-bottom-color:\"{{warn-A700}}\"!important}md-select.md-THEME_NAME-theme.ng-invalid.ng-touched.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value{border-bottom-color:\"{{primary-color}}\";color:\"{{ foreground-1 }}\"}md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-value.md-select-placeholder{color:\"{{ foreground-1 }}\"}md-select.md-THEME_NAME-theme:not([disabled]):focus.md-no-underline .md-select-value{border-bottom-color:transparent!important}md-select.md-THEME_NAME-theme:not([disabled]):focus.md-accent .md-select-value{border-bottom-color:\"{{accent-color}}\"}md-select.md-THEME_NAME-theme:not([disabled]):focus.md-warn .md-select-value{border-bottom-color:\"{{warn-color}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-value{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-value.md-select-placeholder{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme[disabled] .md-select-icon{color:\"{{foreground-3}}\"}md-select.md-THEME_NAME-theme .md-select-icon{color:\"{{foreground-2}}\"}md-select-menu.md-THEME_NAME-theme md-content{background-color:\"{{background-hue-1}}\"}md-select-menu.md-THEME_NAME-theme md-content md-optgroup{color:\"{{foreground-2}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option{color:\"{{foreground-1}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[disabled] .md-text{color:\"{{foreground-3}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option:not([disabled]):hover{background-color:\"{{background-500-0.10}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option:not([disabled]).md-focused,md-select-menu.md-THEME_NAME-theme md-content md-option:not([disabled]):focus{background-color:\"{{background-500-0.18}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected]{color:\"{{primary-500}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-focused,md-select-menu.md-THEME_NAME-theme md-content md-option[selected]:focus{color:\"{{primary-600}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-accent{color:\"{{accent-color}}\"}md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-accent.md-focused,md-select-menu.md-THEME_NAME-theme md-content md-option[selected].md-accent:focus{color:\"{{accent-A700}}\"}.md-checkbox-enabled.md-THEME_NAME-theme .md-ripple{color:\"{{primary-600}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-ripple{color:\"{{background-600}}\"}.md-checkbox-enabled.md-THEME_NAME-theme .md-ink-ripple{color:\"{{foreground-2}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-ink-ripple{color:\"{{primary-color-0.87}}\"}.md-checkbox-enabled.md-THEME_NAME-theme:not(.md-checked) .md-icon{border-color:\"{{foreground-2}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-icon{background-color:\"{{primary-color-0.87}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected].md-focused .md-container:before{background-color:\"{{primary-color-0.26}}\"}.md-checkbox-enabled.md-THEME_NAME-theme[selected] .md-icon:after{border-color:\"{{primary-contrast-0.87}}\"}.md-checkbox-enabled.md-THEME_NAME-theme .md-indeterminate[disabled] .md-container{color:\"{{foreground-3}}\"}.md-checkbox-enabled.md-THEME_NAME-theme md-option .md-text{color:\"{{foreground-1}}\"}md-sidenav.md-THEME_NAME-theme,md-sidenav.md-THEME_NAME-theme md-content{background-color:\"{{background-hue-1}}\"}md-slider.md-THEME_NAME-theme .md-track{background-color:\"{{foreground-3}}\"}md-slider.md-THEME_NAME-theme .md-track-ticks{color:\"{{background-contrast}}\"}md-slider.md-THEME_NAME-theme .md-focus-ring{background-color:\"{{accent-A200-0.2}}\"}md-slider.md-THEME_NAME-theme .md-disabled-thumb{border-color:\"{{background-color}}\";background-color:\"{{background-color}}\"}md-slider.md-THEME_NAME-theme.md-min .md-thumb:after{background-color:\"{{background-color}}\";border-color:\"{{foreground-3}}\"}md-slider.md-THEME_NAME-theme.md-min .md-focus-ring{background-color:\"{{foreground-3-0.38}}\"}md-slider.md-THEME_NAME-theme.md-min[md-discrete] .md-thumb:after{background-color:\"{{background-contrast}}\";border-color:transparent}md-slider.md-THEME_NAME-theme.md-min[md-discrete] .md-sign{background-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme.md-min[md-discrete] .md-sign:after{border-top-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme.md-min[md-discrete][md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme .md-track.md-track-fill{background-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-thumb:after{border-color:\"{{accent-color}}\";background-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-sign{background-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-sign:after{border-top-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme[md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{accent-color}}\"}md-slider.md-THEME_NAME-theme .md-thumb-text{color:\"{{accent-contrast}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-focus-ring{background-color:\"{{warn-200-0.38}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill{background-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after{border-color:\"{{warn-color}}\";background-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-sign{background-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-sign:after{border-top-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn[md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{warn-color}}\"}md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text{color:\"{{warn-contrast}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-focus-ring{background-color:\"{{primary-200-0.38}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill{background-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after{border-color:\"{{primary-color}}\";background-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-sign{background-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-sign:after{border-top-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary[md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{primary-color}}\"}md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text{color:\"{{primary-contrast}}\"}md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after{border-color:transparent}md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after,md-slider.md-THEME_NAME-theme[disabled][md-discrete] .md-thumb:after{background-color:\"{{foreground-3}}\";border-color:transparent}md-slider.md-THEME_NAME-theme[disabled][readonly] .md-sign{background-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme[disabled][readonly] .md-sign:after{border-top-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme[disabled][readonly][md-vertical] .md-sign:after{border-top-color:transparent;border-left-color:\"{{background-400}}\"}md-slider.md-THEME_NAME-theme[disabled][readonly] .md-disabled-thumb{border-color:transparent;background-color:transparent}md-slider-container[disabled]>:first-child:not(md-slider),md-slider-container[disabled]>:last-child:not(md-slider){color:\"{{foreground-3}}\"}.md-subheader.md-THEME_NAME-theme{color:\"{{ foreground-2-0.54 }}\";background-color:\"{{background-default}}\"}.md-subheader.md-THEME_NAME-theme.md-primary{color:\"{{primary-color}}\"}.md-subheader.md-THEME_NAME-theme.md-accent{color:\"{{accent-color}}\"}.md-subheader.md-THEME_NAME-theme.md-warn{color:\"{{warn-color}}\"}md-switch.md-THEME_NAME-theme .md-ink-ripple{color:\"{{background-500}}\"}md-switch.md-THEME_NAME-theme .md-thumb{background-color:\"{{background-50}}\"}md-switch.md-THEME_NAME-theme .md-bar{background-color:\"{{background-500}}\"}md-switch.md-THEME_NAME-theme.md-focused:not(.md-checked) .md-thumb:before{background-color:\"{{foreground-4}}\"}md-switch.md-THEME_NAME-theme.md-focused[disabled] .md-thumb:before{background-color:\"{{foreground-4}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]) .md-ink-ripple{color:\"{{accent-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]) .md-thumb{background-color:\"{{accent-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]) .md-bar{background-color:\"{{accent-color-0.5}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-focused .md-thumb:before{background-color:\"{{accent-color-0.26}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary .md-ink-ripple{color:\"{{primary-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary .md-thumb{background-color:\"{{primary-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary .md-bar{background-color:\"{{primary-color-0.5}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-primary.md-focused .md-thumb:before{background-color:\"{{primary-color-0.26}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn .md-ink-ripple{color:\"{{warn-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn .md-thumb{background-color:\"{{warn-color}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn .md-bar{background-color:\"{{warn-color-0.5}}\"}md-switch.md-THEME_NAME-theme.md-checked:not([disabled]).md-warn.md-focused .md-thumb:before{background-color:\"{{warn-color-0.26}}\"}md-switch.md-THEME_NAME-theme[disabled] .md-thumb{background-color:\"{{background-400}}\"}md-switch.md-THEME_NAME-theme[disabled] .md-bar{background-color:\"{{foreground-4}}\"}md-tabs.md-THEME_NAME-theme md-tabs-wrapper{background-color:transparent;border-color:\"{{foreground-4}}\"}md-tabs.md-THEME_NAME-theme md-next-button md-icon,md-tabs.md-THEME_NAME-theme md-prev-button md-icon{color:\"{{foreground-2}}\"}md-tabs.md-THEME_NAME-theme md-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-tabs.md-THEME_NAME-theme .md-tab{color:\"{{foreground-2}}\"}md-tabs.md-THEME_NAME-theme .md-tab[disabled],md-tabs.md-THEME_NAME-theme .md-tab[disabled] md-icon{color:\"{{foreground-3}}\"}md-tabs.md-THEME_NAME-theme .md-tab.md-active,md-tabs.md-THEME_NAME-theme .md-tab.md-active md-icon,md-tabs.md-THEME_NAME-theme .md-tab.md-focused,md-tabs.md-THEME_NAME-theme .md-tab.md-focused md-icon{color:\"{{accent-color}}\"}md-tabs.md-THEME_NAME-theme .md-tab.md-focused{background:\"{{primary-color-0.1}}\"}md-tabs.md-THEME_NAME-theme .md-tab .md-ripple-container{color:\"{{accent-A100}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper{background-color:\"{{accent-500}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper md-next-button md-icon,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper md-prev-button md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{accent-500-contrast-1}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{accent-500-contrast-0.1}}\"}md-tabs.md-THEME_NAME-theme.md-accent>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-500-contrast}}\";background:\"{{accent-500-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper{background-color:\"{{primary-color}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper md-next-button md-icon,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper md-prev-button md-icon{color:\"{{primary-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{primary-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{primary-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{primary-contrast-0.1}}\"}md-tabs.md-THEME_NAME-theme.md-primary>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-tabs.md-THEME_NAME-theme.md-primary.md-no-ink-bar-color>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{primary-contrast}}\";background:\"{{primary-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper{background-color:\"{{warn-500}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper md-next-button md-icon,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper md-prev-button md-icon{color:\"{{warn-500-contrast}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{warn-500-contrast-0.7}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{warn-500-contrast-1}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{warn-500-contrast-0.1}}\"}md-tabs.md-THEME_NAME-theme.md-warn>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{warn-500-contrast}}\";background:\"{{warn-500-contrast}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper{background-color:\"{{primary-color}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-next-button md-icon,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-prev-button md-icon{color:\"{{primary-contrast}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{primary-contrast-0.7}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{primary-contrast}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{primary-contrast-0.1}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-color}}\";background:\"{{accent-color}}\"}md-toolbar>md-tabs.md-THEME_NAME-theme.md-no-ink-bar-color>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{primary-contrast}}\";background:\"{{primary-contrast}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper{background-color:\"{{accent-500}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-next-button md-icon,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-prev-button md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{accent-500-contrast-0.7}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{accent-500-contrast-1}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{accent-500-contrast-0.1}}\"}md-toolbar.md-accent>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{accent-500-contrast}}\";background:\"{{accent-500-contrast}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper{background-color:\"{{warn-500}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-next-button md-icon,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper md-prev-button md-icon{color:\"{{warn-500-contrast}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]),md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]) md-icon{color:\"{{warn-500-contrast-0.7}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-active md-icon,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused,md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused md-icon{color:\"{{warn-500-contrast-1}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-tab-item:not([disabled]).md-focused{background:\"{{warn-500-contrast-0.1}}\"}md-toolbar.md-warn>md-tabs.md-THEME_NAME-theme>md-tabs-wrapper>md-tabs-canvas>md-pagination-wrapper>md-ink-bar{color:\"{{warn-500-contrast}}\";background:\"{{warn-500-contrast}}\"}md-toast.md-THEME_NAME-theme .md-toast-content{background-color:#323232;color:\"{{background-50}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button{color:\"{{background-50}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button.md-highlight{color:\"{{accent-color}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button.md-highlight.md-primary{color:\"{{primary-color}}\"}md-toast.md-THEME_NAME-theme .md-toast-content .md-button.md-highlight.md-warn{color:\"{{warn-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar){background-color:\"{{primary-color}}\";color:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-icon{color:\"{{primary-contrast}}\";fill:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) .md-button[disabled] md-icon{color:\"{{primary-contrast-0.26}}\";fill:\"{{primary-contrast-0.26}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input{color:\"{{primary-default-contrast}}\";border-color:\"{{primary-default-contrast-divider}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::-webkit-input-placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input:-ms-input-placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::-ms-input-placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::placeholder{color:\"{{primary-default-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input:-moz-placeholder{color:\"{{primary-default-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float] .md-input::-moz-placeholder{color:\"{{primary-default-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::-webkit-input-placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input:-ms-input-placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::-ms-input-placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::placeholder{color:\"{{primary-default-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input:-moz-placeholder{color:\"{{primary-default-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float].md-input-focused .md-input::-moz-placeholder{color:\"{{primary-default-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused .md-input,md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar) md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-A700}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent{background-color:\"{{accent-500}}\";color:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent .md-ink-ripple{color:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-icon{color:\"{{accent-500-contrast}}\";fill:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent .md-button[disabled] md-icon{color:\"{{accent-500-contrast-0.26}}\";fill:\"{{accent-500-contrast-0.26}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input{color:\"{{accent-500-contrast}}\";border-color:\"{{accent-500-contrast-divider}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::-webkit-input-placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input:-ms-input-placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::-ms-input-placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::placeholder{color:\"{{accent-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input:-moz-placeholder{color:\"{{accent-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float] .md-input::-moz-placeholder{color:\"{{accent-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::-webkit-input-placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input:-ms-input-placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::-ms-input-placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::placeholder{color:\"{{accent-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input:-moz-placeholder{color:\"{{accent-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float].md-input-focused .md-input::-moz-placeholder{color:\"{{accent-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused .md-input,md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-accent md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-A700}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn{background-color:\"{{warn-500}}\";color:\"{{warn-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-icon{color:\"{{warn-500-contrast}}\";fill:\"{{warn-500-contrast}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input{color:\"{{warn-500-contrast}}\";border-color:\"{{warn-500-contrast-divider}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::-webkit-input-placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input:-ms-input-placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::-ms-input-placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::placeholder{color:\"{{warn-500-contrast-hint}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input:-moz-placeholder{color:\"{{warn-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float] .md-input::-moz-placeholder{color:\"{{warn-500-contrast-hint}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::-webkit-input-placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input:-ms-input-placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::-ms-input-placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::placeholder{color:\"{{warn-500-contrast-secondary}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input:-moz-placeholder{color:\"{{warn-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float].md-input-focused .md-input::-moz-placeholder{color:\"{{warn-500-contrast-secondary}}\";opacity:1}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused .md-input,md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-resized .md-input{border-color:\"{{primary-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-accent .md-input{border-color:\"{{accent-color}}\"}md-toolbar.md-THEME_NAME-theme:not(.md-menu-toolbar).md-warn md-input-container[md-no-float]:not(.md-input-invalid).md-input-focused.md-warn .md-input{border-color:\"{{warn-500-contrast}}\"}.md-panel.md-tooltip.md-THEME_NAME-theme{color:\"{{background-700-contrast}}\";background-color:\"{{background-700}}\"}body.md-THEME_NAME-theme,html.md-THEME_NAME-theme{color:\"{{foreground-1}}\";background-color:\"{{background-color}}\"}"); 
 })();
 
 

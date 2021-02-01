@@ -2,7 +2,7 @@
  * AngularJS Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.2.1
+ * v1.2.2
  */
 html, body {
   height: 100%;
@@ -827,6 +827,8 @@ button.md-button::-moz-focus-inner {
       height: 40px; }
     .md-button.md-fab.ng-hide, .md-button.md-fab.ng-leave {
       transition: none; }
+    .md-button.md-fab[disabled] {
+      box-shadow: none; }
   .md-button:not([disabled]).md-raised.md-focused, .md-button:not([disabled]).md-fab.md-focused {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26); }
   .md-button:not([disabled]).md-raised:active, .md-button:not([disabled]).md-fab:active {
@@ -1933,7 +1935,7 @@ md-fab-toolbar {
    * Closed styling
    */
   /*
-   * Hover styling
+   * Open styling
    */ }
   md-fab-toolbar.md-fab-bottom-right {
     top: auto;
@@ -3472,7 +3474,7 @@ md-input-container:not([md-no-float]) .md-select-placeholder span:first-child {
   [dir=rtl] md-input-container:not([md-no-float]) .md-select-placeholder span:first-child {
     transform-origin: right top; }
 
-md-input-container.md-input-focused:not([md-no-float]) .md-select-placeholder span:first-child {
+md-input-container.md-input-focused:not([md-no-float]) md-select:not([placeholder]) .md-select-placeholder span:first-child {
   transform: translate(-2px, -22px) scale(0.75); }
 
 .md-select-menu-container {
@@ -4469,14 +4471,14 @@ md-tabs {
     min-height: 248px; }
   md-tabs[md-align-tabs="bottom"] {
     padding-bottom: 48px; }
-    md-tabs[md-align-tabs="bottom"] md-tabs-wrapper {
+    md-tabs[md-align-tabs="bottom"] > md-tabs-wrapper {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
       height: 48px;
       z-index: 2; }
-    md-tabs[md-align-tabs="bottom"] md-tabs-content-wrapper {
+    md-tabs[md-align-tabs="bottom"] > md-tabs-content-wrapper {
       top: 0;
       bottom: 48px; }
   md-tabs.md-dynamic-height md-tabs-content-wrapper {

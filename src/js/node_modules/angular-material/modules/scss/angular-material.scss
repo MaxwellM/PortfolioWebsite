@@ -2,7 +2,7 @@
  * AngularJS Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.2.0-master-93518bb
+ * v1.2.1-master-41c71ed
  */
 // Typography
 // ------------------------------
@@ -2025,6 +2025,10 @@ button.md-button::-moz-focus-inner {
     &.ng-hide, &.ng-leave {
       transition: none;
     }
+
+    &[disabled] {
+      box-shadow: none;
+    }
   }
 
   &:not([disabled]) {
@@ -3425,7 +3429,6 @@ md-fab-speed-dial {
   }
 }
 
-$button-fab-width: rem(5.600) !default;
 $icon-button-margin: rem(0.600) !default;
 
 md-fab-toolbar {
@@ -3532,7 +3535,7 @@ md-fab-toolbar {
   }
 
   /*
-   * Hover styling
+   * Open styling
    */
   &.md-is-open {
     md-fab-trigger > button {
@@ -5238,7 +5241,7 @@ md-input-container {
   }
   &.md-input-focused {
     &:not([md-no-float]) {
-      .md-select-placeholder span:first-child {
+      md-select:not([placeholder]) .md-select-placeholder span:first-child {
         transform: translate(-2px, -22px) scale(0.75);
       }
     }
@@ -6494,7 +6497,8 @@ md-tabs {
   }
   &[md-align-tabs="bottom"] {
     padding-bottom: $tabs-header-height;
-    md-tabs-wrapper {
+
+    > md-tabs-wrapper {
       position: absolute;
       bottom: 0;
       left: 0;
@@ -6502,7 +6506,7 @@ md-tabs {
       height: $tabs-header-height;
       z-index: 2;
     }
-    md-tabs-content-wrapper {
+    > md-tabs-content-wrapper {
       top: 0;
       bottom: $tabs-header-height;
     }

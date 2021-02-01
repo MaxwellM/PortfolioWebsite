@@ -27,7 +27,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     $scope.myLimit = 10;
 
     $scope.query = {
-        order: 'timestamp',
+        order: '-timestamp',
         limit: 10,
         page: 1
     };
