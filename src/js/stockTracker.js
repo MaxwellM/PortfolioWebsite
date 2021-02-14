@@ -8,8 +8,8 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
     $scope.promise = null;
     $scope.getDataPromise = null;
     $scope.results = [];
-    $scope.itemSelected = "XBox Series X";
-    $scope.items = ['Nintendo Switch', 'Dyson V11 Vacuum', 'Apple AirPods', 'XBox Series X', 'XBox Series S'];
+    $scope.itemSelected = "NVIDIA 3070 FE";
+    $scope.items = ['Nintendo Switch', 'Dyson V11 Vacuum', 'Apple AirPods', 'XBox Series X', 'XBox Series S', 'NVIDIA 3070 FE', 'NVIDIA 3080 FE'];
     $scope.vendors = [
         {   url: "",
             vendor: "BestBuy"
