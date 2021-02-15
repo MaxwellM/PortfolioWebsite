@@ -16,6 +16,8 @@ var BestBuyDevices map[string][]string = map[string][]string {
     "Apple AirPods": []string{"6084400", "5706659", "6083595"},
     "XBox Series X": []string{"6428324"},
     "XBox Series S": []string{"6430277"},
+    "NVIDIA 3070 FE": []string{"6429442"},
+    "NVIDIA 3080 FE": []string{"6429440"},
 }
 
 var TargetDevices map[string][]string = map[string][]string {
