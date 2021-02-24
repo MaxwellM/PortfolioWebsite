@@ -14,9 +14,10 @@ ngModule.controller('mainPageCtrl', ['$scope', '$rootScope', '$http', '$q', '$fi
 
     // This waits for GitHubCalendar to be done loading...
     angular.element(function () {
-        $scope.totalContributions = document.getElementById("contribNum").innerText.split(" ", 1)[0];
-        if ($scope.totalContributions === 0) {
-            // Wasn't able to pull actual value. Sometimes it takes a second so lets wait one second and try again
+        if (document.getElementById("contribNum") != null){
+            $scope.totalContributions = document.getElementById("contribNum").innerText.split(" ", 1)[0];
+        } else {
+            // Couldn't find it, so lets try again after one second
             setTimeout($scope.totalContributions = document.getElementById("contribNum").innerText.split(" ", 1)[0], 1000);
         }
         $scope.$apply();
