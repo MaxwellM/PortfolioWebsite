@@ -3,26 +3,10 @@ package starWarsCharacterTableEample
 import (
 	"PortfolioWebsite/src/go/db"
 	"context"
-	"encoding/json"
 	"fmt"
-	"reflect"
 )
 
 type CharacterResult struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	Homeworld   string `json:"homeworld"`
-	Born        string `json:"born"`
-	Died        string `json:"died"`
-	Species     string `json:"species"`
-	Gender      string `json:"gender"`
-	Affiliation string `json:"affiliation"`
-	Associated  string `json:"associated"`
-	Masters     string `json:"masters"`
-	Apprentices string `json:"apprentices"`
-}
-
-type StarWarsCharacterResult struct {
 	Id          int    `json:"id"`
 	Name        string `json:"name"`
 	Homeworld   string `json:"homeworld"`
@@ -40,28 +24,21 @@ func AddCharacter(name string, homeworld string, born string, died string, gende
 	// Used to return the ID of the row we inserted into our DB.
 	lastInsertId := 0
 
-	//fmt.Println("Name: ", name)
-	//fmt.Println("Born: ", born)
-	//fmt.Println("Associated: ", associated)
-	//fmt.Println("Gender: ", gender)
-	//fmt.Println("Affiliation: ", affiliation)
-	//fmt.Println("Masters: ", masters)
-
 	// This inserts our quote and accompanying data into our table!
 	err := db.ConnPool.QueryRow(context.Background(),
-		`INSERT INTO 
+		`INSERT INTO
 				star_wars_characters(
-					name, 
-					home_world, 
-					born, 
-					died, 
-					species, 
-					gender, 
-					affiliation, 
-					associated, 
-					masters, 
-					apprentices) 
-			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+					name,
+					home_world,
+					born,
+					died,
+					species,
+					gender,
+					affiliation,
+					associated,
+					masters,
+					apprentices)
+			VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 			RETURNING id`,
 		name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices).Scan(&lastInsertId)
 	if err != nil {
@@ -73,24 +50,22 @@ func AddCharacter(name string, homeworld string, born string, died string, gende
 }
 
 func LoadAllStarWarsCharacters(Name, Species string) ([]*CharacterResult, error) {
-	fmt.Println("NAME: ", Name)
-	fmt.Println("Species: ", Species)
 	rows, err := db.ConnPool.Query(context.Background(),
-		`SELECT 
-				id, 
-				name, 
-				home_world, 
-				born, 
-				died, 
-				species, 
-				gender, 
-				affiliation, 
-				associated, 
-				masters, 
-				apprentices 
-			FROM 
+		`SELECT
+				id,
+				name,
+				home_world,
+				born,
+				died,
+				species,
+				gender,
+				affiliation,
+				associated,
+				masters,
+				apprentices
+			FROM
 				star_wars_characters
-			WHERE (name = $1 OR $1 = '') 
+			WHERE (name = $1 OR $1 = '')
 			AND   (species = $2 OR $2 = '')`,
 		Name, Species)
 
@@ -130,8 +105,7 @@ func LoadAllStarWarsCharacters(Name, Species string) ([]*CharacterResult, error)
 	return characterResultsArray, nil
 }
 
-func RetreiveCharacter(id int) ([]*StarWarsCharacterResult, error) {
-	fmt.Println("ID AFTER: ", id)
+func RetreiveCharacter(id int) ([]*CharacterResult, error) {
 	rows, err := db.ConnPool.Query(context.Background(),
 		`SELECT
 				id,
@@ -155,13 +129,13 @@ func RetreiveCharacter(id int) ([]*StarWarsCharacterResult, error) {
 		return nil, fmt.Errorf("There was an error reading the quote builder table from the database %s: %s", id, err)
 	}
 
-	starWarsCharacterResultsArray := []*StarWarsCharacterResult{}
+	characterResultsArray := []*CharacterResult{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 
-		var res StarWarsCharacterResult
+		var res CharacterResult
 
 		err = rows.Scan(
 			&res.Id,
@@ -181,15 +155,13 @@ func RetreiveCharacter(id int) ([]*StarWarsCharacterResult, error) {
 			continue
 		}
 
-		starWarsCharacterResultsArray = append(starWarsCharacterResultsArray, &res)
+		characterResultsArray = append(characterResultsArray, &res)
 	}
 
-	return starWarsCharacterResultsArray, nil
+	return characterResultsArray, nil
 }
 
 func ResubmitCharacter(character map[string]interface{}) (string, error) {
-	//fmt.Println("Quote: ", quote)
-
 	// We have to cast our ID to an int. This worked.
 	// https://tanaikech.github.io/2017/06/02/changing-from-float64-to-int-for-values-did-unmarshal-using-mapstringinterface/
 	id := int(character["id"].(float64))
@@ -200,14 +172,10 @@ func ResubmitCharacter(character map[string]interface{}) (string, error) {
 	editedDied := character["died"]
 	editedSpecies := character["species"]
 	editedGender := character["gender"]
-	editedAffiliation, _ := json.Marshal(character["affiliation"])
-	editedAssociated, _ := json.Marshal(character["associated"])
-	editedMasters, _ := json.Marshal(character["masters"])
-	editedApprentices, _ := json.Marshal(character["apprentices"])
-
-	fmt.Println("Affiliation Type: ", reflect.TypeOf(editedAffiliation))
-	//totalPrice := quote["quote"].(map[string]interface{})["Final Price"]
-	//memeo := quote["quote"].(map[string]interface{})["Memo"]
+	editedAffiliation, _ := character["affiliation"]
+	editedAssociated, _ := character["associated"]
+	editedMasters, _ := character["masters"]
+	editedApprentices, _ := character["apprentices"]
 
 	_, err := db.ConnPool.Exec(context.Background(),
 		`UPDATE

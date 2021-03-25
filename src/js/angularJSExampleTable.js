@@ -2,11 +2,11 @@ var ngModule = angular.module('app');
 
 ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$filter', function ($scope, $http, $q, $filter) {
 
-    $scope.addCharacter = addCharacter;
-    $scope.reSubmitCharacter = reSubmitCharacter;
-    $scope.showSection= showSection;
+    $scope.pushCharacter = pushCharacter;
     $scope.refreshAngularJSExampleTableResults = refreshAngularJSExampleTableResults;
     $scope.setClickedRow = setClickedRow;
+    $scope.selectCharacter = selectCharacter;
+    $scope.clearSelectedCharacter = clearSelectedCharacter
 
     $scope.showAddCharacter = false;
     $scope.showViewCharacters = true;
@@ -15,6 +15,49 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
     $scope.searchSpecies = "";
     $scope.allCharacters = [];
     $scope.selectedCharacter = [];
+
+    $scope.query = {
+        order: '-name',
+        limit: 10,
+        page: 1
+    };
+
+    $scope.character = {
+        id: "",
+        name: "",
+        homeworld: "",
+        born: "",
+        died: "",
+        species: "",
+        gender: "",
+        affiliation: "",
+        associated: "",
+        masters: "",
+        apprentices: "",
+    };
+
+    function selectCharacter() {
+        console.log("Select ID: ", $scope.selectedCharacter[0].id);
+        let index = $scope.allCharacters.findIndex(x => x.id === $scope.selectedCharacter[0].id);
+        $scope.character = $scope.allCharacters[index];
+        console.log("Selected Character: ", $scope.character);
+    }
+
+    function clearSelectedCharacter() {
+        $scope.character = {
+            id: "",
+            name: "",
+            homeworld: "",
+            born: "",
+            died: "",
+            species: "",
+            gender: "",
+            affiliation: "",
+            associated: "",
+            masters: "",
+            apprentices: "",
+        };
+    }
 
     function setClickedRow(id) {
         let obj = {
@@ -30,46 +73,33 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         })
     }
 
-    function reSubmitCharacter() {
-        let obj = {
-            character: $scope.selectedCharacter[0],
-        };
+    function pushCharacter() {
+        // update if we're doing that. Otherwise lets add new character
+        if ($scope.selectedCharacter.length > 0) {
+            let obj = {
+                character: $scope.selectedCharacter[0],
+            };
 
-        console.log("EDITED CHARACTER: ", $scope.selectedCharacter[0]);
+            console.log("EDITED CHARACTER: ", $scope.selectedCharacter[0]);
 
-        // Now that everything has been updated, we can update the quote in the DB with the new information!
-        $http.post("/updateCharacter", obj).then(function (res) {
-            let results = res.data;
+            // Now that everything has been updated, we can update the quote in the DB with the new information!
+            $http.post("/updateCharacter", obj).then(function (res) {
+                let results = res.data;
+                refreshAngularJSExampleTableResults();
+            }, function (error) {
+                alert("Couldn't update the quote!", error);
+            })
+        } else {
+            console.log("Character: ", $scope.character);
 
-        }, function (error) {
-            alert("Couldn't update the quote!", error);
-        })
-    }
-
-    function addCharacter(name, homeworld, born, died, species, gender, affiliation, associated, masters, apprentices) {
-        let obj = {
-            name: name,
-            homeworld: homeworld,
-            born: born,
-            died: died,
-            species: species,
-            gender: gender,
-            affiliation: affiliation,
-            associated: associated,
-            masters: masters,
-            apprentices: apprentices
-        };
-
-
-        console.log("Character: ", obj);
-
-        $http.post("/addCharacterToDB", obj).then(function (res) {
-            let results = res.data;
-            refreshAngularJSExampleTableResults();
-        }, function(error) {
-            alert("ERROR ADDING CHARACTER TO DB: ", error);
-        });
-
+            $http.post("/addCharacterToDB", $scope.character).then(function (res) {
+                let results = res.data;
+                Object.keys($scope.character).forEach(k => delete $scope.character[k]);
+                refreshAngularJSExampleTableResults();
+            }, function(error) {
+                alert("ERROR ADDING CHARACTER TO DB: ", error);
+            });
+        }
     }
 
     function refreshAngularJSExampleTableResults() {
@@ -79,38 +109,9 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         $http.get("/loadAngularJSExampleTableResults", {params: {Name, Species}}).then(function (res) {
             let results = res.data;
             $scope.allCharacters = results;
-            // Pre-selects a character.
-            $scope.selectedCharacter = results;
-
-            // $scope.allCharacters.forEach(function (res) {
-            //     res.born = Date.parse(res.born);
-            // });
         }, function () {
             console.warn("error loading character results:", arguments);
-            //loadAllSpotterResults();
         });
-    }
-
-    function showSection(section) {
-        let view = document.getElementById('starWarsCharacterView');
-        let add = document.getElementById('starWarsCharacterAdd');
-        if (section) {
-            $scope.showAddCharacter = true;
-            $scope.showViewCharacters = false;
-            add.style.backgroundColor = '#52658F';
-            add.style.color = '#f5f8fa';
-            view.style.backgroundColor = '#f5f8fa';
-            view.style.color = '#282e44';
-        } else if (!section) {
-            $scope.showViewCharacters = true;
-            $scope.showAddCharacter = false;
-            view.style.backgroundColor = '#52658F';
-            view.style.color = '#f5f8fa';
-            add.style.backgroundColor = '#f5f8fa';
-            add.style.color = '#282e44';
-        } else {
-            console.log("Not sure what you selected there?");
-        }
     }
 
     function splitResults(results) {
@@ -123,5 +124,4 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
 
     // Timed or single shot functions
     refreshAngularJSExampleTableResults();
-    showSection(false);
 }]);
