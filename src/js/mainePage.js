@@ -14,12 +14,27 @@ ngModule.controller('mainPageCtrl', ['$scope', '$rootScope', '$http', '$q', '$fi
 
     // This waits for GitHubCalendar to be done loading...
     angular.element(function () {
-        if (document.getElementById("contribNum") != null){
-            $scope.totalContributions = document.getElementById("contribNum").innerText.split(" ", 1)[0];
-        } else {
-            // Couldn't find it, so lets try again after one second
-            setTimeout($scope.totalContributions = document.getElementById("contribNum").innerText.split(" ", 1)[0], 1000);
-        }
-        $scope.$apply();
+        checkForContributions();
     });
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Try once a second, for 10 seconds to update our Contribution Number from GitHub!
+    async function checkForContributions() {
+        const start = new Date();
+        const future = start.setSeconds(start.getSeconds() + 10);
+
+        while (start <= future) {
+            if (document.getElementById("contribNum") != null && Number(document.getElementById("contribNum").innerText.split(" ", 1)[0]) !== 0){
+                $scope.totalContributions = document.getElementById("contribNum").innerText.split(" ", 1)[0];
+                $scope.$apply();
+                break;
+            } else {
+                // Couldn't find it, so lets try again after one second
+                await sleep(1000);
+            }
+        }
+    }
 }]);
