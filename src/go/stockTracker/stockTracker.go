@@ -74,7 +74,13 @@ func GetStockInfoFromApiSource(vendor string, item string) ([]*ItemResult, error
                         name := allInfoMap["name"].(string)
                         price := strconv.FormatFloat(allInfoMap["salePrice"].(float64), 'f', -1, 64)
                         availability := strconv.FormatBool(allInfoMap["onlineAvailability"].(bool))
-                        url := allInfoMap["url"].(string)
+                        fmt.Println("NAME: ", name)
+                        url := ""
+                        if allInfoMap["url"] == nil {
+                            url = ""
+                        } else {
+                            url = allInfoMap["url"].(string)
+                        }
                         // Now lets fill out struct!
                         bestBuyResult := ItemResult{
                             Id: index,
