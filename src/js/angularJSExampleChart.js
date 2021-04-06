@@ -75,7 +75,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         chart = c3.generate({
             bindto: 'div#chart',
             size: {
-                height: 300
+                height: 400
             },
             padding: {
                 top: 20,
@@ -101,11 +101,17 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                 colors: {
                     count: '#ff0000',
                     pageCount: '#0000ff',
-                    avgCount: '#ffcccb',
-                    avgPageCount: '#add8e6'
+                    avgCount: '#ff0000',
+                    avgPageCount: '#0000ff'
                 },
             },
             axis: {
+                y: {
+                    label: {
+                        text: 'Value',
+                        position: 'inner-center'
+                    },
+                },
                 x: {
                     type: 'timeseries',
                     tick: {
@@ -113,18 +119,14 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                         multiline: false,
                         culling: false,
                         format: '%Y-%m'
-                    }
-                }
+                    },
+                    label: {
+                        text: 'Time',
+                        position: 'inner-center'
+                    },
+                },
             },
         });
-    }
-
-    function sumObjectProperty(type) {
-        let sum = 0;
-        for(const[index,item] of $scope.monthlyVisitors.entries()) {
-            sum += item[type];
-        }
-        return sum;
     }
 
     function getMonthName() {
@@ -152,7 +154,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             let results;
             let currentMonth = getMonthName();
             results = res.data;
-            $scope.monthlyVisitors = results;
+            $scope.monthlyVisitors = round(results);
             $scope.currentMonthName = currentMonth;
 
             // Setting the total for this month!
@@ -162,6 +164,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
                     $scope.currentPageMonthTotal = item.pageCount;
                 }
             }
+
             //$scope.currentMonthTotal = 0;
             // sort our results by month
             results.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
@@ -169,6 +172,21 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
         }, function (err) {
             alert("ERROR /readMonthlyVisitors: ", err);
         })
+    }
+
+    // Will take a json array of objects and loop through it and
+    // if it is a number, convert it to two decimal places.
+    function round(jsonData) {
+        jsonData.forEach((element) => {
+            for (var key of Object.keys(element)) {
+                console.log(key + " -> " + element[key])
+                if (typeof element[key] === "number") {
+                    element[key] = element[key].toFixed(2);
+                }
+            }
+        });
+
+        return jsonData;
     }
 
     function setCurrentMonth() {
