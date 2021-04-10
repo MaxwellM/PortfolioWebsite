@@ -1,86 +1,87 @@
-head
-    link(rel="stylesheet", href="./css/angularJSExampleTable.css", type="text/css")
-body
-    title AngularJS and PostgreSQL Example!
-    div#angularJSExampleTableWrapper
-        div#angularJSExampleTableTitleWrapper
-            h1.md-display-1 Star Wars Characters
-        div#angularJSExampleTableAddCharacterWrapper
-            h4.md-headline {{selectedCharacter.length > 0 ? 'Update Character' : 'Add Character'}}
-            div#angularJSExampleTableAddCharacter
-                div#angularJSExampleTableAddCharacterGroup1
-                    md-input-container
-                        label.md-body-1 Name
-                        input(required="", ng-model='character.name')
-                    md-input-container
-                        label.md-body-1 Home World
-                        input(required="", ng-model='character.homeworld')
-                    md-input-container
-                        label.md-body-1 Born
-                        input(required="", ng-model='character.born')
-                    md-input-container
-                        label.md-body-1 Died
-                        input(required="", ng-model='character.died')
-                div#angularJSExampleTableAddCharacterGroup2
-                    md-input-container
-                        label.md-body-1 Species
-                        input(required="", ng-model='character.species')
-                    md-input-container
-                        label.md-body-1 Gender
-                        input(required="", ng-model='character.gender')
-                    md-input-container
-                        label.md-body-1 Affiliation
-                        input(required="", ng-model='character.affiliation')
-                    md-button#angularJSExampleTableAddCharacterButton(ng-click='pushCharacter()') Submit
-                div#angularJSExampleTableAddCharacterGroup3
-                    md-input-container
-                        label.md-body-1 Associations
-                        textarea(required="", md-no-autogrow='false', rows='2', ng-model='character.associated')
-                    md-input-container
-                        label.md-body-1 Masters
-                        textarea(required="", md-no-autogrow='false', rows='2',  ng-model='character.masters')
-                    md-input-container
-                        label.md-body-1 Apprentices
-                        textarea(required="", md-no-autogrow='false', rows='2',  ng-model='character.apprentices')
-        div#angularJSExampleTablePageWrapper
-            md-table-container
-                table(md-table='', md-row-select='', ng-model='selectedCharacter')
-                    thead(md-head='', md-order='query.order', md-on-reorder='refreshAngularJSExampleTableResults')
-                        tr(md-row='')
-                            th(md-column='', md-desc, md-order-by='id')
-                                span.md-body-1 ID
-                            th(md-column='', md-order-by='name')
-                                span.md-body-1 Name
-                            th(md-column='', md-order-by='homeworld')
-                                span.md-body-1 Home World
-                            th(md-column='', md-order-by='born')
-                                span.md-body-1 Born
-                            th(md-column='', md-order-by='died')
-                                span.md-body-1 Died
-                            th(md-column='', md-order-by='species')
-                                span.md-body-1 Species
-                            th(md-column='', md-order-by='gender')
-                                span.md-body-1 Gender
-                            th(md-column='', md-order-by='affiliation')
-                                span.md-body-1 Affiliation
-                            th(md-column='', md-order-by='associated')
-                                span.md-body-1 Associations
-                            th(md-column='', md-order-by='masters')
-                                span.md-body-1 Masters
-                            th(md-column='', md-order-by='apprentices')
-                                span.md-body-1 Apprentices
-                    tbody(md-body='')
-                        tr(md-row='' md-select= 'result', md-select-id='id', md-auto-select='false', md-on-select='selectCharacter', md-on-deselect='clearSelectedCharacter', ng-repeat="result in allCharacters | orderBy:query.order | limitTo: query.limit: (query.page - 1) * query.limit")
-                            td(md-cell='') {{ ::result.id }}
-                            td(md-cell='') {{ ::result.name }}
-                            td(md-cell='') {{ ::result.homeworld }}
-                            td(md-cell='') {{ ::result.born }}
-                            td(md-cell='') {{ ::result.died }}
-                            td(md-cell='') {{ ::result.species }}
-                            td(md-cell='') {{ ::result.gender }}
-                            td(md-cell='') {{ ::result.affiliation }}
-                            td(md-cell='') {{ ::result.associated }}
-                            td(md-cell='') {{ ::result.masters }}
-                            td(md-cell='') {{ ::result.apprentices }}
-            md-table-pagination(md-limit="query.limit", md-page="query.page", md-total="{{allCharacters.length}}")
-script(defer='', src="./js/angularJSExampleTable.js")
+div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak)
+    head
+        base(href="/")
+        link(rel="stylesheet", href="./css/angularJSExampleTable.css", type="text/css")
+    body
+        title AngularJS and PostgreSQL Example!
+        div#angularJSExampleTableWrapper
+            div#angularJSExampleTableTitleWrapper
+                h1.md-display-1 Star Wars Characters
+            div#angularJSExampleTableAddCharacterWrapper
+                h4.md-headline {{selectedCharacter.length > 0 ? 'Update Character' : 'Add Character'}}
+                div#angularJSExampleTableAddCharacter
+                    div#angularJSExampleTableAddCharacterGroup1
+                        md-input-container
+                            label.md-body-1 Name
+                            input(required="", ng-model='character.name')
+                        md-input-container
+                            label.md-body-1 Home World
+                            input(required="", ng-model='character.homeworld')
+                        md-input-container
+                            label.md-body-1 Born
+                            input(required="", ng-model='character.born')
+                        md-input-container
+                            label.md-body-1 Died
+                            input(required="", ng-model='character.died')
+                    div#angularJSExampleTableAddCharacterGroup2
+                        md-input-container
+                            label.md-body-1 Species
+                            input(required="", ng-model='character.species')
+                        md-input-container
+                            label.md-body-1 Gender
+                            input(required="", ng-model='character.gender')
+                        md-input-container
+                            label.md-body-1 Affiliation
+                            input(required="", ng-model='character.affiliation')
+                        md-button#angularJSExampleTableAddCharacterButton(ng-click='pushCharacter()') Submit
+                    div#angularJSExampleTableAddCharacterGroup3
+                        md-input-container
+                            label.md-body-1 Associations
+                            textarea(required="", md-no-autogrow='false', rows='2', ng-model='character.associated')
+                        md-input-container
+                            label.md-body-1 Masters
+                            textarea(required="", md-no-autogrow='false', rows='2',  ng-model='character.masters')
+                        md-input-container
+                            label.md-body-1 Apprentices
+                            textarea(required="", md-no-autogrow='false', rows='2',  ng-model='character.apprentices')
+            div#angularJSExampleTablePageWrapper
+                md-table-container
+                    table(md-table='', md-row-select='', ng-model='selectedCharacter')
+                        thead(md-head='', md-order='query.order', md-on-reorder='refreshAngularJSExampleTableResults')
+                            tr(md-row='')
+                                th(md-column='', md-desc, md-order-by='id')
+                                    span.md-body-1 ID
+                                th(md-column='', md-order-by='name')
+                                    span.md-body-1 Name
+                                th(md-column='', md-order-by='homeworld')
+                                    span.md-body-1 Home World
+                                th(md-column='', md-order-by='born')
+                                    span.md-body-1 Born
+                                th(md-column='', md-order-by='died')
+                                    span.md-body-1 Died
+                                th(md-column='', md-order-by='species')
+                                    span.md-body-1 Species
+                                th(md-column='', md-order-by='gender')
+                                    span.md-body-1 Gender
+                                th(md-column='', md-order-by='affiliation')
+                                    span.md-body-1 Affiliation
+                                th(md-column='', md-order-by='associated')
+                                    span.md-body-1 Associations
+                                th(md-column='', md-order-by='masters')
+                                    span.md-body-1 Masters
+                                th(md-column='', md-order-by='apprentices')
+                                    span.md-body-1 Apprentices
+                        tbody(md-body='')
+                            tr(md-row='' md-select= 'result', md-select-id='id', md-auto-select='false', md-on-select='selectCharacter', md-on-deselect='clearSelectedCharacter', ng-repeat="result in allCharacters | orderBy:query.order | limitTo: query.limit: (query.page - 1) * query.limit")
+                                td(md-cell='') {{ ::result.id }}
+                                td(md-cell='') {{ ::result.name }}
+                                td(md-cell='') {{ ::result.homeworld }}
+                                td(md-cell='') {{ ::result.born }}
+                                td(md-cell='') {{ ::result.died }}
+                                td(md-cell='') {{ ::result.species }}
+                                td(md-cell='') {{ ::result.gender }}
+                                td(md-cell='') {{ ::result.affiliation }}
+                                td(md-cell='') {{ ::result.associated }}
+                                td(md-cell='') {{ ::result.masters }}
+                                td(md-cell='') {{ ::result.apprentices }}
+                md-table-pagination(md-limit="query.limit", md-page="query.page", md-total="{{allCharacters.length}}")

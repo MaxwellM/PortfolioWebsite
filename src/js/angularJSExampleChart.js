@@ -34,7 +34,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     function ping() {
         let start = performance.now();
-        $http.get("/ping").then(function (res) {
+        $http.get("/api/ping").then(function (res) {
             let finish = performance.now();
             $scope.pingTime = Math.round(finish - start);
         }, function(error) {
@@ -43,7 +43,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     }
 
     function readIP() {
-        $http.get("/readIP").then(function (res) {
+        $http.get("/api/readIP").then(function (res) {
             let results = res.data;
             $scope.distance = calculateDistance(results.latitude, 32.779167 , results.longitude, -96.808891);
             $scope.browserCity = results.city;
@@ -134,13 +134,11 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             "July", "August", "September", "October", "November", "December"
         ];
         const d = new Date();
-        console.log("Month: ", d.getMonth());
-        console.log("Month2: ", monthNames[d.getMonth()]);
         return monthNames[d.getMonth()];
     }
 
     function readVisitors() {
-        $http.get("/readVisitors").then(function (res) {
+        $http.get("/api/readVisitors").then(function (res) {
             let results;
             results = res.data;
             $scope.visitors = results;
@@ -150,7 +148,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     }
 
     function readMonthlyVisitors() {
-        $http.get("/readMonthlyVisitors").then(function (res) {
+        $http.get("/api/readMonthlyVisitors").then(function (res) {
             let results;
             let currentMonth = getMonthName();
             results = res.data;
@@ -170,7 +168,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
             results.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
             drawChart(results);
         }, function (err) {
-            alert("ERROR /readMonthlyVisitors: ", err);
+            alert("ERROR /api/readMonthlyVisitors: ", err);
         })
     }
 
@@ -179,7 +177,6 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
     function round(jsonData) {
         jsonData.forEach((element) => {
             for (var key of Object.keys(element)) {
-                console.log(key + " -> " + element[key])
                 if (typeof element[key] === "number") {
                     element[key] = element[key].toFixed(2);
                 }
@@ -199,7 +196,7 @@ ngModule.controller('angularJSExampleChartCtrl', ['$scope', '$http', '$q', '$fil
 
     $scope.getIPLocations = function() {
         //let ip;
-        $http.get("/getIPLocation").then(function (res) {
+        $http.get("/api/getIPLocation").then(function (res) {
             let results;
             results = res.data;
             $scope.ipLocationList = results;

@@ -1,7 +1,8 @@
-head
-    link(rel="stylesheet", href="./css/resume.css", type="text/css")
-body
-    title Maxwell Ross Morin's Resume
-    div#resumeWrapper
-        embed(ng-src="./images/Resume.pdf", type="application/pdf")
-script(defer='', src="./js/resume.js")
+div#resumePage(ng-controller='resumeCtrl', ng-cloak)
+    head
+        base(href="/")
+        link(rel="stylesheet", href="./css/resume.css", type="text/css")
+    body
+        title Maxwell Ross Morin's Resume
+        div#resumeWrapper
+            embed(ng-src="./images/Resume.pdf", type="application/pdf")

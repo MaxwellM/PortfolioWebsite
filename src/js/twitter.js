@@ -12,7 +12,7 @@ ngModule.controller('goExampleTwitterCtl', ['$scope', '$http', '$q', '$filter', 
             Tweet: $scope.tweet
         };
         console.log("Tweet: ", $scope.tweet);
-        $http.post("/postTweet", obj).then(function (res) {
+        $http.post("/api/postTweet", obj).then(function (res) {
             let results;
             results = res.data;
             $scope.tweetID = results.id_str;

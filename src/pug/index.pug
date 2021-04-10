@@ -1,6 +1,7 @@
 doctype html
 html
     head
+        base(href="/")
         meta(name='description', content="Maxwell Morin's portfolio website")
         meta(name='keywords', content="HTML,CSS,JavaScript,AngularJS,Go,PostgreSQL")
         meta(name='author', content="Maxwell Morin")
@@ -13,7 +14,9 @@ html
         link(rel="stylesheet", href="./js/node_modules/angular-material-data-table/dist/md-data-table.min.css", type="text/css")
         link(rel="stylesheet", href="./css/main.css", type="text/css")
         link(rel="shortcut icon", href="./images/favicon.png", type="image/png")
-        script(defer='', src="./js/node_modules/angular/angular.min.js")
+        script(defer='', src="./js/node_modules/angular/angular.js")
+        script(defer='', src="./js/node_modules/@uirouter/angularjs/release/angular-ui-router.js")
+        script(defer='', src="./js/node_modules/oclazyload/dist/ocLazyLoad.min.js")
         script(defer='', src="./js/app.js")
     // Global site tag (gtag.js) - Google Analytics
     script(async='', src='https://www.googletagmanager.com/gtag/js?id=UA-19197796-1')
@@ -28,34 +31,7 @@ html
         div#MainWrapper
             div#nav_bar(ng-controller='navigationCtrl', ng-cloak)
                 include includes/navigation
-            div#mainPage(ng-controller='mainPageCtrl', ng-if='buttonName == "Maxwell Morin"')
-                include includes/main
-            div#projectPage(ng-controller='projectCtrl', ng-cloak, ng-if='buttonName == "Projects"')
-                include includes/projectPage
-            div#resumePage(ng-controller='resumeCtrl', ng-cloak , ng-if='buttonName == "Resume"')
-                include includes/resume
-            div#contactMePage(ng-controller='contactMeCtrl', ng-cloak, ng-if='buttonName == "Contact Me"')
-                include includes/contactMePage
-            div#angularJSExampleTablePage(ng-controller='angularJSExampleTableCtrl', ng-cloak, ng-if='buttonName == "Table Example"')
-                include includes/angularJSExampleTable
-            div#angularJSExampleDisplayPage(ng-controller='angularJSExampleDisplayCtrl', ng-cloak, ng-if='buttonName == "Display Example"')
-                include includes/angularJSExampleDisplay
-            div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak, ng-if='buttonName == "Chart Example"')
-                include includes/angularJSExampleChart
-            div#untyGameEggmanPage(ng-controller='unityEggmanCtrl', ng-cloak, ng-if='buttonName == "Unity Eggman"')
-                include includes/unityEggman
-            div#untyGameEggciteBikePage(ng-controller='unityEggciteBikeCtrl', ng-cloak, ng-if='buttonName == "Unity Eggcite Bike"')
-                include includes/unityEggciteBike
-            div#untyGameLostInSpacePage(ng-controller='unityLostInSpaceCtrl', ng-cloak, ng-if='buttonName == "Unity Lost In Space"')
-                include includes/unityLostInSpace
-            div#goExampleOccurrencePage(ng-controller='goExampleOccurrenceCtl', ng-cloak, ng-if='buttonName == "String Duplication"')
-                include includes/phraseOccurrence
-            div#goExampleTranslatePage(ng-controller='goExampleTranslateCtl', ng-cloak, ng-if='buttonName == "Translate"')
-                include includes/translate
-            div#goExampleTwitterPage(ng-controller='goExampleTwitterCtl', ng-cloak, ng-if='buttonName == "Twitter"')
-                include includes/twitter
-            div#stockTrackerPage(ng-controller='stockTrackerCtrl', ng-cloak, ng-if='buttonName == "Stock Tracker"')
-                include includes/stockTracker
+            div#renderedPage(ui-view)
             div#footerWrapper(ng-controller='footerCtrl', ng-cloak)
                 include includes/footer
     script(defer='', src="./js/node_modules/angular-material/angular-material.min.js")
@@ -66,3 +42,25 @@ html
     script(defer='', src="./js/node_modules/angular-aria/angular-aria.min.js")
     script(defer='', src="./js/node_modules/angular-messages/angular-messages.min.js")
     script(defer='', src="./js/node_modules/angular-cookies/angular-cookies.min.js")
+    script(defer='', src="./js/node_modules/ngtweet/dist/ngtweet.min.js")
+    script(defer='', src="./js/node_modules/d3/dist/d3.min.js" charset="utf-8")
+    script(defer='', src="./js/node_modules/c3/c3.min.js")
+    script(defer='', src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBD8Vaf701K57QYWMcw6zmmcm8cUt-HPQ")
+    script(defer='', src="./js/node_modules/github-calendar/dist/github-calendar.min.js")
+    script(defer='', src="./js/mainePage.js")
+    script(defer='', src="./js/contactMe.js")
+    script(defer='', src="./js/project.js")
+    script(defer='', src="./js/resume.js")
+    script(defer='', src="./js/angularJSExampleChart.js")
+    script(defer='', src="./js/angularJSExampleDisplay.js")
+    script(defer='', src="./js/angularJSExampleTable.js")
+    script(defer='', src="./js/phraseOccurrence.js")
+    script(defer='', src="./js/stockTracker.js")
+    script(defer='', src="./js/translate.js")
+    script(defer='', src="./js/twitter.js")
+    script(defer='', src="./js/unityEggciteBike.js")
+    script(defer='', src='./unityGames/EggciteBikeWebGL/TemplateData/UnityProgress.js')
+    script(defer='', src="./js/unityEggman.js")
+    script(defer='', src='./unityGames/EggManWebGL/TemplateData/UnityProgress.js')
+    script(defer='', src="./js/unityLostInSpace.js")
+    script(defer='', src='./unityGames/LostInSpaceWebGL/TemplateData/UnityProgress.js')

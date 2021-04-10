@@ -7,6 +7,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "@uirouter/angularjs": "^1.0.29",
     "angular": "^1.8.2",
     "angular-animate": "^1.8.2",
     "angular-aria": "^1.8.2",
@@ -18,7 +19,8 @@
     "angular-tooltips": "^1.2.2",
     "c3": "^0.7.20",
     "github-calendar": "^2.2.7",
-    "ngtweet": "^1.0.0"
+    "ngtweet": "^1.0.0",
+    "oclazyload": "^1.1.0"
   },
   "devDependencies": {},
   "scripts": {

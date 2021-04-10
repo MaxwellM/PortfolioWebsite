@@ -64,7 +64,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
             id: id
         };
         console.log("ID: ", obj.id);
-        $http.get("/setClickedRow", {params: {id}}).then(function (res) {
+        $http.get("/api/setClickedRow", {params: {id}}).then(function (res) {
             let results = res.data;
             console.log("Character: ", results);
             $scope.selectedCharacter = results;
@@ -83,7 +83,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
             console.log("EDITED CHARACTER: ", $scope.selectedCharacter[0]);
 
             // Now that everything has been updated, we can update the quote in the DB with the new information!
-            $http.post("/updateCharacter", obj).then(function (res) {
+            $http.post("/api/updateCharacter", obj).then(function (res) {
                 let results = res.data;
                 refreshAngularJSExampleTableResults();
             }, function (error) {
@@ -92,7 +92,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         } else {
             console.log("Character: ", $scope.character);
 
-            $http.post("/addCharacterToDB", $scope.character).then(function (res) {
+            $http.post("/api/addCharacterToDB", $scope.character).then(function (res) {
                 let results = res.data;
                 Object.keys($scope.character).forEach(k => delete $scope.character[k]);
                 refreshAngularJSExampleTableResults();
@@ -106,7 +106,7 @@ ngModule.controller('angularJSExampleTableCtrl', ['$scope', '$http', '$q', '$fil
         let Name = $scope.searchName;
         let Species = $scope.searchSpecies;
 
-        $http.get("/loadAngularJSExampleTableResults", {params: {Name, Species}}).then(function (res) {
+        $http.get("/api/loadAngularJSExampleTableResults", {params: {Name, Species}}).then(function (res) {
             let results = res.data;
             $scope.allCharacters = results;
         }, function () {

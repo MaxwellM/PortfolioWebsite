@@ -9,7 +9,7 @@ ngModule.controller('goExampleOccurrenceCtl', ['$scope', '$http', '$q', '$filter
         // Splitting string
         let SplitString = str.split(" ");
 
-        $http.get("/getOccurrences", {params:{SplitString}}).then(function (res) {
+        $http.get("/api/getOccurrences", {params:{SplitString}}).then(function (res) {
             let results;
             results = res.data;
             $scope.occurrences = JSON.stringify(results, null, 2);

@@ -1,19 +1,19 @@
-head
-    link(rel="stylesheet", href="./css/unityEggciteBike.css", type="text/css")
-    link(rel="stylesheet", href="./unityGames/EggciteBikeWebGL/TemplateData/style.css")
-body
-    title Unity3D WebGL Game!
-    div#unityEggciteBikeLabelWrapper
-        div#unityEggciteBikeTop
-            md-button#closeLostInSpace(ng-show='playEggciteBike', ng-click='goBack()') Close Eggcite Bike
-            md-button#playLostInSpace(ng-show='!playEggciteBike', ng-click='launchEggciteBike()') Play Eggcite Bike
-    div#showEggciteBike(ng-if='playEggciteBike')
-        .template-wrap.clear
-            canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')
-            br
-            .logo
-            .fullscreen
-                img(src='./unityGames/EggciteBikeWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
-            .title Eggcite Bike
-script(defer='', src="./js/unityEggciteBike.js")
-script(defer='', src='./unityGames/EggciteBikeWebGL/TemplateData/UnityProgress.js')
+div#untyGameEggciteBikePage(ng-controller='unityEggciteBikeCtrl', ng-cloak)
+    head
+        base(href="/")
+        link(rel="stylesheet", href="./css/unityEggciteBike.css", type="text/css")
+        link(rel="stylesheet", href="./unityGames/EggciteBikeWebGL/TemplateData/style.css")
+    body
+        title Unity3D WebGL Game!
+        div#unityEggciteBikeLabelWrapper
+            div#unityEggciteBikeTop
+                md-button#closeLostInSpace(ng-show='playEggciteBike', ng-click='goBack()') Close Eggcite Bike
+                md-button#playLostInSpace(ng-show='!playEggciteBike', ng-click='launchEggciteBike()') Play Eggcite Bike
+        div#showEggciteBike(ng-if='playEggciteBike')
+            .template-wrap.clear
+                canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')
+                br
+                .logo
+                .fullscreen
+                    img(src='./unityGames/EggciteBikeWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
+                .title Eggcite Bike

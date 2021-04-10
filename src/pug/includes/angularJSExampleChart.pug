@@ -1,58 +1,57 @@
-head
-    link(rel="stylesheet", href="./css/angularJSExampleChart.css", type="text/css")
-    link(rel="stylesheet", href="./css/c3.css")
-body
-    title AngularJS and C3JS Chart Example!
-    div#angularJSExampleChartInnerPageWrapper
-        div#angularJSExampleChartTopWrapper
-            div#angularJSExampleChartTitle
-                h1.md-display-1 Website Traffic
-            div#angularJSExampleChartWrapper
-                div#chart
-        div#angularJSExampleChartInformationWrapper
-            div#angularJSExampleChartTopLeftWrapper
-                div#angularJSExampleChartTopLeftTop
-                    .md-headline Statistics for {{ currentMonthName }}
-                    div#angularJSExampleChartTopLeftInnerWrapper
-                        .md-subhead Unique Visitors {{ ::currentMonthTotal }} | Page Views {{ ::currentPageMonthTotal }}
-                div#angularJSExampleChartTopLeftBottom
-                    .md-headline Live Connection Info
-                        div#angularJSExampleChartTopLeftBottomWrapper
-                            div#angularJSExampleChartRTWrapper
-                                .md-subhead RT:
-                                .md-subhead {{ pingTime }}
-                                .md-subhead ms
-                                div#RTCircle(ng-style=" pingTime >= 250 && pingTime < 1500  ? { backgroundColor:'red' } : pingTime >= 100 && pingTime < 250 ? {backgroundColor: 'khaki'} : pingTime >= 0 && pingTime < 100 ? {backgroundColor: 'green'} : {backgroundColor: ''}")
-                            .md-subhead | Client: {{ browserCity }}, {{ browserState }} | Server: Dallas, TX | Distance: {{ distance | limitTo:8}} Mi
-            div#angularJSExampleChartTableWrapper(ng-show='ipLocationList.length')
-                md-table-container
-                    table(md-table='', md-progress='getIPLocations')
-                        thead(md-head='', md-order='query.order')
-                            tr(md-row='')
-                                th(md-column='', md-order-by='ip')
-                                    span.md-body-1 IP
-                                th(md-column='', md-order-by='isp')
-                                    span.md-body-1 ISP
-                                th(md-column='', md-order-by='as.name')
-                                    span.md-body-1 Name
-                                th(md-column='', md-order-by='location.city')
-                                    span.md-body-1 City
-                                th(md-column='', md-order-by='location.region')
-                                    span.md-body-1 Region
-                                th(md-column='', md-order-by='location.country')
-                                    span.md-body-1 Country
-                                th(md-column='', md-desc, md-order-by='timestamp')
-                                    span.md-body-1 Time
-                        tbody(md-body='')
-                            tr(md-row='' ng-repeat="result in ipLocationList | orderBy:query.order | limitTo: query.limit: (query.page - 1) * query.limit")
-                                td(md-cell='') {{ ::result.ip }}
-                                td(md-cell='') {{ ::result.isp }}
-                                td(md-cell='') {{ ::result.as.name }}
-                                td(md-cell='') {{ ::result.location.city }}
-                                td(md-cell='') {{ ::result.location.region }}
-                                td(md-cell='') {{ ::result.location.country }}
-                                td(md-cell='') {{ ::result.timestamp | date:"short" }}
-                md-table-pagination(md-limit="query.limit", md-page="query.page", md-total="{{ipLocationList.length}}")
-script(defer='', src="./js/angularJSExampleChart.js")
-script(defer='', src="./js/node_modules/d3/dist/d3.min.js" charset="utf-8")
-script(defer='', src="./js/node_modules/c3/c3.min.js")
+div#angularJSExampleChartPage(ng-controller='angularJSExampleChartCtrl', ng-cloak)
+    head
+        base(href="/")
+        link(rel="stylesheet", href="./css/angularJSExampleChart.css", type="text/css")
+        link(rel="stylesheet", href="./css/c3.css")
+    body
+        title AngularJS and C3JS Chart Example!
+        div#angularJSExampleChartInnerPageWrapper
+            div#angularJSExampleChartTopWrapper
+                div#angularJSExampleChartTitle
+                    h1.md-display-1 Website Traffic
+                div#angularJSExampleChartWrapper
+                    div#chart
+            div#angularJSExampleChartInformationWrapper
+                div#angularJSExampleChartTopLeftWrapper
+                    div#angularJSExampleChartTopLeftTop
+                        .md-headline Statistics for {{ currentMonthName }}
+                        div#angularJSExampleChartTopLeftInnerWrapper
+                            .md-subhead Unique Visitors {{ ::currentMonthTotal }} | Page Views {{ ::currentPageMonthTotal }}
+                    div#angularJSExampleChartTopLeftBottom
+                        .md-headline Live Connection Info
+                            div#angularJSExampleChartTopLeftBottomWrapper
+                                div#angularJSExampleChartRTWrapper
+                                    .md-subhead RT:
+                                    .md-subhead {{ pingTime }}
+                                    .md-subhead ms
+                                    div#RTCircle(ng-style=" pingTime >= 250 && pingTime < 1500  ? { backgroundColor:'red' } : pingTime >= 100 && pingTime < 250 ? {backgroundColor: 'khaki'} : pingTime >= 0 && pingTime < 100 ? {backgroundColor: 'green'} : {backgroundColor: ''}")
+                                .md-subhead | Client: {{ browserCity }}, {{ browserState }} | Server: Dallas, TX | Distance: {{ distance | limitTo:8}} Mi
+                div#angularJSExampleChartTableWrapper(ng-show='ipLocationList.length')
+                    md-table-container
+                        table(md-table='', md-progress='getIPLocations')
+                            thead(md-head='', md-order='query.order')
+                                tr(md-row='')
+                                    th(md-column='', md-order-by='ip')
+                                        span.md-body-1 IP
+                                    th(md-column='', md-order-by='isp')
+                                        span.md-body-1 ISP
+                                    th(md-column='', md-order-by='as.name')
+                                        span.md-body-1 Name
+                                    th(md-column='', md-order-by='location.city')
+                                        span.md-body-1 City
+                                    th(md-column='', md-order-by='location.region')
+                                        span.md-body-1 Region
+                                    th(md-column='', md-order-by='location.country')
+                                        span.md-body-1 Country
+                                    th(md-column='', md-desc, md-order-by='timestamp')
+                                        span.md-body-1 Time
+                            tbody(md-body='')
+                                tr(md-row='' ng-repeat="result in ipLocationList | orderBy:query.order | limitTo: query.limit: (query.page - 1) * query.limit")
+                                    td(md-cell='') {{ ::result.ip }}
+                                    td(md-cell='') {{ ::result.isp }}
+                                    td(md-cell='') {{ ::result.as.name }}
+                                    td(md-cell='') {{ ::result.location.city }}
+                                    td(md-cell='') {{ ::result.location.region }}
+                                    td(md-cell='') {{ ::result.location.country }}
+                                    td(md-cell='') {{ ::result.timestamp | date:"short" }}
+                    md-table-pagination(md-limit="query.limit", md-page="query.page", md-total="{{ipLocationList.length}}")

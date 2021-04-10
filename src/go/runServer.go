@@ -18,57 +18,66 @@ func main() {
 	//sets the root of the directory to access
 	router.Static("/css", "./public/css")
 	router.Static("/js", "./public/js")
+	router.Static("/html", "./public/html")
 	router.Static("/images", "./public/images")
 	router.Static("/unityGames", "./public/unityGames")
 	// For our single page website... Minus the Unity stuff as it cannot be
 	// closed without reloading the page...
 	router.StaticFile("", "./public/html/index.html")
 
-    // Cookie stuff
-	router.GET("/setCookie", routes.SetCookie)
-	router.GET("/getCookie", routes.GetCookie)
-	router.GET("/clearCookie", routes.ClearCookie)
+    // We'll house all of our API calls here
+    api := router.Group("/api")
+    {
+        // Cookie stuff
+        api.GET("/setCookie", routes.SetCookie)
+        api.GET("/getCookie", routes.GetCookie)
+        api.GET("/clearCookie", routes.ClearCookie)
 
-	router.GET("/getGithubInfo/:url", routes.GetGithubInfo)
+        router.GET("/getGithubInfo/:url", routes.GetGithubInfo)
 
-	// Linked to the Star Wars Character Example
-	router.POST("/addCharacterToDB", routes.AddCharacterToDB)
-	router.POST("/updateCharacter", routes.UpdateCharacter)
-	router.GET("/loadAngularJSExampleTableResults", routes.LoadAngularJSExampleTableResults)
-	router.GET("/setClickedRow", routes.SetClickedRow)
+        // Linked to the Star Wars Character Example
+        api.POST("/addCharacterToDB", routes.AddCharacterToDB)
+        api.POST("/updateCharacter", routes.UpdateCharacter)
+        api.GET("/loadAngularJSExampleTableResults", routes.LoadAngularJSExampleTableResults)
+        api.GET("/setClickedRow", routes.SetClickedRow)
 
-	// Linked to the Weather Example
-	router.GET("/getWeather", routes.GetWeather)
-	router.GET("/getWeatherConditions", routes.GetWeatherConditions)
-	router.GET("/getLocalWeather", routes.GetLocalWeather)
-	router.GET("/getLocalCurrentConditions", routes.GetLocalCurrentConditions)
+        // Linked to the Weather Example
+        api.GET("/getWeather", routes.GetWeather)
+        api.GET("/getWeatherConditions", routes.GetWeatherConditions)
+        api.GET("/getLocalWeather", routes.GetLocalWeather)
+        api.GET("/getLocalCurrentConditions", routes.GetLocalCurrentConditions)
 
-	// Linked to the Visitor Counter
-	router.GET("/visitorCounter", routes.VisitorCounter)
-	router.GET("/readVisitors", routes.ReadVisitors)
-	router.GET("/readMonthlyVisitors", routes.ReadMonthlyVisitors)
-	router.GET("/getIPLocation", routes.GetIPLocation)
+        // Linked to the Visitor Counter
+        api.GET("/visitorCounter", routes.VisitorCounter)
+        api.GET("/readVisitors", routes.ReadVisitors)
+        api.GET("/readMonthlyVisitors", routes.ReadMonthlyVisitors)
+        api.GET("/getIPLocation", routes.GetIPLocation)
 
-	// Linked to the Contact Me Page
-	router.POST("/sendMessage", routes.SendMessage)
+        // Linked to the Contact Me Page
+        api.POST("/sendMessage", routes.SendMessage)
 
-	// Linked to the Go Examples Page!
-	router.GET("/getOccurrences", routes.GetOccurrences)
-	router.GET("/translate", routes.Translate)
-	router.POST("/postTweet", routes.PostTweet)
+        // Linked to the Go Examples Page!
+        api.GET("/getOccurrences", routes.GetOccurrences)
+        api.GET("/translate", routes.Translate)
+        api.POST("/postTweet", routes.PostTweet)
 
-	// Linked to the Stock Tracker Page
-	router.GET("/getNewInventory", routes.GetNewInventory)
+        // Linked to the Stock Tracker Page
+        api.GET("/getNewInventory", routes.GetNewInventory)
 
-	router.GET("/ping", routes.SendPong)
-    router.GET("/readIP", routes.ReadIP)
+        api.GET("/ping", routes.SendPong)
+        api.GET("/readIP", routes.ReadIP)
+    }
 
 	// Timed functions!
 	go weatherExample.InitRequestCount()
 	go weatherExample.InitUpdateCurrentConditions()
 	go weatherExample.InitUpdateForecast()
 	go visitorCounter.InitCreateMonth()
-	//go weatherExample.UpdateAllWeather(true)
+
+    // This will have the frontend handle all of the routing
+    router.NoRoute(func(c *gin.Context) {
+        c.File("./public/html/index.html")
+    })
 
 	// This is the port that runs
 	router.Run(":8080")

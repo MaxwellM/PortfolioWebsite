@@ -32,7 +32,7 @@ ngModule.controller('contactMeCtrl', ['$scope', '$http', '$q', '$filter', functi
             return
         }
 
-        $http.post('/sendMessage', obj).then(function (res) {
+        $http.post('/api/sendMessage', obj).then(function (res) {
             let results = res.data;
             alert("Message Successfully Sent!");
         }, function (err) {

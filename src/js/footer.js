@@ -5,8 +5,8 @@ ngModule.controller('footerCtrl', ['$scope', '$http', '$q', '$filter', function 
     $scope.visitors = [];
 
     function getVisitorInfo() {
-        $http.get("/visitorCounter").then(function (res) {
-            $http.get("/readVisitors").then(function (res) {
+        $http.get("/api/visitorCounter").then(function (res) {
+            $http.get("/api/readVisitors").then(function (res) {
                 let results;
                 results = res.data;
                 $scope.visitors = results;

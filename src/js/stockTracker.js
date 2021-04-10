@@ -61,7 +61,7 @@ ngModule.controller('stockTrackerCtrl', ['$scope', '$http', '$q', '$filter', '$s
             $scope.currentVendor = vendor.vendor;
             // We can add a sleep, if we want.
             // await sleep(1000);
-            let promise = $http.get('/getNewInventory', {params: {vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
+            let promise = $http.get('/api/getNewInventory', {params: {vendor: vendor.vendor, item: $scope.itemSelected}}).then(function (res) {
                 returnedPromises ++;
                 let results;
                 results = res.data;

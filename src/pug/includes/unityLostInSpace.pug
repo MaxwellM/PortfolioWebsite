@@ -1,18 +1,18 @@
-head
-    link(rel="stylesheet", href="./css/unityLostInSpace.css", type="text/css")
-    link(rel="stylesheet", href="./unityGames/LostInSpaceWebGL/TemplateData/style.css")
-title Unity3D WebGL Game!
-div#unityLostInSpaceLabelWrapper
-    div#unityLostInSpaceTop
-        md-button#closeLostInSpace(ng-show='playLostInSpace', ng-click='goBack()') Close Lost in Space
-        md-button#playLostInSpace(ng-show='!playLostInSpace', ng-click='launchLostInSpace()') Play Lost in Space
-div#showLostInSpace(ng-if='playLostInSpace')
-    .template-wrap.clear
-        canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')
-        br
-        .logo
-        .fullscreen
-            img(src='./unityGames/LostInSpaceWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
-        .title Lost in Space
-script(defer='', src="./js/unityLostInSpace.js")
-script(defer='', src='./unityGames/LostInSpaceWebGL/TemplateData/UnityProgress.js')
+div#untyGameLostInSpacePage(ng-controller='unityLostInSpaceCtrl', ng-cloak)
+    head
+        base(href="/")
+        link(rel="stylesheet", href="./css/unityLostInSpace.css", type="text/css")
+        link(rel="stylesheet", href="./unityGames/LostInSpaceWebGL/TemplateData/style.css")
+    title Unity3D WebGL Game!
+    div#unityLostInSpaceLabelWrapper
+        div#unityLostInSpaceTop
+            md-button#closeLostInSpace(ng-show='playLostInSpace', ng-click='goBack()') Close Lost in Space
+            md-button#playLostInSpace(ng-show='!playLostInSpace', ng-click='launchLostInSpace()') Play Lost in Space
+    div#showLostInSpace(ng-if='playLostInSpace')
+        .template-wrap.clear
+            canvas#canvas.emscripten(oncontextmenu='event.preventDefault()' height='600px' width='960px')
+            br
+            .logo
+            .fullscreen
+                img(src='./unityGames/LostInSpaceWebGL/TemplateData/fullscreen.png' width='38' height='38' alt='Fullscreen' title='Fullscreen' onclick='SetFullscreen(1);')
+            .title Lost in Space

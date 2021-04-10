@@ -17,7 +17,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
         // We're cheap and are on the free plan which means we have 50 requests a day. We'll implement a count in Go
         // that will cease requests if they exceed that amount.
 
-        $http.get("/getWeather", {params:{location}}).then(function (res) {
+        $http.get("/api/getWeather", {params:{location}}).then(function (res) {
             let results;
             results = res.data;
             $scope.weatherData = results.Forecast;
@@ -29,7 +29,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
     }
 
     function readLocalWeatherReport() {
-        $http.get("/getLocalWeather", {params:{location}}).then(function (res) {
+        $http.get("/api/getLocalWeather", {params:{location}}).then(function (res) {
             let results;
             results = res.data;
             $scope.weatherData = results;
@@ -39,7 +39,7 @@ ngModule.controller('angularJSExampleDisplayCtrl', ['$scope', '$http', '$q', '$f
     }
 
     function readCurrentConditions() {
-        $http.get("/getLocalCurrentConditions", {params:{location}}).then(function (res) {
+        $http.get("/api/getLocalCurrentConditions", {params:{location}}).then(function (res) {
             let results;
             results = res.data;
             $scope.currentConditionsWeather = results.Result[0];

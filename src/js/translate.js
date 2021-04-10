@@ -14,7 +14,7 @@ ngModule.controller('goExampleTranslateCtl', ['$scope', '$http', '$q', '$filter'
         let Lang = getLanguageCode($scope.lngSelected);
         $scope.translation = "";
 
-        $http.get("/translate", {params:{SplitString, Lang}}).then(function (res) {
+        $http.get("/api/translate", {params:{SplitString, Lang}}).then(function (res) {
             let results;
             results = res.data;
             $scope.translation = results;
