@@ -36,7 +36,7 @@ var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet',
         })
         .state('AngularJSExampleChart', {
             url : '/angularJsExampleChart',
-            templateUrl : "./html/includes/angularJsExampleChart.html",
+            templateUrl : "./html/includes/angularJSExampleChart.html",
             controller : "angularJSExampleChartCtrl"
         })
         .state('AngularJSExampleDisplay', {
