@@ -17,7 +17,7 @@ var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet',
         .state('Home', {
             url : '/',
             templateUrl : "./html/includes/main.html",
-            controller : "mainPageCtrl"
+            controller : "mainPageCtrl",
         })
         .state('ContactMe', {
             url : '/contactMe',
@@ -71,7 +71,7 @@ var ngModule = angular.module('app', ['720kb.tooltips', 'ngSanitize', 'ngtweet',
         })
         .state('UnityEggciteBike', {
             url : '/unityEggciteBike',
-            templateUrl : "./html/includes/UnityEggciteBike.html",
+            templateUrl : "./html/includes/unityEggciteBike.html",
             controller : "unityEggciteBikeCtrl"
         })
         .state('UnityEggman', {
