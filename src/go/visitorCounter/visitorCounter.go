@@ -528,16 +528,6 @@ func WriteIPLocationToDB(ip string, domain string) (string, error) {
 	}
 	ipLocationReturn, err := ioutil.ReadAll(res.Body)
 
-	fmt.Println("BODY: ", string(ipLocationReturn))
-
-	ipLocationReturnJSON, err := json.Marshal(ipLocationReturn)
-	if err != nil {
-		fmt.Println("Error marshaling IP Location", err)
-		return "", err
-	}
-
-	fmt.Println("ipLocationReturnJSON: ", ipLocationReturnJSON)
-
 	// Putting our IP Location information to a struct
 	var ipLocationResult WhoIsAPI
 	unmarshalErr := json.Unmarshal([]byte(ipLocationReturn), &ipLocationResult)
@@ -555,8 +545,6 @@ func WriteIPLocationToDB(ip string, domain string) (string, error) {
 		ipLocationResult.Result.ZipCode = "84401"
 		ipLocationResult.Result.Org = "Century Link"
 	}
-
-	fmt.Println("ipLocationResult STRUCT AFTER UNMARSHAL: ", ipLocationResult)
 
 	// This inserts our quote and accompanying data into our table!
 	dbErr := db.ConnPool.QueryRow(context.Background(),
