@@ -18,7 +18,7 @@
     "angular-sanitize": "^1.8.2",
     "angular-tooltips": "^1.2.2",
     "c3": "^0.7.20",
-    "github-calendar": "^2.2.7",
+    "github-calendar": "^2.2.9",
     "ngtweet": "^1.0.0",
     "oclazyload": "^1.1.0"
   },

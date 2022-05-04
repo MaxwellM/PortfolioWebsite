@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"strings"
 	"time"
 
-	"PortfolioWebsite/src/go/db"
 	"PortfolioWebsite/src/go/common"
+	"PortfolioWebsite/src/go/db"
 )
 
 type IpResult struct {
@@ -28,12 +30,37 @@ type VisitorResult struct {
 	AvgPageCount float64   `json:"avgPageCount"`
 }
 
+type WhoIsAPI struct {
+	Result WhoIsAPIResult `json:"result"`
+}
+
+type WhoIsAPIResult struct {
+	Address        string   `json:"address"`
+	City           string   `json:"city"`
+	Country        string   `json:"country"`
+	CreationDate   string   `json:"creationDate"`
+	DNSSec         string   `json:"DNSSec"`
+	DomainName     string   `json:"domainName"`
+	Emails         string   `json:"emails"`
+	ExpirationDate string   `json:"expirationDate"`
+	Name           string   `json:"name"`
+	NameServers    []string `json:"nameServers"`
+	Org            string   `json:"org"`
+	ReferralURL    string   `json:"referralURL"`
+	Registrar      string   `json:"registrar"`
+	State          string   `json:"state"`
+	Status         string   `json:"status"`
+	UpdatedDate    string   `json:"updatedDate"`
+	WhoIsServer    string   `json:"whoIsServer"`
+	ZipCode        string   `json:"zipCode"`
+}
+
 type VisitorLocationResult struct {
-	As       VisitorLocationAs       `json:"as"`
-	Ip       string                  `json:"ip"`
-	Isp      string                  `json:"isp"`
-	Location VisitorLocationLocation `json:"location"`
-	Timestamp time.Time              `json:"timestamp"`
+	As        VisitorLocationAs       `json:"as"`
+	Ip        string                  `json:"ip"`
+	Isp       string                  `json:"isp"`
+	Location  VisitorLocationLocation `json:"location"`
+	Timestamp time.Time               `json:"timestamp"`
 }
 
 type VisitorLocationAs struct {
@@ -212,8 +239,11 @@ func IncrementMonthlyVisitors() (string, error) {
 	}
 }
 
-func CheckIfIPExists(ip string) (string, error) {
+func CheckIfIPExists(ip string, domain string) (string, error) {
 	unique := true
+
+	fmt.Println("IP: ", ip)
+	fmt.Println("Domain: ", domain)
 
 	rows, err := db.ConnPool.Query(context.Background(),
 		`SELECT
@@ -240,17 +270,18 @@ func CheckIfIPExists(ip string) (string, error) {
 			return "", err
 		}
 		if dbIP == ip {
+			fmt.Println("IP NOT UNIQUE: ", dbIP, " ", ip)
 			unique = false
 		}
 	}
 
 	if unique {
-		message, err := WriteIPToDatabase(ip)
+		message, err := WriteIPToDatabase(ip, domain)
 		if err != nil {
 			fmt.Println("Error inserting IP to DB", message)
 			return message, err
 		}
-		updateIPLocation, err := WriteIPLocationToDB(ip)
+		updateIPLocation, err := WriteIPLocationToDB(ip, domain)
 		if err != nil {
 			fmt.Println("Error updating the IP Location to DB", updateIPLocation)
 		}
@@ -265,7 +296,7 @@ func CheckIfIPExists(ip string) (string, error) {
 	return "Not Unique", nil
 }
 
-func WriteIPToDatabase(ip string) (string, error) {
+func WriteIPToDatabase(ip string, domain string) (string, error) {
 	lastInsertId := 0
 	now := time.Now()
 	// This inserts our quote and accompanying data into our table!
@@ -280,7 +311,7 @@ func WriteIPToDatabase(ip string) (string, error) {
 				id`,
 		ip, now).Scan(&lastInsertId)
 	if err != nil {
-		fmt.Println("Error saving IP to database: ", err)
+		fmt.Println("Error saving IP to database 1: ", err)
 		return "", err
 	}
 
@@ -471,15 +502,31 @@ func GetIPLocation() (map[string]interface{}, error) {
 
 // Functions for our IP Locations
 
-func WriteIPLocationToDB(ip string) (string, error) {
+func WriteIPLocationToDB(ip string, domain string) (string, error) {
 	lastInsertId := 0
 
-	url := fmt.Sprintf(`https://geoipify.whoisxmlapi.com/api/v1?apiKey=at_pruWCmEUi97TIwBtqGswfJokFFZ6M&ipAddress=` + ip)
-	ipLocationReturn, err := common.GetMapFromURL(url)
+	whoIsKeyInfo, err := common.ReadJsonFile("whoIsApiKey.json")
 	if err != nil {
-		fmt.Println("Error obtaining IP Location", err)
+		fmt.Println("Error reading JSON file!")
 		return "", err
 	}
+	//whoIsHost := whoIsKeyInfo["host"].(string)
+	whoIsKey := whoIsKeyInfo["key"].(string)
+
+	url := "https://api.apilayer.com/whois/query?domain=" + domain
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("apikey", whoIsKey)
+
+	if err != nil {
+		fmt.Println("WHOISAPI CALL ERROR: ", err)
+	}
+	res, err := client.Do(req)
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+	ipLocationReturn, err := ioutil.ReadAll(res.Body)
 
 	ipLocationReturnJSON, err := json.Marshal(ipLocationReturn)
 	if err != nil {
@@ -487,13 +534,27 @@ func WriteIPLocationToDB(ip string) (string, error) {
 		return "", err
 	}
 
+	fmt.Println("ipLocationReturnJSON STRUCT AFTER MARSHAL: ", ipLocationReturnJSON)
+
 	// Putting our IP Location information to a struct
-	var ipLocationResult VisitorLocationResult
+	var ipLocationResult WhoIsAPI
 	unmarshalErr := json.Unmarshal(ipLocationReturnJSON, &ipLocationResult)
-	if unmarshalErr != nil {
+	// Lets check if it is because we're on LocalHost. If so, lets create a blank entry.
+	if unmarshalErr != nil && !strings.Contains(ip, "localhost") {
 		fmt.Println("Error unmarshaling IP Location JSON", unmarshalErr)
 		return "", unmarshalErr
+	} else if strings.Contains(ip, "localhost") {
+		// Lets create an empty struct
+		ipLocationResult.Result.DomainName = "LocalHost"
+		ipLocationResult.Result.Registrar = "LocalHost"
+		ipLocationResult.Result.City = "West Haven"
+		ipLocationResult.Result.Country = "USA"
+		ipLocationResult.Result.State = "Utah"
+		ipLocationResult.Result.ZipCode = "84401"
+		ipLocationResult.Result.Org = "Century Link"
 	}
+
+	fmt.Println("ipLocationResult STRUCT AFTER UNMARSHAL: ", ipLocationResult)
 
 	// This inserts our quote and accompanying data into our table!
 	dbErr := db.ConnPool.QueryRow(context.Background(),
@@ -516,21 +577,21 @@ func WriteIPLocationToDB(ip string) (string, error) {
 				$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 			RETURNING
 				id`,
-		ipLocationResult.As.Asn,
-		ipLocationResult.As.Domain,
-		ipLocationResult.As.Name,
-		ipLocationResult.As.Route,
+		1,
+		ipLocationResult.Result.DomainName,
+		ipLocationResult.Result.Registrar,
 		ip,
-		ipLocationResult.Location.City,
-		ipLocationResult.Location.Country,
-		ipLocationResult.Location.Lat,
-		ipLocationResult.Location.Lng,
-		ipLocationResult.Location.PostalCode,
-		ipLocationResult.Location.Region,
-		ipLocationResult.Location.Timezone,
-		ipLocationResult.Isp).Scan(&lastInsertId)
+		ip,
+		ipLocationResult.Result.City,
+		ipLocationResult.Result.Country,
+		41.2705,
+		72.9470,
+		ipLocationResult.Result.ZipCode,
+		ipLocationResult.Result.State,
+		"",
+		ipLocationResult.Result.Org).Scan(&lastInsertId)
 	if dbErr != nil {
-		fmt.Println("Error saving IP to database: ", err)
+		fmt.Println("Error saving IP to database 2: ", err)
 		return "", err
 	}
 

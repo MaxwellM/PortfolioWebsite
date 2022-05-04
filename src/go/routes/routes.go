@@ -1,13 +1,13 @@
 package routes
 
 import (
+	"PortfolioWebsite/src/go/common"
 	"PortfolioWebsite/src/go/contactMe"
 	"PortfolioWebsite/src/go/goExamples"
 	"PortfolioWebsite/src/go/starWarsCharacterTableEample"
+	"PortfolioWebsite/src/go/stockTracker"
 	"PortfolioWebsite/src/go/visitorCounter"
 	"PortfolioWebsite/src/go/weatherExample"
-	"PortfolioWebsite/src/go/common"
-	"PortfolioWebsite/src/go/stockTracker"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
@@ -16,15 +16,15 @@ import (
 )
 
 func SetCookie(data *gin.Context) {
-    data.SetCookie(
-    	"MAXintosh_Cookie",
-    	"Maxwell_Ross_Morin",
+	data.SetCookie(
+		"MAXintosh_Cookie",
+		"Maxwell_Ross_Morin",
 		60*60*24,
-    	"/",
-    	"maxintosh.org",
-    	true,
-    	false,
-    	)
+		"/",
+		"maxintosh.org",
+		true,
+		false,
+	)
 }
 
 func GetCookie(data *gin.Context) {
@@ -41,19 +41,19 @@ func GetCookie(data *gin.Context) {
 		)
 		data.String(200, "Cookie:%s", cookie)
 	}
-    data.String(200, "Cookie:%s", cookie)
+	data.String(200, "Cookie:%s", cookie)
 }
 
 func ClearCookie(data *gin.Context) {
-    data.SetCookie(
-    	"MAXintosh_Cookie",
-    	"Maxwell Ross Morin",
-    	-1,
-    	"/",
-    	"localhost",
-    	true,
-    	false,
-    	)
+	data.SetCookie(
+		"MAXintosh_Cookie",
+		"Maxwell Ross Morin",
+		-1,
+		"/",
+		"localhost",
+		true,
+		false,
+	)
 }
 
 func GetNewInventory(data *gin.Context) {
@@ -64,103 +64,110 @@ func GetNewInventory(data *gin.Context) {
 
 	// Now lets strip the HTML into just the data we need!
 	if vendor == "BestBuy" {
-	    filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
-	    if err != nil {
-	        fmt.Println("Error filtering Best Buy resp: ", err.Error())
-	        data.JSON(http.StatusBadRequest, err.Error())
-	    } else {
-	        data.JSON(http.StatusOK, filteredResp)
-	    }
+		filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
+		if err != nil {
+			fmt.Println("Error filtering Best Buy resp: ", err.Error())
+			data.JSON(http.StatusBadRequest, err.Error())
+		} else {
+			data.JSON(http.StatusOK, filteredResp)
+		}
 	} else if vendor == "Walmart" {
-	    filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
-        if err != nil {
-            fmt.Println("Error filtering Walmart resp: ", err.Error())
-            data.JSON(http.StatusBadRequest, err.Error())
-        } else {
-            data.JSON(http.StatusOK, filteredResp)
-        }
+		filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
+		if err != nil {
+			fmt.Println("Error filtering Walmart resp: ", err.Error())
+			data.JSON(http.StatusBadRequest, err.Error())
+		} else {
+			data.JSON(http.StatusOK, filteredResp)
+		}
 	} else if vendor == "Target" {
-	    filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
-        if err != nil {
-            fmt.Println("Error filtering Target resp: ", err.Error())
-            data.JSON(http.StatusBadRequest, err.Error())
-        } else {
-            data.JSON(http.StatusOK, filteredResp)
-        }
-	} else if vendor == "GameStop"{
-        filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
-        if err != nil {
-            fmt.Println("Error filtering Target resp: ", err.Error())
-            data.JSON(http.StatusBadRequest, err.Error())
-        } else {
-            data.JSON(http.StatusOK, filteredResp)
-        }
+		filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
+		if err != nil {
+			fmt.Println("Error filtering Target resp: ", err.Error())
+			data.JSON(http.StatusBadRequest, err.Error())
+		} else {
+			data.JSON(http.StatusOK, filteredResp)
+		}
+	} else if vendor == "GameStop" {
+		filteredResp, err := stockTracker.GetStockInfoFromApiSource(vendor, item)
+		if err != nil {
+			fmt.Println("Error filtering Target resp: ", err.Error())
+			data.JSON(http.StatusBadRequest, err.Error())
+		} else {
+			data.JSON(http.StatusOK, filteredResp)
+		}
 	} else {
-	    // Didn't recognize the vendor...
-	    data.JSON(http.StatusBadRequest, fmt.Errorf("Did not recognize vendor!"))
+		// Didn't recognize the vendor...
+		data.JSON(http.StatusBadRequest, fmt.Errorf("Did not recognize vendor!"))
 	}
 }
 
 func GetGithubInfo(data *gin.Context) {
 	url := data.Query("url")
-    resp, err := common.GetStringFromURL(url)
-    if err != nil {
-        data.JSON(http.StatusBadRequest, err.Error())
-    } else {
-        // We need to pass back an HTML page. That is how the library parses the Github Info
-        // http://benwendt.ca/articles/gin-header/
-        data.Render(
-            http.StatusOK, render.Data{
-                ContentType: "text/html",
-                Data:        []byte(resp),
-            })
-    }
+	resp, err := common.GetStringFromURL(url)
+	if err != nil {
+		data.JSON(http.StatusBadRequest, err.Error())
+	} else {
+		// We need to pass back an HTML page. That is how the library parses the Github Info
+		// http://benwendt.ca/articles/gin-header/
+		data.Render(
+			http.StatusOK, render.Data{
+				ContentType: "text/html",
+				Data:        []byte(resp),
+			})
+	}
 }
 
 // Using ipstack.com we can make 10,000 ip requests a month for free. Cool. Lets get some
 // location data on an IP address if we find one.
 func ReadIP(data *gin.Context) {
-    IP := data.GetHeader("X-Real-IP")
+	apiKeyInfo, err := common.ReadJsonFile("ipStackApiKey.json")
+	if err != nil {
+		fmt.Println("Error reading JSON file!")
+		data.JSON(http.StatusBadRequest, err.Error())
+	}
+	apiKey := apiKeyInfo["key"].(string)
 
-    if IP != "" {
-        url := fmt.Sprintf(`http://api.ipstack.com/`+IP+`?access_key=2724f648413b327eda2fd505ea8cb9ab`)
+	IP := data.GetHeader("X-Real-IP")
 
-        resp, err := common.GetMapFromURL(url)
+	if IP != "" {
+		url := fmt.Sprintf(`https://api.ipstack.com/` + IP + `?access_key=` + apiKey)
 
-        if err != nil {
-            data.JSON(http.StatusBadRequest, err.Error())
-        }
+		resp, err := common.GetMapFromURL(url)
 
-        data.JSON(http.StatusOK, resp)
-    } else {
-            url := fmt.Sprintf(`http://api.ipstack.com/161.185.160.93?access_key=2724f648413b327eda2fd505ea8cb9ab`)
+		if err != nil {
+			data.JSON(http.StatusBadRequest, err.Error())
+		}
 
-            resp, err := common.GetMapFromURL(url)
+		data.JSON(http.StatusOK, resp)
+	} else {
+		url := fmt.Sprintf(`https://api.ipstack.com/161.185.160.93?access_key=` + apiKey)
 
-            if err != nil {
-                data.JSON(http.StatusBadRequest, err.Error())
-            }
-        data.JSON(http.StatusOK, resp)
-    }
+		resp, err := common.GetMapFromURL(url)
+
+		if err != nil {
+			data.JSON(http.StatusBadRequest, err.Error())
+		}
+		data.JSON(http.StatusOK, resp)
+	}
 }
 
 func VisitorCounter(data *gin.Context) {
 	//IP := data.Request.RemoteAddr
 	//IP := data.ClientIP()
+	Domain := data.Request.Host
 	IP := data.GetHeader("X-Real-IP")
-    if IP == "" {
-        IP = data.GetHeader("X-Forwarded-For")
-    }
-    if IP == "" {
-        IP = data.GetHeader("RemoteAddr")
+	if IP == "" {
+		IP = data.GetHeader("X-Forwarded-For")
+	}
+	if IP == "" {
+		IP = data.GetHeader("RemoteAddr")
 
-    }
-    if IP == "" {
-        IP = data.GetHeader("Referer")
+	}
+	if IP == "" {
+		IP = data.GetHeader("Referer")
 
-    }
-
-	ips, err := visitorCounter.CheckIfIPExists(IP)
+	}
+	ips, err := visitorCounter.CheckIfIPExists(IP, Domain)
 	if err != nil {
 		fmt.Println("Error returning IPs who visited the site! ", err)
 		data.JSON(http.StatusBadRequest, err.Error())
@@ -403,7 +410,7 @@ func PostTweet(data *gin.Context) {
 
 //Responds to a ping from /ping
 func SendPong(data *gin.Context) {
-		data.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+	data.JSON(http.StatusOK, gin.H{
+		"message": "pong",
+	})
 }
