@@ -35,24 +35,24 @@ type WhoIsAPI struct {
 }
 
 type WhoIsAPIResult struct {
-	Address        *string   `json:"address"`
-	City           *string   `json:"city"`
-	Country        *string   `json:"country"`
-	CreationDate   *string   `json:"creation_date"`
-	DNSSec         *string   `json:"dnssec"`
-	DomainName     *string   `json:"domain_name"`
-	Emails         *string   `json:"emails"`
-	ExpirationDate *string   `json:"expiration_date"`
-	Name           *string   `json:"name"`
-	NameServers    *[]string `json:"name_servers"`
-	Org            *string   `json:"org"`
-	ReferralURL    *string   `json:"referral_url"`
-	Registrar      *string   `json:"registrar"`
-	State          *string   `json:"state"`
-	Status         *string   `json:"status"`
-	UpdatedDate    *string   `json:"updated_date"`
-	WhoIsServer    *string   `json:"whois_server"`
-	ZipCode        *string   `json:"zipcode"`
+	Address        string   `json:"address"`
+	City           string   `json:"city"`
+	Country        string   `json:"country"`
+	CreationDate   string   `json:"creation_date"`
+	DNSSec         string   `json:"dnssec"`
+	DomainName     string   `json:"domain_name"`
+	Emails         string   `json:"emails"`
+	ExpirationDate string   `json:"expiration_date"`
+	Name           string   `json:"name"`
+	NameServers    []string `json:"name_servers"`
+	Org            string   `json:"org"`
+	ReferralURL    string   `json:"referral_url"`
+	Registrar      string   `json:"registrar"`
+	State          string   `json:"state"`
+	Status         string   `json:"status"`
+	UpdatedDate    string   `json:"updated_date"`
+	WhoIsServer    string   `json:"whois_server"`
+	ZipCode        string   `json:"zipcode"`
 }
 
 type VisitorLocationResult struct {
@@ -540,20 +540,20 @@ func WriteIPLocationToDB(ip string, domain string) (string, error) {
 
 	// Putting our IP Location information to a struct
 	var ipLocationResult WhoIsAPI
-	unmarshalErr := json.Unmarshal(ipLocationReturnJSON, &ipLocationResult)
+	unmarshalErr := json.Unmarshal([]byte(ipLocationReturn), &ipLocationResult)
 	// Lets check if it is because we're on LocalHost. If so, lets create a blank entry.
 	if unmarshalErr != nil && !strings.Contains(ip, "localhost") {
 		fmt.Println("Error unmarshaling IP Location JSON", unmarshalErr)
 		return "", unmarshalErr
 	} else if strings.Contains(ip, "localhost") {
 		// Lets create an empty struct
-		*ipLocationResult.Result.DomainName = "LocalHost"
-		*ipLocationResult.Result.Registrar = "LocalHost"
-		*ipLocationResult.Result.City = "West Haven"
-		*ipLocationResult.Result.Country = "USA"
-		*ipLocationResult.Result.State = "Utah"
-		*ipLocationResult.Result.ZipCode = "84401"
-		*ipLocationResult.Result.Org = "Century Link"
+		ipLocationResult.Result.DomainName = "LocalHost"
+		ipLocationResult.Result.Registrar = "LocalHost"
+		ipLocationResult.Result.City = "West Haven"
+		ipLocationResult.Result.Country = "USA"
+		ipLocationResult.Result.State = "Utah"
+		ipLocationResult.Result.ZipCode = "84401"
+		ipLocationResult.Result.Org = "Century Link"
 	}
 
 	fmt.Println("ipLocationResult STRUCT AFTER UNMARSHAL: ", ipLocationResult)
