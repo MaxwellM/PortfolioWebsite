@@ -38,21 +38,21 @@ type WhoIsAPIResult struct {
 	Address        string   `json:"address"`
 	City           string   `json:"city"`
 	Country        string   `json:"country"`
-	CreationDate   string   `json:"creationDate"`
-	DNSSec         string   `json:"DNSSec"`
-	DomainName     string   `json:"domainName"`
+	CreationDate   string   `json:"creation_date"`
+	DNSSec         string   `json:"dnssec"`
+	DomainName     string   `json:"domain_name"`
 	Emails         string   `json:"emails"`
-	ExpirationDate string   `json:"expirationDate"`
+	ExpirationDate string   `json:"expiration_date"`
 	Name           string   `json:"name"`
-	NameServers    []string `json:"nameServers"`
+	NameServers    []string `json:"name_servers"`
 	Org            string   `json:"org"`
-	ReferralURL    string   `json:"referralURL"`
+	ReferralURL    string   `json:"referral_url"`
 	Registrar      string   `json:"registrar"`
 	State          string   `json:"state"`
 	Status         string   `json:"status"`
-	UpdatedDate    string   `json:"updatedDate"`
-	WhoIsServer    string   `json:"whoIsServer"`
-	ZipCode        string   `json:"zipCode"`
+	UpdatedDate    string   `json:"updated_date"`
+	WhoIsServer    string   `json:"whois_server"`
+	ZipCode        string   `json:"zipcode"`
 }
 
 type VisitorLocationResult struct {
