@@ -528,6 +528,8 @@ func WriteIPLocationToDB(ip string, domain string) (string, error) {
 	}
 	ipLocationReturn, err := ioutil.ReadAll(res.Body)
 
+	fmt.Println("BODY: ", string(ipLocationReturn))
+
 	ipLocationReturnJSON, err := json.Marshal(ipLocationReturn)
 	if err != nil {
 		fmt.Println("Error marshaling IP Location", err)
