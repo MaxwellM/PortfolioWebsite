@@ -31,7 +31,7 @@ type VisitorResult struct {
 }
 
 type WhoIsAPI struct {
-	Result WhoIsAPIResult `json:"result"`
+	Result []string `json:"result"`
 }
 
 type WhoIsAPIResult struct {
