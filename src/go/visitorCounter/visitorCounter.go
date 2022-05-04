@@ -31,7 +31,7 @@ type VisitorResult struct {
 }
 
 type WhoIsAPI struct {
-	Result []string `json:"result"`
+	Result WhoIsAPIResult `json:"result"`
 }
 
 type WhoIsAPIResult struct {
@@ -535,6 +535,8 @@ func WriteIPLocationToDB(ip string, domain string) (string, error) {
 		fmt.Println("Error marshaling IP Location", err)
 		return "", err
 	}
+
+	fmt.Println("ipLocationReturnJSON: ", ipLocationReturnJSON)
 
 	// Putting our IP Location information to a struct
 	var ipLocationResult WhoIsAPI
