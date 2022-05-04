@@ -534,8 +534,6 @@ func WriteIPLocationToDB(ip string, domain string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("ipLocationReturnJSON STRUCT AFTER MARSHAL: ", ipLocationReturnJSON)
-
 	// Putting our IP Location information to a struct
 	var ipLocationResult WhoIsAPI
 	unmarshalErr := json.Unmarshal(ipLocationReturnJSON, &ipLocationResult)

@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin/render"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func SetCookie(data *gin.Context) {
@@ -154,7 +155,7 @@ func ReadIP(data *gin.Context) {
 func VisitorCounter(data *gin.Context) {
 	//IP := data.Request.RemoteAddr
 	//IP := data.ClientIP()
-	Domain := data.Request.Host
+	Domain := strings.Trim(data.Request.Host, "www.")
 	IP := data.GetHeader("X-Real-IP")
 	if IP == "" {
 		IP = data.GetHeader("X-Forwarded-For")
