@@ -9,7 +9,8 @@ ngModule.controller('unityEggmanCtrl', ['$scope', '$http', '$q', '$filter', func
     function launchEggman() {
         let gameWindow = document.getElementById("canvas");
         let script = document.createElement("script");
-        script.src = "../../unityGames/EggManWebGL/Release/UnityLoader.js";
+        //script.src = "../../unityGames/EggManWebGL/Release/UnityLoader.js";
+        script.src = "../../unityGames/EggMan5-4WebGL/Build/UnityLoader.js";
         if (!$scope.playEggciteBike) {
             document.body.appendChild(script);
             $scope.playEggman = true;
@@ -36,10 +37,10 @@ ngModule.controller('unityEggmanCtrl', ['$scope', '$http', '$q', '$filter', func
         compatibilitycheck: null,
         backgroundColor: "#222C36",
         splashStyle: "Light",
-        dataUrl: "../../unityGames/EggManWebGL/Release/EggManWebGL.data",
-        codeUrl: "../../unityGames/EggManWebGL/Release/EggManWebGL.js",
-        //asmUrl: "../../unityGames/EggManWebGL/Release/EggManWebGL.asm.js",
-        memUrl: "../../unityGames/EggManWebGL/Release/EggManWebGL.mem",
+        dataUrl: "../../unityGames/EggMan5-4WebGL/Build/EggMan5-4WebGL.data.unityweb",
+        codeUrl: "../../unityGames/EggMan5-4WebGL/Build/EggMan5-4WebGL.code.unityweb",
+        asmUrl: "../../unityGames/EggMan5-4WebGL/Build/EggMan5-4WebGL.asm.framework.unityweb",
+        memUrl: "../../unityGames/EggMan5-4WebGL/Build/EggMan5-4WebGL.asm.memory.unityweb",
     };
 
 }]);
