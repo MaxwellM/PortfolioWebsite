@@ -1,7 +1,7 @@
 var ngModule = angular.module('app');
 
 ngModule.controller('mainPageCtrl', ['$scope', '$rootScope', '$http', '$q', '$filter', function ($scope, $rootScope, $http, $q, $filter) {
-    $scope.totalContributions = 0;
+    //$scope.totalContributions = 0;
 
     //GitHubCalendar(".calendar", "maxwellm", {
     //    responsive: true,
