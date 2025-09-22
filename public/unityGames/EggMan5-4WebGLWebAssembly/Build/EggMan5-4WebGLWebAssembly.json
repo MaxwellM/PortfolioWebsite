@@ -1,0 +1,14 @@
+{
+"companyName": "Maxintosh",
+"productName": "EggMan",
+"dataUrl": "EggMan5-4WebGLWebAssembly.data.unityweb",
+"wasmCodeUrl": "EggMan5-4WebGLWebAssembly.wasm.code.unityweb",
+"wasmFrameworkUrl": "EggMan5-4WebGLWebAssembly.wasm.framework.unityweb",
+"asmCodeUrl": "EggMan5-4WebGLWebAssembly.asm.code.unityweb",
+"asmMemoryUrl": "EggMan5-4WebGLWebAssembly.asm.memory.unityweb",
+"asmFrameworkUrl": "EggMan5-4WebGLWebAssembly.asm.framework.unityweb",
+"TOTAL_MEMORY": 536870912,
+"splashScreenStyle": "Dark",
+"backgroundColor": "#222C36",
+"cacheControl": {"dataUrl": "must-revalidate"}
+}

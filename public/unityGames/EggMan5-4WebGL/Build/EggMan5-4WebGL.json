@@ -1,0 +1,12 @@
+{
+"companyName": "Maxintosh",
+"productName": "EggMan",
+"dataUrl": "EggMan5-4WebGL.data.unityweb",
+"asmCodeUrl": "EggMan5-4WebGL.asm.code.unityweb",
+"asmMemoryUrl": "EggMan5-4WebGL.asm.memory.unityweb",
+"asmFrameworkUrl": "EggMan5-4WebGL.asm.framework.unityweb",
+"TOTAL_MEMORY": 536870912,
+"splashScreenStyle": "Dark",
+"backgroundColor": "#222C36",
+"cacheControl": {"dataUrl": "must-revalidate"}
+}
