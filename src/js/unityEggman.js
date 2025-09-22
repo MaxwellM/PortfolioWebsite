@@ -9,7 +9,6 @@ ngModule.controller('unityEggmanCtrl', ['$scope', '$http', '$q', '$filter', func
     function launchEggman() {
         let gameWindow = document.getElementById("canvas");
         let script = document.createElement("script");
-        //script.src = "../../unityGames/EggManWebGL/Release/UnityLoader.js";
         script.src = "../../unityGames/EggMan5-4WebGL/Build/UnityLoader.js";
         if (!$scope.playEggciteBike) {
             document.body.appendChild(script);
